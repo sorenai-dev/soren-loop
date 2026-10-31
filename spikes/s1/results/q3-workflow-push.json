@@ -1,0 +1,70 @@
+{
+  "fork_token": {
+    "status": 201,
+    "body": {
+      "permissions": {
+        "contents": "write",
+        "metadata": "read"
+      },
+      "repository_selection": "selected",
+      "expires_at": "2026-10-30T22:16:11Z"
+    }
+  },
+  "api_create_feature_branch": {
+    "status": 201,
+    "body": {}
+  },
+  "api_put_normal_file": {
+    "status": 201,
+    "body": {}
+  },
+  "api_add_workflow": {
+    "status": 403,
+    "body": {
+      "message": "Resource not accessible by integration",
+      "documentation_url": "https://docs.github.com/rest/repos/contents#create-or-update-file-contents"
+    }
+  },
+  "api_modify_workflow": {
+    "status": 403,
+    "body": {
+      "message": "Resource not accessible by integration",
+      "documentation_url": "https://docs.github.com/rest/repos/contents#create-or-update-file-contents"
+    }
+  },
+  "api_write_upstream_with_fork_token": {
+    "status": 403,
+    "body": {
+      "message": "Resource not accessible by integration",
+      "documentation_url": "https://docs.github.com/rest/repos/contents#create-or-update-file-contents"
+    }
+  },
+  "control_branch": {
+    "status": 201,
+    "body": {}
+  },
+  "control_file": {
+    "status": 201,
+    "body": {}
+  },
+  "git_push_normal": {
+    "code": 0,
+    "stderr": "remote: \nremote: Create a pull request for 's1-git-normal' on GitHub by visiting:        \nremote:      https://github.com/sorenai-dev/feature-loop-s1-upstream/pull/new/s1-git-normal        \nremote:"
+  },
+  "git_push_add_workflow": {
+    "code": 1,
+    "stderr": "To https://github.com/sorenai-dev/feature-loop-s1-upstream.git\n ! [remote rejected] s1-git-workflow-add -> s1-git-workflow-add (refusing to allow a GitHub App to create or update workflow `.github/workflows/evil2.yml` without `workflows` permission)\nerror: failed to push some refs to 'https://github.com/sorenai-dev/feature-loop-s1-upstream.git'"
+  },
+  "git_push_modify_workflow": {
+    "code": 1,
+    "stderr": "To https://github.com/sorenai-dev/feature-loop-s1-upstream.git\n ! [remote rejected] s1-git-workflow-modify -> s1-git-workflow-modify (refusing to allow a GitHub App to create or update workflow `.github/workflows/secret-check.yml` without `workflows` permission)\nerror: failed to push some refs to 'https://github.com/sorenai-dev/feature-loop-s1-upstream.git'"
+  },
+  "git_push_upstream_with_fork_token": {
+    "code": 128,
+    "stderr": "remote: Permission to mandelbro/feature-loop-s1-upstream.git denied to feature-loop-s1-fcf8[bot].\nfatal: unable to access 'https://github.com/mandelbro/feature-loop-s1-upstream.git/': The requested URL returned error: 403"
+  },
+  "clone": {
+    "code": 0,
+    "stderr": ""
+  }
+}

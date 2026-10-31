@@ -1,0 +1,37 @@
+{
+  "app": {
+    "slug": "feature-loop-s1-fcf8",
+    "permissions": {
+      "contents": "write",
+      "metadata": "read",
+      "pull_requests": "write"
+    },
+    "events": []
+  },
+  "installations": [
+    {
+      "account": "sorenai-dev",
+      "repository_selection": "selected",
+      "permissions": {
+        "contents": "write",
+        "metadata": "read",
+        "pull_requests": "write"
+      },
+      "repos": [
+        "sorenai-dev/feature-loop-s1-upstream"
+      ]
+    },
+    {
+      "account": "mandelbro",
+      "repository_selection": "selected",
+      "permissions": {
+        "contents": "write",
+        "metadata": "read",
+        "pull_requests": "write"
+      },
+      "repos": [
+        "mandelbro/feature-loop-s1-upstream"
+      ]
+    }
+  ]
+}

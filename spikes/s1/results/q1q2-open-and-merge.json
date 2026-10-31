@@ -1,0 +1,38 @@
+{
+  "open_pr_pr_only": {
+    "token": "[redacted]",
+    "status": 201,
+    "body": {
+      "number": 1,
+      "html_url": "https://github.com/mandelbro/feature-loop-s1-upstream/pull/1",
+      "maintainer_can_modify": false
+    }
+  },
+  "pr_head": {
+    "repo": "sorenai-dev/feature-loop-s1-upstream",
+    "user": "feature-loop-s1-fcf8[bot]",
+    "sha": "df32e7f465605c2f191a0e45e6b0c594fa211bd0"
+  },
+  "merge_with_same_token": {
+    "status": 403,
+    "body": {
+      "message": "Resource not accessible by integration",
+      "documentation_url": "https://docs.github.com/rest/pulls/pulls#merge-a-pull-request"
+    }
+  },
+  "control_pr": {
+    "status": 201,
+    "body": {
+      "number": 2
+    }
+  },
+  "control_merge_with_contents_write": {
+    "token": "[redacted]",
+    "status": 200,
+    "body": {
+      "merged": true,
+      "message": "Pull Request successfully merged",
+      "sha": "8596481b68db97486df96267f4dfa29f9c2964c5"
+    }
+  }
+}

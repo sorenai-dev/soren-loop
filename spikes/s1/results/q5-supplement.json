@@ -1,0 +1,39 @@
+{
+  "mint_permission_app_lacks_workflows": {
+    "status": 422,
+    "body": {
+      "message": "The permissions requested are not granted to this installation.",
+      "documentation_url": "https://docs.github.com/rest/reference/apps#create-an-installation-access-token-for-an-app"
+    }
+  },
+  "mint_repo_outside_installation": {
+    "status": 422,
+    "body": {
+      "message": "There is at least one repository that does not exist or is not accessible to the parent installation.",
+      "documentation_url": "https://docs.github.com/rest/reference/apps#create-an-installation-access-token-for-an-app"
+    }
+  },
+  "control_token_scope_used_for_merge": {
+    "status": 201,
+    "body": {
+      "permissions": {
+        "contents": "write",
+        "metadata": "read",
+        "pull_requests": "write"
+      },
+      "repository_selection": "selected",
+      "expires_at": "2026-10-30T22:16:43Z"
+    }
+  },
+  "pr_only_token_scope_used_for_q1_q2": {
+    "status": 201,
+    "body": {
+      "permissions": {
+        "metadata": "read",
+        "pull_requests": "write"
+      },
+      "repository_selection": "selected",
+      "expires_at": "2026-10-30T22:16:44Z"
+    }
+  }
+}

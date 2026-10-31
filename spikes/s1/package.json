@@ -1,0 +1,13 @@
+{
+  "name": "feature-loop-spike-s1",
+  "private": true,
+  "type": "module",
+  "description": "Spike S1: GitHub App fork-PR least-privilege permissions",
+  "scripts": {
+    "register": "node manifest.mjs",
+    "spike": "node run-spike.mjs"
+  },
+  "dependencies": {
+    "jose": "^6.2.14"
+  }
+}

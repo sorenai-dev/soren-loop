@@ -1,0 +1,8 @@
+.DS_Store
+.claude-flow/
+node_modules/
+.secrets/
+.work-*/
+.env
+.env.*
+*.pem

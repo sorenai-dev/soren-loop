@@ -1,0 +1,38 @@
+{
+  "upstream_pr_only_token": {
+    "status": 201,
+    "body": {
+      "permissions": {
+        "metadata": "read",
+        "pull_requests": "write"
+      },
+      "repository_selection": "selected",
+      "expires_at": "2026-10-30T22:16:09Z"
+    }
+  },
+  "repos_visible_to_token": [
+    "mandelbro/feature-loop-s1-upstream"
+  ],
+  "upstream_contents_write_with_pr_only_token": {
+    "status": 403,
+    "body": {
+      "message": "Resource not accessible by integration",
+      "documentation_url": "https://docs.github.com/rest/repos/contents#create-or-update-file-contents"
+    }
+  },
+  "mint_permission_app_lacks_workflows": {
+    "status": 422,
+    "body": {}
+  },
+  "note_fork_token_is_minted_from_the_fork_installation": {
+    "status": 201,
+    "body": {
+      "permissions": {
+        "metadata": "read",
+        "pull_requests": "write"
+      },
+      "repository_selection": "selected",
+      "expires_at": "2026-10-30T22:16:11Z"
+    }
+  }
+}
