@@ -51,12 +51,34 @@ that runs before the capabilities are dropped.
 | Image | Reference-devcontainer-derived, pinned by digest | Same |
 | Runs | `npm ci --ignore-scripts` (or the ecosystem equivalent from the lockfile only); an owner-allowlisted set of packages may run install scripts | `claude -p` (plan read-only / build read-write); the CLI's check commands |
 | Egress | Registries for the detected ecosystem only | Anthropic endpoints only, from the reference firewall script; DNS restricted to the same |
-| Mounts | Run tree (rw), dependency cache volume | Run tree (rw for build, ro for plan), plugin (ro), per-run config dir, credential volume |
+| Mounts | Pristine `base_sha` export, dependency cache volume. **Produces a read-only dependency layer.** | **Exactly as SR-02 lists them:** run tree (rw for the build agent, ro for plan and for the check container), **dependency layer (ro)**, plugin (ro), and the per-run config dir with the credential (a copied file, or `CLAUDE_CODE_OAUTH_TOKEN` in the env). There is no persistent rw credential volume; S5 checks refresh behaviour (ST-65). |
 | User | Non-root | Non-root `agent`; `NET_ADMIN` dropped after init; no sudo; no Docker socket; no SSH agent; no git credential helper |
 | Host env | None | Only the Claude auth variable |
 
-The run tree is an export of `base_sha`, so it holds only tracked files, has no `.git` entry, and
-contains no untracked `.env*` files. `doctor` fails if `.env*` files are *tracked*.
+The run tree is an export of `base_sha` (or of the PR head for rework, `07` §1.4), so it holds
+only tracked files, has no `.git` entry, and contains no untracked `.env*` files. `doctor` fails
+if `.env*` files are *tracked*.
+
+**Rules from Zod M11:**
+- **Phase A only ever runs on a pristine export**, freshly produced from the trusted gitdir
+  before any agent has run. An agent-touched tree never hydrates. `--resume` and rework reuse
+  the hydrated dependency volume, or re-export and re-hydrate from scratch; they never
+  re-hydrate the agent's tree. An agent-written `.npmrc` or lockfile therefore can't run with
+  registry egress.
+- **Deterministic checks run in a fresh phase-B container** over the same tree (`07` §1.2).
+  Agent-spawned background processes die with the agent's container.
+- **The registered flag-fixture setup file** (site config `flag_fixture_path`, `07` §1.3(d)) is
+  hard-blocked from agent edits under SR-04(a). The fresh check container verifies that its blob
+  hash equals the base commit's before running the flag-off test (ST-77).
+- **The dependency layer is read-only in phase B** for both the agent and the check container.
+  Dependencies never live inside the agent-writable run tree, so the agent can't patch the test
+  runner in `node_modules` and make the fresh-container checks pass falsely (SR-02).
+
+**Where L1 runs (Zod M12, SR-26a).** **By default, inside a sealed phase-B container**, with a
+fresh `CLAUDE_CONFIG_DIR` (credential only), an empty strict MCP config (flag name
+**UNVERIFIED**, in S6), no plugins, zero tools, and an empty cwd. Running L1 on the host with the
+same configuration is an **S6-gated optimization**. It's enabled only once S6 shows that the
+init event lists zero tools and zero MCP servers (ST-35).
 
 **No-Docker fallback.** `@anthropic-ai/sandbox-runtime` (beta) wrapping `claude`, plus the
 sandboxed Bash tool, with the same two-phase egress. It is accepted as a fallback only once S5
@@ -126,6 +148,10 @@ scripts/vendor-sync.ts                # pulls a given commit, rewrites VENDORED.
   every batch `completed`, and no `failing_checks`; `blocked` requires `blocked_reason`;
   `needs_info` requires `spec_gaps`. A TS port in `@sorenai/loop-schema` is tested against
   fixtures generated from the kit's own test cases.
+- An unknown `schema_version` counts as a **missing** outcome, not an error (Postel m3). The
+  cross-field rules are proposed upstream as `if`/`then` and `contains` clauses in
+  `outcome.schema.json`, so one artifact carries them (`13` §5). Until that lands, the TS port
+  stays, with the shared fixtures.
 - A missing or invalid outcome is not an error state of its own. Classification falls through
   to the deterministic checks, and the run lands in `stalled` unless they pass.
 - The outcome's `status` drives **nothing** in the state machine. It is stored as

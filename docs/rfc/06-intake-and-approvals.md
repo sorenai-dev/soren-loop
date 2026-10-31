@@ -7,9 +7,22 @@ mitigation.
 
 ### 1.1 Identity (both modes)
 
-The host backend signs a JWT with `createWidgetToken(user)`. The claims are `iss` (site ID),
-`aud` (`soren-loop`), `sub`, `exp` (at most 5 minutes out), `iat`, `jti`, and an optional
-`name`. The host page passes `getToken` to the loader. The iframe requests a token over
+The host backend signs a JWT with
+`createWidgetToken({sub, name?, email?, emailVerified?}, {siteId, audience, key, kid})`. The
+token is `sl.widget_jwt.v1` in `loop-schema` (Postel M5):
+
+- **Header:** `alg` ∈ {`ES256`, `EdDSA`}; `kid` required; `typ: "sl-widget+jwt"` (RFC 8725
+  explicit typing).
+- **Claims:** `iss` = the site ID; `aud` = the **widget host origin**, the verifying endpoint
+  of `/v1/widget/sessions`, as an exact string `scheme://host[:port]` with no trailing slash
+  (Postel D-M4; per-install, never a shared constant; the audience is the recipient); `sub`; `iat`; `exp`; `jti`; optional
+  `name`, `email`, and `email_verified` (honoured only with the site opt-in).
+- The validation rules (30 s leeway, `iat` not in the future beyond the leeway,
+  `exp − iat ≤ 300`, `jti` TTL = `exp` + leeway) are SR-07 as confirmed by Sentinel (ST-67).
+- Rejected tokens record a reason for the owner (`05` §1.1). Integrators debug with the
+  owner-only token check, `POST /v1/owner/sites/{id}/widget-token/check`.
+
+The host page passes `getToken` to the loader. The iframe requests a token over
 `postMessage` with a strict origin check, then moves to a `MessageChannel`, and exchanges the
 token at `POST /v1/widget/sessions` (SR-07). Identity never comes from props, `data-`
 attributes, or URLs (ST-12).
@@ -52,8 +65,11 @@ makes the widget host the XSS-exposed origin (T1.4). That is exactly why it is a
 
 SR-11 caps: 3 open requests per `sub`, plus a daily cap per `sub` and per site. Field caps. An
 owner "pause intake" switch. A silent "block requester". Near-duplicate collapse in the owner
-queue. Email digests after N per hour. The A23-8 throttle pauses a requester after 3 flagged
-requests in 24 h, using the same response as a cap (`03` §3).
+queue: a submission whose normalized `title` + `problem` match (after case-folding) an open
+request from the same site within 7 days is shown grouped under it, with a
+`duplicate_of` link. This is display-only; there's no state change (Zod M14). Email digests
+after N per hour. The A23-8 throttle pauses a requester after 3 **requester-attributable**
+flagged pre-checks in a rolling 24 h. A pause is shadow-accept, not an error (`03` §3, SR-40b).
 
 ## 2. Owner Gates
 
@@ -145,8 +161,9 @@ deterministic `submit` policy, and the owner's G2 and G3 review.
 | PC-B (A23-2) | CLI, right after spec generation, before upload | L1 + L2 + L3 | Revision plus spec | `H_req`, `H_spec` | Row 7 |
 | PC-C (A23-2) | CLI, at `build` start | Verify the PC-B record; **re-run L2** against the real base | Instruction-file diff | `H_spec`, `base_sha` | Row 20 |
 
-**L1 invocation (A23-7).** On the CLI, L1 runs as a separate `claude -p` process. Its cwd is a
-fresh empty temp directory. Its input arrives on stdin, wrapped in a fixed data fence. It runs
+**L1 invocation (A23-7; SR-26a).** L1 runs as a separate `claude -p` process, **by default inside
+a sealed phase-B container**; host execution is S6-gated (`15` §2, Zod M12). Its cwd is a fresh
+empty directory. Its input arrives on stdin, wrapped in a fixed data fence. It runs
 with the SR-01 flags and **zero tools** (`--allowedTools ""` plus a deny-all `permissions`
 block; exact flag spelling **UNVERIFIED**, S6 addendum). Its output is a single JSON object
 validated against the verdict schema (`additionalProperties: false`, a category enum, span

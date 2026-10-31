@@ -17,7 +17,7 @@ working exploits.
 | `03-prompt-injection-and-llm-top10.md` | Request → spec → plan → code pipeline; what each gate reviews; indirect injection; OWASP LLM Top 10 (2025); §7 the decision 23 pre-check |
 | `04-abuse-cases.md` | AB1–AB12: spam, flag social engineering, approval fatigue, illegal content, impersonation, recon, notification abuse |
 | `05-supply-chain-and-hosted.md` | What we distribute; agent-workflow-kit observations; self-hosted vs hosted |
-| `06-requirements-tests-spikes.md` | SR-01 to SR-41 (MUST/SHOULD/LATER), security tests ST-01 to ST-72 (gate: all but ST-24), spike consequences S1–S7 |
+| `06-requirements-tests-spikes.md` | SR-01 to SR-41 (MUST/SHOULD/LATER), security tests ST-01 to ST-79 (gate: all `mvp`, i.e. all but ST-24), spike consequences S1–S7 |
 
 ---
 

@@ -48,6 +48,8 @@ marked **UNVERIFIED**. SR and ST IDs refer to `docs/security/06-requirements-tes
 | `13-open-questions.md` | Decision log: how each open question and tension was closed (decisions 26 to 31), plus new tensions |
 | `15-sandbox-and-packaging.md` | Deep dives: `claude -p` hardening, sandbox phases, `/tdd-pair` packaging, outcome handling |
 | `16-flags.md` | Deep dive: `FlagWriter`, flagd, Unleash, the flag gate, the OFREP contract |
+| `17-receipts-and-retention.md` | Approval receipts the CLI verifies offline; store-by-store retention and the CLI `gc` |
+| `18-state-diagrams.md` | Mermaid lifecycle and overlay diagrams (illustrative; `03` §3 is normative) |
 | `reviews/` | Zod and Postel reviews (2026-10-31); the findings→fix map is in `13` §5 |
 | `14-notifications.md` | The per-stage notification policy (decision 30): `NotificationPolicy.resolve`, locked owner alerts, suppression records, site overrides |
 

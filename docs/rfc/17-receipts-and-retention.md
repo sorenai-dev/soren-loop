@@ -30,12 +30,13 @@ already-pinned key, at the next `login` or `pull`.
    is set.
 5. Verify `signature` over `authenticatorData || SHA256(clientDataJSON)` with a pinned key.
 
-Any failure exits with code 8 (`receipt_invalid`; `07` §5). There is no override and no retry.
+Any failure exits with code 8 (`receipt_invalid`; `07` §2). There is no override and no retry.
 A compromised server or DB can't forge an approval, a clearance, or rework instructions without
 the owner's authenticator (T7.3). It can still withhold work. That residual is accepted.
 
-Test coverage: vectors R-01 to R-08 (`04` §3.5), plus a proposed ST that feeds each forged
-receipt through the CLI against otherwise valid server data.
+Test coverage: vectors R-01 to R-08 (`04` §3.5); **ST-63** (forged receipts, one per step);
+**ST-64** (hold laundering through a server-claimed clearance); **ST-74** (rework receipts).
+The pin set grows only through a receipt from an already-pinned key (SR-19).
 
 ## 2. Retention (SR-27, decision 19; Zod M7)
 
@@ -54,7 +55,7 @@ receipt through the CLI against otherwise valid server data.
 | `idempotency_keys.response` | Can echo submitted text | Expires after 24 h; a sweeper deletes it |
 | `inbox_items` | The fixed title (the owner-edited title) | Deleted with the request text |
 | CLI `~/.soren-loop/runs/<run_id>/` (tree, `.soren-loop/spec.md`, logs) | Spec and request text on the owner's disk | `soren-loop gc` runs at the start of `pull` and deletes run directories whose request has a server purge tombstone, or that are older than 30 days after the request closed |
-| CLI `~/.soren-loop/ops/` (idempotency op files, `07` §5) | IDs only | Deleted when the operation is terminal |
+| CLI `~/.soren-loop/ops/` (idempotency op files, `07` §2) | IDs only | Deleted when the operation is terminal |
 | GitHub PR, commit, and issue text | The owner-edited title and the diff | Outside soren-loop's control. Documented: the owner edits the title before projection, and closed PRs remain on GitHub. |
 
 **Kept:** IDs, all hashes, transitions, approvals (assertions carry no PII), clearances,

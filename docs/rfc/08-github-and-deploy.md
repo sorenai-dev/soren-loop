@@ -34,7 +34,7 @@ two Apps, **no upstream credential can merge, whatever the minting code does.**
 | Permissions | `pull_requests: write`, `metadata: read` (decision 25), plus the read-only and optional additions in §1.2 | `contents: write`, `metadata: read` |
 | **Never** | `contents: write`, `workflows`, `administration`, `secrets`, `actions` | `workflows`, `pull_requests`, `administration`, or any upstream installation |
 | Used for | Opening PRs, labels, receiving webhooks, the optional issue projection, ancestry checks | Minting the single-use push token for `submit`; the server's compare re-check of the pushed branch |
-| Webhooks | On: `pull_request`, `pull_request_review`, `deployment_status`, `installation`, `installation_repositories` | Off (no webhook URL) |
+| Webhooks | On: `pull_request` (including `synchronize`, for SR-41 head pinning), `pull_request_review`, `deployment_status`, `installation`, `installation_repositories` | Off (no webhook URL) |
 | Who uses its key | The outbox workers | Only the token-minting service (`POST /v1/cli/runs/{id}/push-token`) and the compare re-check |
 | Bot identity | `soren-loop-pr[bot]` authors the PR | `soren-loop-push[bot]` authors the commits pushed to the fork |
 
@@ -107,7 +107,9 @@ that needs it. The check is about not holding more than it should (ST-48).
 |-----------|-----|--------------|----------|
 | Open PR, label, project issue | PR App | `repositories: [upstream]`, `permissions: {pull_requests: write, metadata: read}` (plus `issues: write` for projection) | Minted per effect, 1 h, never leaves the worker |
 | Ancestry compare | PR App | `{contents: read, metadata: read}`, upstream | Per call |
-| Push for `submit` | Push App | `repositories: [fork]`, `{contents: write, metadata: read}` | **Single use per `run_id`**, 1 h, handed to the CLI over TLS and never logged (SR-09) |
+| CLI fetch of a private upstream (`07` §1.1), **fallback only** | PR App | `{contents: read, metadata: read}`, upstream, via the CLI-owned `GIT_ASKPASS` | 1 h, one per run, audited; requires a DPoP-bound CLI token (SR-09, T24, ST-75). The default uses the owner's own git credential, so nothing is minted. |
+| CLI fetch of a recorded rework head SHA (`07` §1.4) | Push App | **down-scoped at mint** to `{contents: read, metadata: read}`, fork | 1 h, one per run, audited (Zod m5) |
+| Push for `submit` | Push App | `repositories: [fork]`, `{contents: write, metadata: read}` | One per run (at most one `replace`), 1 h. Stored encrypted only until expiry, for revocation, and never returned again. The CLI revokes it after the push, and the server revokes any leftover when the request leaves `building` (SR-09). |
 | Compare re-check of the pushed branch | Push App | `{contents: read, metadata: read}`, fork | Per call |
 
 - **F3:** any mint response other than **201** is a hard error. That includes a 422 from an
@@ -116,7 +118,12 @@ that needs it. The check is about not holding more than it should (ST-48).
   broader scope.
 - **F4:** `POST /pulls` always sends `maintainer_can_modify: false`, so upstream maintainers
   can't push onto the bot's branch, and the branch content stays attributable to the pipeline.
-- The PR head is `<bot-org>:soren-loop/<public_ref>`. `public_ref` is a separate opaque random
+- **SR-41 head pinning.** When the PR is opened or updated, the server records `pinned_head_sha`
+  in `request_prs`. A `synchronize` event or fork head that matches neither the pin nor the
+  in-flight run's declared `expected_head` moves the request to `stalled{head_tampered}`, adds
+  `soren-loop:do-not-merge`, and raises the locked `owner.pr_head_changed` (`03` row 47). A
+  merge of a superseded PR raises the same locked kind (row 46).
+- The PR head is `<bot-org>:soren-loop/<public_ref>/<chain>`. `public_ref` is a separate opaque random
   ID that can't be linked to the widget `request_id` (SR-40a). On a public repo, a requester can
   then never find their own PR, diff, or risk summary. S1 showed that the upstream token needs no
   fork access to name a public fork as the head. Whether that holds for a **private** fork is
@@ -187,30 +194,65 @@ the upstream installation holds `contents: write`, so R5 and T10.1 return to H f
 
 ## 2. Deploy Detection
 
-**Default: GitHub `deployment_status`.** On `state: success` with `environment` equal to the
-site's configured production environment, the server calls
-`GET /repos/{o}/{r}/compare/{merge_sha}...{deploy_sha}`. Status `ahead` or `identical` →
-`deployment_succeeded`. Anything else is ignored and logged (ST-13, T10.6). Where possible, the
-server also checks that the deployment's creator is the configured deploy actor.
+**Default: GitHub `deployment_status`.** Ingestion verifies `X-Hub-Signature-256` over the raw
+bytes, routes the delivery by `installation.id`, persists it, and returns `202` well inside
+GitHub's 10 s timeout. **Every** verified `success` for the site's production environment is
+stored in the **site-scoped** `deployments` table, whatever state the requests are in (Zod M1).
 
-**Fallback 1: a signed deploy webhook** `POST /v1/webhooks/deploy` from the owner's CD:
-`{event_id, environment, sha}`. It is signed with HMAC-SHA256 over the timestamp and body
-(`X-SL-Timestamp`, `X-SL-Signature`), with a 5-minute window and `event_id` dedup. Unlike
-GitHub's, this signature covers a timestamp, so replay is bounded. Ancestry is still checked
-via the compare API.
+**Matching (Zod D2): one deploy can satisfy many requests.** Each evaluation is a
+`deployment_evaluations` row from `GET /repos/{o}/{r}/compare/{merge_sha}...{deploy_sha}`,
+made with the PR App's `contents: read` token. `ahead` or `identical` → `deployment_succeeded`
+for that request (`03` row 27). Anything else is logged (ST-13, T10.6).
 
-**Fallback 2: `soren-loop mark-deployed <id> --sha <sha>`**, an owner CLI action. Ancestry is
-checked, and an audit row is written.
+- **On deployment arrival:** enqueue one evaluation per request currently in `merged` at that
+  site.
+- **On a request's entry to `merged`:** evaluate only deployments with
+  `received_at ≥ merged_at − 10 min`, newest first, and **stop at the first match**. The work is
+  bounded, and never all deploys ever.
+- Evaluations are idempotent per (deployment, request), and they go through the per-request
+  `gh.*` serialization (`04` §5).
+- A test: two requests merged before one deploy both enable, with one compare call each.
+
+Where possible, the server also checks that the deployment's creator is the configured deploy
+actor.
+
+### 2.1 Signed Deploy Webhook (Postel M7: Standard Webhooks)
+
+`POST /v1/webhooks/deploy/{site_id}` from the owner's CD. The body is `{environment, sha}`,
+where `sha` is 40 lowercase hex characters.
+
+- **Headers:** `webhook-id` (the event ID), `webhook-timestamp` (Unix seconds), and
+  `webhook-signature: v1,<base64(HMAC-SHA256(secret, id + "." + timestamp + "." + body))>`.
+  Several signatures can be listed, space-separated, so a secret can be rotated: two secrets
+  are valid during the overlap.
+- **Secrets** use the `whsec_<base64>` format that the Standard Webhooks reference libraries
+  decode (Postel d6).
+- **Responses:**
+  - `202` when accepted;
+  - `200` for a duplicate `webhook-id`;
+  - `400` for a timestamp more than 5 minutes off;
+  - **one uniform `401`** for a bad signature *or* an unknown `site_id`, so sites can't be
+    enumerated;
+  - `202` for a non-production `environment`, which is logged and then ignored.
+
+  Every body is a problem document with no detail. Ancestry is still checked through the compare
+  API.
+- **Reuse:** the Phase 2 outbound `webhook` channel (`14` §6) uses this exact scheme.
+
+### 2.2 Manual Fallback
+
+`soren-loop mark-deployed <id> --sha <sha>` is an owner CLI action. Ancestry is checked, and an
+audit row is written.
 
 **Alternative.** Poll the host's deployment API (Vercel, Netlify, Render, Fly) with
 vendor-specific adapters. Rejected for V1: too many adapters, and which hosts emit GitHub
 deployments by default is **UNVERIFIED**.
 
 **Second-order cost.** Hosts that never emit deployments leave requests in `merged`. Mitigation:
-a 7-day `deploy_wait` alert to the owner, with setup docs for the deploy webhook. The R7
-detection metric is `requests_in_merged_age_days`.
+the 7-day `deploy_wait_exceeded` alert, setup docs for the deploy webhook, and the
+`requests_in_merged_age_days` metric (R7).
 
-**Enablement after deploy.** `deployed` → `setTargets(flag_key, [sub])` happens automatically. That
-matches the brief ("on deploy, enable for the requester"). Because G3 lives on GitHub, decision 29
-(Q2) adds two site options: the merger must be the owner's login, or a +SU dashboard
-confirmation before this write (`06` §2).
+**Enablement after deploy.** With `enablement_mode = auto`, `deployed{queued}` writes the flag.
+Under `dashboard_confirm`, or under `merger_must_be_owner_login` when the merger isn't the
+owner's login, the request waits in `deployed{awaiting_confirm}` until the owner confirms with
++SU (`03` rows 25, 27, 42; decision 29, Q2). The requester sees `shipping` throughout.

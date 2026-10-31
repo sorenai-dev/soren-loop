@@ -36,8 +36,9 @@ server. Run logs stay local in `~/.soren-loop/runs/<run_id>/`, with stream lines
 
 **Alerts** go through the notification policy (`14`). Locked: `security_hold_entered`,
 `precheck_unavailable`, App permission-check failure, outbox `dead`, `policy_changed`,
-`audit_chain_mismatch`, `authenticator_changed`, `cli_device_approved`, and
-`owner_contact_changed`. Tunable: a request in
+`audit_chain_mismatch`, `authenticator_changed`, `cli_device_approved`,
+`owner_contact_changed`, and `pr_head_changed` (SR-41). The metric
+`widget_auth_failures_total{reason}` tracks rejected widget tokens (Postel D-M4). Tunable: a request in
 `merged` for more than 7 days, and the flag-rate threshold for a requester (sent once). Project
 CI alerts (a policy-diff issue opened, a webhook signature-failure spike) go to maintainers or
 to metrics, not through the policy.
@@ -139,6 +140,6 @@ of state would be the system acting without a deterministic event.
 | Property | ST-23: random event sequences against real Postgres | fast-check; runs in CI on every PR |
 | Contract | `@sorenai/loop-schema` JSON Schema snapshots; CLI-to-server API contract tests; `stream-json` fixtures per supported Claude Code version | A schema change fails CI until the snapshot is updated in review |
 | Integration | Webhook verification and dedup; both GitHub Apps against a sandbox org (the S1 scripts become regression tests, plus ST-48 and ST-49); WebAuthn with a virtual authenticator (Playwright) | ST-06, ST-13, ST-14, ST-16 |
-| Security (negative) | ST-01 to ST-40, each tagged with its SR | The release gate: every MUST-MVP ST green |
+| Security (negative) | Every ST tagged `mvp` (`09` §1a), each tagged with its SR | The release gate: every `mvp` ST green, ST-01 to ST-79 minus ST-24 today |
 | Red test | S7: ST-01 to ST-03 against the real sandbox image on macOS and Linux runners | Builds are disabled if any probe succeeds |
 | E2E | The `02` §7 smoke test, nightly, against the demo app | The definition of Phase 1 done |

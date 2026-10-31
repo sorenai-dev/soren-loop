@@ -31,7 +31,7 @@ orchestration-only platform can follow (decisions 1 and 9).
 | G-4 | A fully hijacked build agent cannot merge, push upstream, read host credentials, or exfiltrate over non-Anthropic egress | ST-01 to ST-05, ST-14, the S7 red test |
 | G-5 | Code the agent writes ships behind the request's flag and stays off for non-targeted users | The SR-04(d) check, plus the SR-23 probe (SHOULD) |
 | G-6 | The requester learns progress at stage granularity and never learns about holds, plans, repos, or PRs | ST-18, ST-33 |
-| G-7 | Self-hosting is one image plus Postgres plus flagd, on two hostnames | A compose file and a Helm-free quickstart that run in under 30 minutes (target) |
+| G-7 | Self-hosting is one image plus Postgres plus flagd, on two hostnames | A compose file and a quickstart. **Acceptance test:** a scripted fresh-VM run of the setup guide, timed; the target is under 60 minutes, including two Apps, a bot org, passkeys, and two TLS hosts (Zod m12) |
 | G-8 | The state machine is the only way state changes, and every change is attributable | ST-23 property tests; the `request_transitions` audit trail (SR-15) |
 
 ## Non-Goals

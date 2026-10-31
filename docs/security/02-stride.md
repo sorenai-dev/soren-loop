@@ -3,6 +3,8 @@
 Boundaries and flows are defined in `01-system-model.md`. Requirement IDs (`SR-nn`) are in
 `06-requirements-tests-spikes.md`.
 
+**Round 6b (2026-10-31).** Arendt's revision is reconciled: T7.6 added; ST-73 to ST-76 added; SR-02, SR-08, SR-09, SR-13, SR-26a/e, SR-37, and SR-38 aligned.
+
 **Round 6 update (2026-10-31).** The Zod and Postel RFC reviews are folded in: T2.7, T8.16, T8.17, T10.14, and PC10; SR-02, SR-07, SR-09, SR-19, SR-26, SR-27, SR-36, SR-37, and SR-41 are revised; ST-63 to ST-72 are new.
 
 **Round 5 update (2026-10-30).** Decisions 26–31 are ratified, and RFC `14` is reviewed (T6.5, T6.6, T12.4, T12.5; SR-39, SR-40). Ratified: the PR App set (T10.13), hardened interactive builds (SR-38), SU-2, FL-1 and AU-1 (SR-35 to SR-37), the notification policy, and the rename to soren-loop.
@@ -99,6 +101,7 @@ model. **Residual** is the risk after the listed mitigation.
 | T7.3 | T | A compromised control plane serves a malicious "approved" spec | L | H | M (C hosted) | The CLI recomputes the hash. A receipt check (the CLI verifies the owner's WebAuthn assertion against public keys pinned at `login`) means the server cannot forge an approval (SR-19). | **N** | M MVP, L with receipts |
 | T7.4 | T | Replay of a `submit` or plan upload | L | M | L | Idempotency keys; transition guards (plan upload only in `planning`) | D | L |
 | T7.5 | I | CLI logs leak tokens | M | M | M | Redact tokens; never pass them as argv; keep them out of `doctor` output | N | L |
+| T7.6 | I | **A stolen CLI token reads the private repo** through the server-minted upstream fetch token (RFC T24, Zod M13) | M | H | H | Owner's own git credential by default, so no server-minted read capability; the fallback token is gated on a lease or state, one per run, audited, 1 h, one repo, and requires a DPoP-bound CLI token (SR-09) | **N** | L (default), M (fallback) |
 
 ## TB8: CLI → sandbox → `claude -p` → Anthropic
 

@@ -17,7 +17,7 @@ type Channel = "email" | "dashboard_inbox";            // MVP. Phase 2 extension
 
 type NotificationEvent =
   | { audience: "requester"; kind: "requester.stage_entered"; stage: RequesterStage;
-      request_id: string; stage_since_hour: string }   // no internal state, by type (§3)
+      request_id: string; stage_since: string }        // hour-rounded; no internal state, by type (§3)
   | { audience: "owner"; kind: OwnerEventKind; request_id?: string; site_id: string };
 
 type OwnerEventKind =
@@ -25,11 +25,11 @@ type OwnerEventKind =
   | "owner.security_hold_entered" | "owner.precheck_unavailable"
   | "owner.app_permission_check_failed" | "owner.outbox_dead"
   | "owner.policy_changed" | "owner.audit_chain_mismatch" | "owner.authenticator_changed"
-  | "owner.cli_device_approved" | "owner.owner_contact_changed"
+  | "owner.cli_device_approved" | "owner.owner_contact_changed" | "owner.pr_head_changed"
   // tunable
   | "owner.request_submitted" | "owner.plan_ready" | "owner.run_stalled"
   | "owner.rate_limited" | "owner.pr_opened" | "owner.deploy_wait_exceeded"
-  | "owner.flag_enabled" | "owner.requester_throttled";
+  | "owner.flag_enabled" | "owner.requester_throttled" | "owner.enablement_confirm_needed";
 
 interface NotificationPolicy {
   resolve(event: NotificationEvent, audience: "owner" | "requester"): Channel[]; // may be []
@@ -57,7 +57,8 @@ records them (the audit row, or the outbox status change), under the same rule.
 | Requester | `closed` | `[email]` | No |
 | Owner | `owner.security_hold_entered`, `owner.precheck_unavailable`, `owner.app_permission_check_failed`, `owner.outbox_dead` | `[email, dashboard_inbox]` | **Yes** |
 | Owner | `owner.policy_changed` (otherwise whoever edits the policy could hide the edit), `owner.audit_chain_mismatch` (SR-37), `owner.authenticator_changed`, `owner.cli_device_approved`, `owner.owner_contact_changed` (email to the real owner is how a stolen synced passkey gets noticed) | `[email, dashboard_inbox]` | **Yes** |
-| Owner | `owner.request_submitted`, `owner.plan_ready`, `owner.run_stalled`, `owner.rate_limited`, `owner.deploy_wait_exceeded` | `[email, dashboard_inbox]` | No |
+| Owner | `owner.pr_head_changed` (SR-41: the active PR's head moved off its pin, or a superseded PR was merged; `reason` carries which) | `[email, dashboard_inbox]` | **Yes** (the tenth locked kind) |
+| Owner | `owner.request_submitted`, `owner.plan_ready`, `owner.run_stalled`, `owner.rate_limited`, `owner.deploy_wait_exceeded`, `owner.enablement_confirm_needed` | `[email, dashboard_inbox]` | No |
 | Owner | `owner.pr_opened`, `owner.flag_enabled`, `owner.requester_throttled` | `[dashboard_inbox]` | No |
 
 **Requester email (T17, ruled by Sentinel, SR-39c).**
@@ -113,7 +114,7 @@ that.
    internal transition. A hold never changes the requester stage, so it never creates a
    requester event for any policy to act on.
 2. **The policy can't see internal state.** The requester event type carries only `stage`,
-   `request_id`, and `stage_since_hour`. Requester keys can only be stage names, and the schema
+   `request_id`, and `stage_since`. Requester keys can only be stage names, and the schema
    rejects anything else. No override can say "notify on `security_hold`", or on any state
    inside a stage.
 3. **Timing matches the feed.** Requester `notify.*` rows are scheduled at the next hour
@@ -130,17 +131,31 @@ audience only, and the type system keeps them from ever resolving to a requester
 
 ## 4. Outbox Rows and Suppression
 
-For each event in a transition:
+For each event, inside the transaction that produces it (Zod m9: exactly one rule):
 
 ```text
-defaults  = Defaults.channels(event)
+defaults  = Defaults.channels(event)          # timers: evaluated when the timer fires (Zod M4)
 effective = policy.resolve(event, audience)
-for c in effective:              insert outbox(effect = "notify." + c, status = pending, ...)
-for c in defaults \ effective:   insert outbox(effect = "notify." + c, status = suppressed, reason = "policy")
-if effective is empty:           insert outbox(effect = "notify.none", status = suppressed,
-                                               reason = "policy" | "no_address")   # one row
+for c in effective:             insert outbox(effect="notify."+c, status=pending)
+for c in defaults \ effective:  insert outbox(effect="notify."+c, status=suppressed, reason="policy")
+if defaults ∪ effective is empty:
+                                insert outbox(effect="notify.none", status=suppressed, reason="policy")
+# A requester event with no verified address: email resolves to [] and is recorded as
+# suppressed with reason "no_address" under the second loop. No notify.none row is added then.
 increment notifications_suppressed_total{kind} once per suppressed row
 ```
+
+Each row's key is `H("sl:obx:v1"; source_type, source_id, effect, kind, audience, channel)`
+(`04` §5), so two events in one transaction never collide (Zod B1).
+
+- **Who decides what.** The policy decides **whether and where**, in the transaction. The
+  `Notifier` decides only **how to batch delivery** of rows that are already `pending`: the
+  SR-11 digests for unlocked owner kinds, and leading-edge coalescing for locked email. Neither
+  can drop a row. A row ends as `done` or `sent_coalesced`, never `suppressed` (Zod m9).
+- **Ordering.** Requester rows for one request are delivered in `source_id` order, and each is
+  scheduled at `ceil_hour` (Zod M4).
+- **Requester email opt-in** is `sites.requester_email_enabled` (default false). When it's
+  false, requester email defaults resolve to `[]` with reason `no_address`.
 
 - `suppressed` is a **terminal** outbox status that workers never drain. The row stores `kind`,
   `audience`, `channel`, `stage` (requester only), `policy_version`, and `reason`. It never
@@ -199,7 +214,7 @@ A channel is an entry in the `Channel` enum (an additive schema change, `05` §4
 |---------|----------|--------------|
 | `sms` | Owner only | SR-33: verified owner numbers, destination rate limits, no tokens in bodies |
 | `web_push` | Owner only | VAPID push to the dashboard PWA |
-| `webhook` | Owner, and a requester relay | HMAC-signed with a timestamp (like the deploy webhook, `08` §2). Owner endpoint: the three-layer SSRF defense at registration and at send time, and a minimal payload `{kind, request_id}`. Requester relay: posts `{request_id, stage, stage_since_hour}` to the host app at `ceil_hour` like email (SR-39b). The host delivers through its own channels, and soren-loop holds no requester address (the preferred T17 path). |
+| `webhook` | Owner, and a requester relay | HMAC-signed with a timestamp (like the deploy webhook, `08` §2). Owner endpoint: the three-layer SSRF defense at registration and at send time, and a minimal payload `{kind, request_id}`. Requester relay: posts `{request_id, stage, stage_since}` to the host app at `ceil_hour` like email (SR-39b). The host delivers through its own channels, and soren-loop holds no requester address (the preferred T17 path). |
 
 Adapters receive only the rendered fixed template and the destination. Policy evaluation stays
 in the transaction. Adding a channel never changes `resolve`'s contract.
