@@ -98,7 +98,8 @@ questions resolved:
 | # | Decision |
 |---|----------|
 | 32 | T17–T21 accepted with Sentinel's conditions: requester email only from a host-JWT `email` claim with `email_verified: true`, default off, encrypted and purged under SR-27; requester notifications delivered at the next hour; locked owner alerts coalesced per site and kind, leading edge, every request ID listed, inbox never coalesced; locked alerts never digested; throttled requesters are shadow-accepted (skip PC-I and the matcher, still run PC-S) |
-| 33 | Convert `sorenai-dev` from a GitHub user account to an organization before the first public release, with `mandelbro` as owner. The working copy lives at `~/Code/soren-loop` (outside iCloud); commits are authored by `mandelbro` |
+| 33 | Convert `sorenai-dev` from a GitHub user account to an organization before the first public release, with `mandelbro` as owner. The working copy lives at `~/Code/soren-loop` (outside iCloud); commits are authored by `mandelbro`. Done 2026-10-31: the user account was renamed `sorenai-dev-user`, a new `sorenai-dev` org now owns the repos, and `mandelbro` is an org owner |
+| 34 | RFC tensions accepted: no MVP cuts (≈30.5 eng-weeks; 15–17 calendar weeks for two engineers including a 2-week spike reserve, T26). T23: rework feedback from a GitHub review needs owner step-up before it reaches the agent. T24: private-repo fetch defaults to the owner's own git credential, with a DPoP-gated server-minted token as fallback. T27/T30: a rebuild from base opens a new PR in a branch chain; superseded branches are deleted after 30 days. T28: agent commits are bot-authored, with an owner sign-off trailer mode and a `doctor` DCO/CLA warning. T29: the flag-off gate needs a one-time, registered owner test-setup file |
 
 ## Repo Split (proposed)
 

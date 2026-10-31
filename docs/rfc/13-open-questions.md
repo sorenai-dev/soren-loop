@@ -64,18 +64,18 @@ conditions.
 Residual accepted by Sentinel: a rejection after a hold during `planning` looks like an owner
 rejecting at plan review (T12.4).
 
-## 3a. New Tensions from the Zod and Postel Revision (owner to confirm)
+## 3a. New Tensions from the Zod and Postel Revision (closed by decision 34, except T25)
 
 | # | Tension | Recommendation |
 |---|---------|----------------|
-| T23 | Decision 29 (Q11) accepted GitHub `changes_requested` reviews by the owner login as rework feedback. Zod B5 shows that unsigned feedback steering a write-capable agent breaks content-bound approvals. | GitHub reviews create **pending** feedback, and the owner confirms it with one +SU `rework.approve` (`03` row 24). This tightens Q11. It needs the owner's OK. |
-| T24 | The private-repo fetch token (Zod M13) means a stolen CLI token could read the private upstream for 1 h | **Sentinel ruling (rated H inherent):** the default is the owner's own git credential, used only for `git fetch` of the exact upstream URL, so nothing is minted. The server-minted token is a fallback, and it requires a DPoP-bound CLI token (SR-09, T7.6, ST-75). Residual: L by default, M on the fallback. The owner should confirm the default. |
-| T25 | SR-36 says "bulk never proxied", but the stock OFREP web provider may need bulk (Postel M6, UNVERIFIED) | S4 gates it. Allowlist-filtered bulk is the proposed amendment (with Sentinel), and `SorenLoopFlagProvider` is the fallback (`16` §5). |
-| T26 | The reconciled MVP is ≈ 30.5 eng-weeks (15–17 calendar weeks), up from ~19.5 (10–12) | The owner picks from the pullback table in `12` §4 (up to ≈ 5 eng-weeks). Nothing has been cut. |
-| T27 | `build --fresh` opens a new PR and closes the old one, so review comments split across two PRs | Accepted for V1 (no force-push is the stronger property). The new PR links the old one. |
-| T28 | Agent commits are now authored by the push App's bot identity and committed by the owner (Zod m12). Repos with DCO or CLA bots may reject them. | `doctor` detects DCO and CLA checks and warns. The owner can choose a `Co-authored-by` trailer mode instead. |
-| T29 | The deterministic flag-off gate (Zod D6) adds an onboarding step: the owner adds a test-setup file that installs OpenFeature's `InMemoryProvider` from `SL_FLAG_FIXTURE` | Accept. `doctor` checks for it, and the onboarding guide ships a snippet per test runner (Jest, Vitest, pytest). |
-| T30 | Branch chains (Zod D3): every build from base opens a new PR. A rejected first submit, or `--fresh`, splits review history across PRs, and the fork accumulates branches. | Accept. Superseded PRs link to their successor, superseded branches are deleted after 30 days, and rework within a chain keeps a single PR. |
+| T23 | Decision 29 (Q11) accepted GitHub `changes_requested` reviews by the owner login as rework feedback. Zod B5 shows that unsigned feedback steering a write-capable agent breaks content-bound approvals. | GitHub reviews create **pending** feedback, and the owner confirms it with one +SU `rework.approve` (`03` row 24). This tightens Q11. It needs the owner's OK. **Closed: decision 34.** |
+| T24 | The private-repo fetch token (Zod M13) means a stolen CLI token could read the private upstream for 1 h | **Sentinel ruling (rated H inherent):** the default is the owner's own git credential, used only for `git fetch` of the exact upstream URL, so nothing is minted. The server-minted token is a fallback, and it requires a DPoP-bound CLI token (SR-09, T7.6, ST-75). Residual: L by default, M on the fallback. The owner should confirm the default. **Closed: decision 34.** |
+| T25 | SR-36 says "bulk never proxied", but the stock OFREP web provider may need bulk (Postel M6, UNVERIFIED) | S4 gates it. Allowlist-filtered bulk is the proposed amendment (with Sentinel), and `SorenLoopFlagProvider` is the fallback (`16` §5). **Open: gated on S4.** |
+| T26 | The reconciled MVP is ≈ 30.5 eng-weeks (15–17 calendar weeks), up from ~19.5 (10–12) | The owner picks from the pullback table in `12` §4 (up to ≈ 5 eng-weeks). Nothing has been cut. **Closed: decision 34.** |
+| T27 | `build --fresh` opens a new PR and closes the old one, so review comments split across two PRs | Accepted for V1 (no force-push is the stronger property). The new PR links the old one. **Closed: decision 34.** |
+| T28 | Agent commits are now authored by the push App's bot identity and committed by the owner (Zod m12). Repos with DCO or CLA bots may reject them. | `doctor` detects DCO and CLA checks and warns. The owner can choose a `Co-authored-by` trailer mode instead. **Closed: decision 34.** |
+| T29 | The deterministic flag-off gate (Zod D6) adds an onboarding step: the owner adds a test-setup file that installs OpenFeature's `InMemoryProvider` from `SL_FLAG_FIXTURE` | Accept. `doctor` checks for it, and the onboarding guide ships a snippet per test runner (Jest, Vitest, pytest). **Closed: decision 34.** |
+| T30 | Branch chains (Zod D3): every build from base opens a new PR. A rejected first submit, or `--fresh`, splits review history across PRs, and the fork accumulates branches. | Accept. Superseded PRs link to their successor, superseded branches are deleted after 30 days, and rework within a chain keeps a single PR. **Closed: decision 34.** |
 
 ## 5. Review Findings → Fix Map (2026-10-31)
 

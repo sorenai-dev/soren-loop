@@ -96,7 +96,7 @@ separate **2-week calendar reserve** for spike-driven redesign (S5, S6, S7), so 
 Then 11 to 16. **Exit criterion:** the `02` §7 smoke test passes nightly, and every `mvp` ST is
 green (ST-01 to ST-79 minus ST-24).
 
-### Pullback options (the owner chooses; nothing is cut here)
+### Pullback options (decision 34: **no pullbacks taken**, so the MVP scope is the full ≈ 30.5 eng-weeks)
 
 | Candidate cut | Saves (eng-wk) | Risk if cut | SR / ST touched | Conflicts with |
 |---------------|----------------|-------------|-----------------|----------------|
