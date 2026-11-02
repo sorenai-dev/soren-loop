@@ -1,9 +1,24 @@
-.DS_Store
-.claude-flow/
+# Dependencies and build output
 node_modules/
-.secrets/
-.work-*/
+dist/
+build/
+coverage/
+.turbo/
+.vite/
+.cache/
+*.tsbuildinfo
+.eslintcache
+playwright-report/
+test-results/
+
+# Secrets
 .env
 .env.*
 *.pem
+.secrets/
+
+# Private planning and local tooling
 tasks/
+.DS_Store
+.claude-flow/
+.work-*/

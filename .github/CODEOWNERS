@@ -1,0 +1,6 @@
+# Default owner for everything in the repository.
+* @mandelbro
+
+# GitHub App manifests define the Apps' permissions (SC8); changes need the owner.
+/github/*.manifest.json @mandelbro
+/.github/ @mandelbro
