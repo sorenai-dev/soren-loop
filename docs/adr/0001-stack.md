@@ -33,8 +33,8 @@ Node runs scripts such as `db:migrate` directly through type stripping, with no 
 - **TypeScript stays on 6.0** until typescript-eslint supports 7.x (its peer range today is
   `<6.1.0`). Moving to 7.x is a separate ADR once lint support lands.
 - **Node 24, not 26.** Node 26 became the active LTS in October 2026. Node 24 is still a supported
-  LTS line through April 2028, and it is what the owner's machine and the Taiga sandbox already run.
-  Revisit at the go-public gate (Task 094-1).
+  LTS line through April 2028, and it is what the development machines already run. Revisit at
+  the release gate (Task 094-1).
 - `tsc -b` emits declarations only, so `typecheck` never writes JavaScript next to the tests.
   Publishable packages add their own build when their packaging tasks land.
 - PGlite gives most server tests a service-free path. Tests that need real Postgres concurrency
