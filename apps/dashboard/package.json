@@ -1,0 +1,18 @@
+{
+  "name": "@sorenai/loop-dashboard",
+  "version": "0.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sorenai-dev/soren-loop.git",
+    "directory": "apps/dashboard"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "vitest run"
+  }
+}

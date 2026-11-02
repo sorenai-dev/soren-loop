@@ -1,0 +1,31 @@
+{
+  "name": "@sorenai/loop-server",
+  "version": "0.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sorenai-dev/soren-loop.git",
+    "directory": "apps/server"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:db": "SL_REQUIRE_PG=1 vitest run",
+    "db:migrate": "node src/db/cli.ts migrate",
+    "db:rollback": "node src/db/cli.ts rollback",
+    "db:check-reversible": "node src/db/cli.ts check-reversible"
+  },
+  "dependencies": {
+    "kysely": "^0.29.8",
+    "pg": "^8.23.1"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.14",
+    "@types/pg": "^8.23.1",
+    "kysely-pglite-dialect": "^1.4.0"
+  }
+}
