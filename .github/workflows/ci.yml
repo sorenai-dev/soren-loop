@@ -54,10 +54,39 @@ jobs:
         env:
           PROJECT: ${{ matrix.project }}
 
+  test-db:
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:16@sha256:5db6dac2ef5dcff512f4f00a009c3c332b9f2f28f24277175bf3e4a3d02ef83a
+        env:
+          POSTGRES_USER: soren
+          POSTGRES_PASSWORD: soren
+          POSTGRES_DB: soren_loop_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U soren"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgres://soren:soren@localhost:5432/soren_loop_test
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - run: pnpm test:db
+      - name: Migrations are reversible (up, down, up gives the same schema)
+        run: pnpm --filter @sorenai/loop-server db:check-reversible
+        env:
+          PG_DUMP: docker exec ${{ job.services.postgres.id }} pg_dump -U soren soren_loop_test
+
   ci:
     name: ci
     if: always()
-    needs: [lint, typecheck, test]
+    needs: [lint, typecheck, test, test-db]
     runs-on: ubuntu-24.04
     steps:
       - name: Every required job succeeded

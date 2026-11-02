@@ -1,0 +1,17 @@
+# Local Postgres 16 for `pnpm test:db` and the db:* scripts:
+#   docker compose -f docker-compose.dev.yml up -d
+#   export DATABASE_URL=postgres://soren:soren@localhost:54316/soren_loop_dev
+services:
+  db:
+    image: postgres:16@sha256:5db6dac2ef5dcff512f4f00a009c3c332b9f2f28f24277175bf3e4a3d02ef83a
+    environment:
+      POSTGRES_USER: soren
+      POSTGRES_PASSWORD: soren
+      POSTGRES_DB: soren_loop_dev
+    ports:
+      - "127.0.0.1:54316:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "soren"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
