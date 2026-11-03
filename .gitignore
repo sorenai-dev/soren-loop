@@ -25,3 +25,24 @@ CLAUDE.local.md
 .claude/tdd-state.json
 .claude/tdd-state.archive/
 .work-*/
+
+# Ruflo local secrets and runtime data
+.env.local
+.env.*.local
+.claude-flow/data/
+.claude-flow/logs/
+.claude-flow/sessions/
+
+# Ruflo local runtime data
+.claude-flow/data
+.hive-mind/sessions
+.claude-flow/agents.json
+.claude-flow/hive-mind/state.json
+.claude-flow/data/*
+.claude-flow/sessions/*
+.claude-flow/metrics/*
+.claude-flow/daemon-state.json
+.claude-flow/daemon.pid
+.claude-flow/swarm/swarm-state.json
+.swarm/
+ruvector.db
