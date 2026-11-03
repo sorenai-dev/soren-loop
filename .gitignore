@@ -21,4 +21,7 @@ test-results/
 tasks/
 .DS_Store
 .claude-flow/
+CLAUDE.local.md
+.claude/tdd-state.json
+.claude/tdd-state.archive/
 .work-*/
