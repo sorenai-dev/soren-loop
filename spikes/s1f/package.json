@@ -1,0 +1,11 @@
+{
+  "name": "soren-loop-spike-s1f",
+  "private": true,
+  "type": "module",
+  "description": "Spike S1-F: private-repo fork follow-ups and the ST-48 merge-denial check",
+  "engines": { "node": ">=24" },
+  "scripts": {
+    "spike": "node run.ts --org sorenai-dev-sandbox",
+    "typecheck": "tsc -p tsconfig.json"
+  }
+}
