@@ -12,7 +12,7 @@ Nothing is published to npm until the release gate at the end of Phase 1c.
 - [x] 002 Scaffold the CLI and plugin repo with the aggregate `ci` check
 - [x] 003 Postgres test harness, migration framework, and the outbox-queue decision
 - [x] 003-1 Provision the `sorenai-dev-sandbox` org for integration and end-to-end tests
-- [ ] 004 Spike S1-F: private-repo fork follow-ups and the ST-48 merge-denial check
+- [x] 004 Spike S1-F: private-repo fork follow-ups and the ST-48 merge-denial check
 - [ ] 005 Spike S4: flagd HTTP sync auth and latency, and the OFREP web provider bulk question
 - [ ] 006 Spike S2: `claude -p` stream-json success, error, and rate-limit shapes
 - [ ] 007 Spike S3: plugin skill invocation, headless `AskUserQuestion`, auto-update, agent addressing
