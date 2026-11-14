@@ -1,0 +1,35 @@
+import { readdirSync, readFileSync } from 'node:fs'
+import { isBuiltin } from 'node:module'
+import { join } from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { expect, test } from 'vitest'
+
+const root = fileURLToPath(new URL('..', import.meta.url))
+
+function filesUnder(dir: string, ext: string): string[] {
+  return readdirSync(join(root, dir), { recursive: true, encoding: 'utf8' })
+    .filter((f) => f.endsWith(ext))
+    .map((f) => join(dir, f))
+}
+
+test('[T011-15] no src file imports a Node builtin, so the dashboard can run this package in a browser', () => {
+  const specifier = /(?:import|export)\s[^'"]*?from\s*['"]([^'"]+)['"]|import\(\s*['"]([^'"]+)['"]\s*\)|^\s*import\s*['"]([^'"]+)['"]|require\(\s*['"]([^'"]+)['"]\s*\)/gm
+  const offenders: string[] = []
+  for (const file of filesUnder('src', '.ts')) {
+    const text = readFileSync(join(root, file), 'utf8')
+    for (const m of text.matchAll(specifier)) {
+      const spec = m[1] ?? m[2] ?? m[3] ?? m[4] ?? ''
+      if (isBuiltin(spec)) offenders.push(`${file}: ${spec}`)
+    }
+  }
+  expect(filesUnder('src', '.ts').length).toBeGreaterThan(0)
+  expect(offenders).toEqual([])
+})
+
+test('[T011-15] every shared vector file is ASCII-only JSON', () => {
+  for (const file of filesUnder('test-vectors', '.json')) {
+    const bytes = readFileSync(join(root, file))
+    const nonAscii = bytes.findIndex((b) => b > 0x7e || (b < 0x20 && b !== 0x0a))
+    expect(nonAscii, file).toBe(-1)
+  }
+})
