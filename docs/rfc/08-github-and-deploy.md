@@ -293,7 +293,7 @@ own merge call succeeds (S1-F item 9b, 200). GitHub can't enforce "a human press
 only things standing in the way are soren-loop's code, which has no merge call, and the
 protection of the repo App's key and of the 1 h push token (both carry `contents: write`). A
 lint rule keeps `PUT /pulls/{n}/merge` and `POST /merges` out of the codebase. A merge whose
-merger is `soren-loop-repo[bot]` raises a locked owner alert and blocks enablement (proposed;
+merger is `soren-loop-repo[bot]` raises the locked `owner.bot_merged_pr` alert and blocks enablement (confirmed;
 needs a `03` row 25 guard, `13` T34). This is the residual R5/T10.1 risk for private repos,
 rated **H** again for them (it was L under the fork model).
 
