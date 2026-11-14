@@ -81,7 +81,7 @@ rejecting at plan review (T12.4).
 
 S1-F (`docs/discovery/spikes/S1F-private-repo-followups.md`) refuted the private-fork
 assumption, and the owner chose the same-repo model for private repos (`08` §1.8, §1.9),
-ratified as decision 37 (ratified 2026-11-14). These items follow from it. All five were **confirmed by the owner
+ratified as decision 37 (2026-11-14). These items follow from it. All five were **confirmed by the owner
 (2026-11-14)**.
 
 | # | Tension | Recommendation |
