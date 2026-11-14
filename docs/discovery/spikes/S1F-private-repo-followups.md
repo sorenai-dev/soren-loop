@@ -148,6 +148,39 @@ own PRs fork-like treatment; a third-party App's PRs do not get it. The mitigati
 setup: `doctor` refuses to run unless `pull_request` workflows use no secrets, or secrets sit behind
 environments with required reviewers (`08` §1.8 already sketches the first).
 
+## Same-Repo Gaps (items 13–15, 2026-11-14, before the G03 PR)
+
+Three questions the RFC revision left open (`13` T33, and Arendt's open items on branch scope and
+`maintainer_can_modify`), run on a fresh private upstream with the same widened App and the S1
+default-branch ruleset. Evidence: `spikes/s1f/results/run-20261114T224202.json` (items 7 and 8 both
+re-run; every item 7 result reproduced).
+
+| # | Question | Result | Key status codes and messages |
+|---|----------|--------|-------------------------------|
+| 13 | T33: does a `push` workflow on `soren-loop/**` see repo secrets when the App pushes? | **Yes** (the risk) | push run by the App, `probe_present=true` |
+| 14a | Can the App's token write branches outside `soren-loop/*`? | **Yes** (a gap) | create `feature/*` 201 · `git push` to `release/*` exit 0 |
+| 14b | Does a branch ruleset confine it? | **Yes** | see S7 |
+| 15 | Does `maintainer_can_modify: false` mean anything on a same-repo PR? | No; GitHub reports `false` | PR 201, field `false` |
+
+**S6. Push workflows on the App's branches get secrets too (T33 verified).** `doctor`'s
+no-secrets-or-gated-environment rule must cover `push` workflows matching `soren-loop/**` as well as
+`pull_request` workflows; SR-08 already says so, and the RFC's UNVERIFIED marker can go.
+
+**S7. A second ruleset confines the App to `soren-loop/**`.** Without it, the App (and its 1 h push
+token) can create and update any branch other than the protected default branch. A branch ruleset on
+`~ALL`, excluding `refs/heads/soren-loop/**` and `~DEFAULT_BRANCH`, with the `creation`, `update` and
+`deletion` rules and the repository **admin** role as the only bypass actor, blocks it: create
+`feature/*` 422 "Reference update failed", update an existing `feature/*` branch 409 "Cannot update
+this protected ref", `git push` to `release/*` rejected (GH013). The App still creates `soren-loop/*`
+branches (201), and the owner, an admin, still creates `feature/*` branches (201). The default branch
+is excluded, so merges keep going through the S1 ruleset alone. **Cost:** non-admin human collaborators
+can't create or update other branches either. Adding the built-in **write** role to the bypass list
+would likely keep them working while still blocking the App, which holds no repo role; that variant is
+**UNVERIFIED**.
+
+**S8. `maintainer_can_modify` is a fork-PR setting.** On a same-repo PR GitHub reports `false`, and
+there is no fork for maintainers to push to. ST-49's narrowing to fork PRs (decision 37) is correct.
+
 ## RFC Sections This Changes (for Arendt)
 
 | Section | Change |
