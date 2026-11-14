@@ -9,6 +9,7 @@ import * as c5 from './checks/c5-st48-merge-denial.ts';
 import * as c6 from './checks/c6-review-bypass.ts';
 import * as c7 from './checks/c7-same-repo.ts';
 import * as c8 from './checks/c8-same-repo-gaps.ts';
+import * as c9 from './checks/c9-confine-roles.ts';
 
 // Items 1-3 (private forks, org fork policy, private fork-PR settings) were removed once private forks
 // were dropped (S1-F P1, 2026-11-14). Their code is in commit 1ef94c9; results are in the write-up.
@@ -21,6 +22,8 @@ const ITEMS: Array<[number, (ctx: Context) => Promise<void>]> = [
   [7, c7.run],
   // Item 8 (rows 13-15): same-repo gaps (T33, branch confinement, maintainer_can_modify); --only 8.
   [8, c8.run],
+  // Item 9 (row 16): the confinement ruleset with the write + maintain + admin bypass; --only 9.
+  [9, c9.run],
 ];
 
 const cfg = parseArgs(process.argv.slice(2));

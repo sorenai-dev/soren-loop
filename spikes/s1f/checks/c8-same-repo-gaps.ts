@@ -26,7 +26,9 @@ jobs:
         run: if [ -n "$S" ]; then echo "s1g probe_present=true"; else echo "s1g probe_present=false"; fi
 `;
 const b64 = (s: string) => Buffer.from(s).toString('base64');
-const REPO_ADMIN_ROLE = 5; // GitHub's built-in repository role id for "admin"
+// GitHub's built-in repository role ids for ruleset bypass. Undocumented and NOT sequential:
+// maintain 2, write 4, admin 5 (github/rest-api-description#4406). Guessing "write = 3" is wrong.
+export const ROLE = { maintain: 2, write: 4, admin: 5 } as const;
 
 async function branchWithCommit(tok: string, up: string, branch: string, base: string): Promise<{ ref: Res; commit: Res }> {
   const ref = await api(tok, 'POST', `/repos/${up}/git/refs`, { ref: `refs/heads/${branch}`, sha: base });
@@ -38,16 +40,16 @@ function dropBranch(ctx: Context, up: string, branch: string): void {
   defer(ctx, `delete ${up}:${branch}`, () => void owner('DELETE', `/repos/${up}/git/refs/heads/${branch}`));
 }
 
-function confineRuleset(ctx: Context, up: string): void {
+export function confineRuleset(ctx: Context, up: string, roles: number[] = [ROLE.admin], item = 14): void {
   const res = owner('POST', `/repos/${up}/rulesets`, {
     name: `s1g-confine-app-${ctx.runId}`,
     target: 'branch',
     enforcement: 'active',
-    bypass_actors: [{ actor_type: 'RepositoryRole', actor_id: REPO_ADMIN_ROLE, bypass_mode: 'always' }],
+    bypass_actors: roles.map((actor_id) => ({ actor_type: 'RepositoryRole', actor_id, bypass_mode: 'always' })),
     conditions: { ref_name: { include: ['~ALL'], exclude: ['refs/heads/soren-loop/**', '~DEFAULT_BRANCH'] } },
     rules: [{ type: 'creation' }, { type: 'update' }, { type: 'deletion' }],
   });
-  expectStatus(ctx, 14, 'owner adds a ruleset confining non-admins to soren-loop/** (reverted)', res, [201]);
+  expectStatus(ctx, item, `owner adds a ruleset confining the App to soren-loop/**, bypass roles ${roles.join(',')} (reverted)`, res, [201]);
   const id = (res.body as { id?: number } | null)?.id;
   if (id) defer(ctx, `delete ruleset ${id}`, () => void owner('DELETE', `/repos/${up}/rulesets/${id}`));
 }
