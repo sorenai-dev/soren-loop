@@ -1,0 +1,16 @@
+# Spike S4: flagd syncing over HTTP from a stub of the server's internal sync endpoint.
+# Driven by run.ts, which sets the S4_* variables per scenario. Every port binds to 127.0.0.1
+# (SR-36: flagd's evaluation and sync ports are never on a public interface).
+services:
+  flagd:
+    image: ghcr.io/open-feature/flagd@sha256:a1b6de22ef4f8a4f10af2f9d0009ccef946d707d4211db342f0f2422778b764a
+    command:
+      - start
+      - --sources
+      - '[{"uri":"${S4_SYNC_URL}","provider":"http","authHeader":"${S4_AUTH_HEADER}","interval":${S4_INTERVAL}}]'
+    ports:
+      - 127.0.0.1:8013:8013 # evaluation (gRPC / Connect)
+      - 127.0.0.1:8014:8014 # management (health, metrics)
+      - 127.0.0.1:8016:8016 # OFREP
+    extra_hosts:
+      - host.docker.internal:host-gateway
