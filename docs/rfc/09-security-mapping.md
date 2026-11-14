@@ -47,7 +47,7 @@ indicators.
 ## 1a. Release Gate (Zod M10)
 
 Every ST in `security/06` carries a priority tag (`mvp`, `phase2`, `hosted`). The release gate
-is **every `mvp`-tagged ST**: currently **ST-01 to ST-79 minus ST-24** (`hosted`), as tagged in
+is **every `mvp`-tagged ST**: currently **ST-01 to ST-80 minus ST-24** (`hosted`), as tagged in
 `security/06`. Range-based gates ("ST-01 to ST-40") are retired.
 
 ## 2. SHOULD-MVP Requirements (ship in Phase 1 unless cut in writing)

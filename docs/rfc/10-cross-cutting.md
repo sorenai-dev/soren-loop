@@ -38,8 +38,9 @@ server. Run logs stay local in `~/.soren-loop/runs/<run_id>/`, with stream lines
 **Alerts** go through the notification policy (`14`). Locked: `security_hold_entered`,
 `precheck_unavailable`, App permission-check failure, outbox `dead`, `policy_changed`,
 `audit_chain_mismatch`, `authenticator_changed`, `cli_device_approved`,
-`owner_contact_changed`, `pr_head_changed` (SR-41), and `flag_sync_stale` (a flagd instance's
-canary lags the server's by more than 3× the poll interval; S4 F3, SR-39(e), `16` §2). The metric
+`owner_contact_changed`, `pr_head_changed` (SR-41), `flag_sync_stale` (a flagd instance's
+canary lags the server's by more than 3× the poll interval; S4 F3, SR-39(e), `16` §2), and
+`bot_merged_pr` (a merge by the repo App on a private repo; decision 37, `08` §1.9). The metric
 `widget_auth_failures_total{reason}` tracks rejected widget tokens (Postel D-M4). Tunable: a request in
 `merged` for more than 7 days, and the flag-rate threshold for a requester (sent once). Project
 CI alerts (a policy-diff issue opened, a webhook signature-failure spike) go to maintainers or
