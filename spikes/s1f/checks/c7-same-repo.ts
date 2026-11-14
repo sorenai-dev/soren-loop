@@ -11,7 +11,7 @@ import { api, git, mint, owner } from '../lib/github.ts';
 
 export const SAME_REPO = { contents: 'write', pull_requests: 'write', metadata: 'read' } as const;
 // A repo Actions secret holding a random, meaningless value: CI only reports whether it is non-empty.
-const PROBE_NAME = 'S1G_PROBE';
+export const PROBE_NAME = 'S1G_PROBE';
 const WF_PATH = '.github/workflows/s1g-probe.yml';
 const WF = `name: s1g-probe
 on: pull_request
@@ -27,11 +27,11 @@ const HERE = join(import.meta.dirname, '..');
 const b64 = (s: string) => Buffer.from(s).toString('base64');
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-function gh(args: string[], input?: string) {
+export function gh(args: string[], input?: string) {
   return spawnSync('gh', args, { encoding: 'utf8', ...(input === undefined ? {} : { input }) });
 }
 
-function addRuleset(ctx: Context, up: string): void {
+export function addRuleset(ctx: Context, up: string, item = 7): void {
   const res = owner('POST', `/repos/${up}/rulesets`, {
     name: `s1g-require-review-${ctx.runId}`,
     target: 'branch',
@@ -44,7 +44,7 @@ function addRuleset(ctx: Context, up: string): void {
       { type: 'pull_request', parameters: { required_approving_review_count: 1, dismiss_stale_reviews_on_push: true, require_code_owner_review: false, require_last_push_approval: true, required_review_thread_resolution: false } },
     ],
   });
-  expectStatus(ctx, 7, 'owner adds require-review ruleset, no bypass (reverted)', res, [201]);
+  expectStatus(ctx, item, 'owner adds require-review ruleset, no bypass (reverted)', res, [201]);
   const id = (res.body as { id?: number } | null)?.id;
   if (id) defer(ctx, `delete ruleset ${id}`, () => void owner('DELETE', `/repos/${up}/rulesets/${id}`));
 }
@@ -60,9 +60,9 @@ async function decision(up: string, n: number): Promise<{ reviewDecision?: strin
   return null;
 }
 
-async function probeReport(up: string, sha: string): Promise<{ run: unknown; report: string | null }> {
+export async function probeReport(up: string, sha: string, event = 'pull_request'): Promise<{ run: unknown; report: string | null }> {
   for (let i = 0; i < 40; i++) {
-    const runs = owner('GET', `/repos/${up}/actions/runs?head_sha=${sha}&event=pull_request`);
+    const runs = owner('GET', `/repos/${up}/actions/runs?head_sha=${sha}&event=${event}`);
     const run = ((runs.body as { workflow_runs?: Array<{ id: number; status: string; conclusion: string | null; actor?: { login?: string } }> } | null)?.workflow_runs ?? [])[0];
     if (run?.status === 'completed') {
       const log = gh(['run', 'view', String(run.id), '-R', up, '--log']).stdout;

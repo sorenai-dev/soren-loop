@@ -8,6 +8,7 @@ import * as c4 from './checks/c4-approval-gate.ts';
 import * as c5 from './checks/c5-st48-merge-denial.ts';
 import * as c6 from './checks/c6-review-bypass.ts';
 import * as c7 from './checks/c7-same-repo.ts';
+import * as c8 from './checks/c8-same-repo-gaps.ts';
 
 // Items 1-3 (private forks, org fork policy, private fork-PR settings) were removed once private forks
 // were dropped (S1-F P1, 2026-11-14). Their code is in commit 1ef94c9; results are in the write-up.
@@ -18,6 +19,8 @@ const ITEMS: Array<[number, (ctx: Context) => Promise<void>]> = [
   // Items 7-12 (same-repo model), selected together with --only 7. Not in the default run: they need
   // the PR App widened to contents:write, which the fork-model items must not have.
   [7, c7.run],
+  // Item 8 (rows 13-15): same-repo gaps (T33, branch confinement, maintainer_can_modify); --only 8.
+  [8, c8.run],
 ];
 
 const cfg = parseArgs(process.argv.slice(2));
@@ -28,7 +31,7 @@ for (const app of Object.values(cfg.apps)) {
 const ctx = newContext(cfg);
 const cleanupFailures: string[] = [];
 for (const [item, fn] of ITEMS) {
-  if (cfg.only ? !cfg.only.has(item) : item === 7) continue;
+  if (cfg.only ? !cfg.only.has(item) : item >= 7) continue;
   console.log(`\n== item ${item}`);
   try {
     await fn(ctx);
