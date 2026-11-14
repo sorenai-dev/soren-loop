@@ -108,6 +108,12 @@ questions resolved:
 |---|----------|
 | 36 | Both repos are public from 2026-11-02; development happens in the open. This supersedes decision 35 only on repo visibility: nothing is published to npm, tagged or released before the release gate (Task 094-1), and until then the CLI repo still links the schema package locally. The public plan is `ROADMAP.md`; task specs (`tasks/`) are still never published. PRs land as merge commits, not squashes, so the commit history stays as written. Workflows from first-time outside contributors need approval before they run. The CLI's read-only deploy key for the private repo is retired |
 
+## Ratified Decisions — Round 8 (2026-11-14, spike S1-F)
+
+| # | Decision |
+|---|----------|
+| 37 | S1-F (`spikes/S1F-private-repo-followups.md`) extends decision 29 (Q1) and narrows decisions 24 and 25 to public repos. The PR App cannot open a PR from a private fork (P1), so private forks are dropped. **Public repos** keep the two-App fork model unchanged. **Private repos** use the same-repo ("Dependabot") model, not as an opt-in: one separately registered repo App, installed only on the owner's private repo, with `contents: write`, `pull_requests: write`, `metadata: read`, `deployments: read` and optional `issues: write`, never `workflows`, `administration`, `secrets` or `actions`. It pushes `soren-loop/*` branches and opens the PR, and a repo member reviews and merges. The control is a default-branch ruleset with no bypass actors (`pull_request` with 1 approving review, dismiss stale reviews and `require_last_push_approval`; `deletion`; `non_fast_forward`), verified at start-up and hourly with the App's own token and by `doctor`. `doctor` refuses a private-repo binding unless `pull_request` workflows use no secrets or keep them behind environments with required reviewers. soren-loop never calls merge, and `reviewDecision` never drives a state change. Decision 26's "fail on `contents` above read" applies to the PR App. R5/T10.1 are rated H for private repos (a leaked repo-App key can merge a human-approved PR, S2). The setup wizard forks with the owner's credential (P7). RFC tensions T31–T35 (`13` §3b) are confirmed. |
+
 ## Repo Split (proposed)
 
 1. **SDK** — feature-flag evaluation (OpenFeature provider) + flag-write adapters per vendor.
