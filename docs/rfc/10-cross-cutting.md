@@ -70,15 +70,16 @@ flowchart LR
 - **Origin scoping (SR-29).** Sibling hosts are same-site, so the dashboard host enforces an
   exact `expectedOrigin` for WebAuthn, plus `Sec-Fetch-Site: same-origin`, an exact `Origin`, and
   CSRF on every state-changing route, and reads only `__Host-` cookies (`06` §3).
-- **GitHub App start-up check.** The server verifies both Apps' permissions and installed repos
-  at boot and hourly, and fails closed on anything extra (`08` §1.4a, T10.12).
+- **GitHub App start-up check.** The server verifies every registered App's permissions and
+  installed repos, and each private repo's default-branch ruleset, at boot and hourly, and fails
+  closed on anything extra or missing from the ruleset (`08` §1.4a, §1.9, T10.12).
 - **Headers.** Dashboard: nonce CSP, Trusted Types, `frame-ancestors 'none'`, HSTS. Widget:
   `frame-ancestors <the site's registered origins>`, set per site from config.
 - **Secrets.** `SL_MASTER_KEY` (the envelope key) comes from the environment or a file. The two GitHub App
   private keys are separate `0400` files in `SL_SECRETS_DIR`, written once by `--setup` and mounted read-only afterwards
   (`08` §1.5). None of these is ever stored in Postgres.
 - **The flagd sync listener** binds to localhost or a private network only (`16` §2).
-- **GitHub App creation.** Two Apps (decision 25), each registered through a manifest flow from the dashboard setup wizard, plus a bot-only org for the fork (`08` §1.3). The manifests are checked into
+- **GitHub App creation.** Two Apps (decision 25) plus a bot-only org for the fork for public repos, and one repo App for private repos (owner decision 2026-11-14, `08` §1.9). Each is registered through a manifest flow from the dashboard setup wizard (`08` §1.3). The manifests are checked into
   Repo 1 under CODEOWNERS (SC8). `doctor` diffs each App's installed permissions against its manifest.
 - **Backups.** A standard `pg_dump`. The receipts and the audit chain are inside it.
 

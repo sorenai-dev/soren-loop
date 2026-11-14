@@ -8,7 +8,7 @@ came up in the notification-policy design (decision 30). Those need the owner's 
 
 | # | Question | Decision |
 |---|----------|----------|
-| Q1 | Orgs that forbid private forks | **29.** The same-repo mode survives as opt-in and off by default, behind `doctor`-verified rulesets and +SU, with a PR note (`08` §1.8). The S1-F follow-ups run in Phase 0. |
+| Q1 | Orgs that forbid private forks | **29**, then **extended and narrowed by the owner decision of 2026-11-14 (S1-F).** Decision 29 kept the same-repo mode as an opt-in. S1-F showed the PR App can't open a PR from a private fork at all (P1), so private forks are dropped and the same-repo ("Dependabot") model is **the** model for every private repo, not an opt-in: one repo App with `contents: write` and `pull_requests: write`, never `workflows` or `administration`, behind a default-branch ruleset with no bypass actors that the start-up check and `doctor` verify, the CI-secrets rule, no merge call, and settled review reads (`08` §1.8, §1.9). Public repos keep the fork model. Pending the brief update (T31 to T35). |
 | Q2 | Enablement after a GitHub merge (G3) | **29.** Automatic by default. Site options: `merger_must_be_owner_login`, `dashboard_confirm` (+SU) (`06` §2, `08` §2). |
 | Q3 | MVP flag store | **29.** flagd only. Unleash is the first Phase 2 adapter, LaunchDarkly second. |
 | Q4 | `build --wait` through a rate-limit window | **29.** Phase 2, opt-in, on an owner-started run, at most one resume per invocation (`07` §1.2). |
@@ -22,7 +22,7 @@ came up in the notification-policy design (decision 30). Those need the owner's 
 | Q12 | Path-policy templates | **29.** Shipped as suggestions; the owner confirms with +SU; `doctor` still refuses a build without a confirmed policy. |
 | Q13 | CLI platforms | **29.** macOS and Linux; Windows through WSL2 only. |
 | Q14 | OpenFeature SDK as a prerequisite | **29.** An onboarding step; `doctor` checks for it (T10). |
-| Q15 | Owner of the bot-only fork | **29.** A dedicated GitHub org (`08` §1.3). |
+| Q15 | Owner of the bot-only fork | **29.** A dedicated GitHub org (`08` §1.3). Since S1-F it serves public repos only. |
 | Q16 | Keep `build --interactive` | **27.** Kept, hardened exactly like headless; only the auditor changes (`07` §1.2). |
 
 ## 2. Tensions (all resolved)
@@ -76,6 +76,20 @@ rejecting at plan review (T12.4).
 | T28 | Agent commits are now authored by the push App's bot identity and committed by the owner (Zod m12). Repos with DCO or CLA bots may reject them. | `doctor` detects DCO and CLA checks and warns. The owner can choose a `Co-authored-by` trailer mode instead. **Closed: decision 34.** |
 | T29 | The deterministic flag-off gate (Zod D6) adds an onboarding step: the owner adds a test-setup file that installs OpenFeature's `InMemoryProvider` from `SL_FLAG_FIXTURE` | Accept. `doctor` checks for it, and the onboarding guide ships a snippet per test runner (Jest, Vitest, pytest). **Closed: decision 34.** |
 | T30 | Branch chains (Zod D3): every build from base opens a new PR. A rejected first submit, or `--fresh`, splits review history across PRs, and the fork accumulates branches. | Accept. Superseded PRs link to their successor, superseded branches are deleted after 30 days, and rework within a chain keeps a single PR. **Closed: decision 34.** |
+
+## 3b. New Tensions from S1-F (owner decision 2026-11-14)
+
+S1-F (`docs/discovery/spikes/S1F-private-repo-followups.md`) refuted the private-fork
+assumption, and the owner chose the same-repo model for private repos (`08` §1.8, §1.9). These
+items follow from it and need the owner's confirmation.
+
+| # | Tension | Recommendation |
+|---|---------|----------------|
+| T31 | Decision 25 names two Apps. Because permissions are App-wide (S1 F2), the private-repo App can't be the PR App widened to `contents: write` without giving every public upstream installation a merge-capable credential. | A third, separate registration, the **repo App** (`soren-loop-repo`), installed only on private repos, with its own key (`08` §1.1, §1.5). A deployment registers only the Apps its repos need. Name is a placeholder. |
+| T32 | Decision 26 and SR-08 say the start-up check and `doctor` fail on any `contents` permission above read. The repo App needs `contents: write`. | Scope that rule to the PR App. The repo App's expected set is exactly `contents: write`, `pull_requests: write`, `metadata: read`, `deployments: read`, optional `issues: write`; anything else, including `workflows` or `administration`, fails closed (`08` §1.4a). Needs SR-08 and ST-48 wording (owner). |
+| T33 | S5 covers `pull_request` workflows. A push to a `soren-loop/**` branch also triggers `push` workflows in the same repo, which normally get repo secrets; S1-F didn't test it. | `doctor` applies the same no-secrets-or-gated-environment rule to `push` workflows that match `soren-loop/**`. Verify in the S1-F harness before Tasks 060 to 066 (**UNVERIFIED**). |
+| T34 | S2: the repo App (and the 1 h push token) can merge a PR once a human approves its latest commit. GitHub can't enforce "a human presses merge". | No merge call in the codebase (lint), and a `03` row 25 guard: a `pr_merged` whose merger is `soren-loop-repo[bot]` raises a locked owner alert and blocks enablement. Residual R5/T10.1 rated H for private repos. |
+| T35 | A binding's model follows the repo's visibility. A repo that changes visibility after binding would run the wrong model (a public repo in same-repo mode; a private repo whose fork PRs fail with 422). | The start-up check compares the repo's `private` flag with the binding's model and fails closed for that binding; re-binding is a +SU setup action. |
 
 ## 5. Review Findings → Fix Map (2026-10-31)
 
@@ -160,8 +174,8 @@ binding text, and the SR-02 mount text.
 `claude -p` flag spellings (`--plugin-dir`, `--permission-prompts none`, zero-tool mode) and
 `CLAUDE.md` loading under `--setting-sources user` (S6); `stream-json` rate-limit events (S2);
 plugin skill invocation with `disable-model-invocation` and plugin agent addressing (S3); flagd
-sync auth and latency (S4); private-repo fork behaviour, org fork policies, and whether "all
-external contributors" approval holds App PRs (S1-F); merge denial for the full PR-App set
-(ST-48); which hosts emit GitHub deployments; Unleash endpoint paths; pg-boss and
+sync auth and latency (S4); whether `push` workflows on `soren-loop/**` branches of a private
+repo receive secrets, and how long `reviewDecision` takes to settle after a push (S1-F left
+both open, `08` §1.9); which hosts emit GitHub deployments; Unleash endpoint paths; pg-boss and
 graphile-worker maintenance; subscription quota per feature; intake cost per request. Each is
 marked **UNVERIFIED** where it appears.

@@ -28,10 +28,10 @@ orchestration-only platform can follow (decisions 1 and 9).
 | G-1 | Close the loop end to end: request → approved spec → PR → deploy → flag on for the requester | The smoke test in `02` §Integration passes on a fresh machine |
 | G-2 | Keep subscription use inside Anthropic's terms | Builds use only the stock `claude` binary or the official Action; no token handling; the weekly policy-diff job is green |
 | G-3 | No untrusted text reaches an agent with write access except through an owner-approved, hash-pinned artifact | ST-06, ST-07, ST-23 |
-| G-4 | A fully hijacked build agent cannot merge, push upstream, read host credentials, or exfiltrate over non-Anthropic egress | ST-01 to ST-05, ST-14, the S7 red test |
+| G-4 | A fully hijacked build agent cannot merge, push upstream (on private repos: to anything but its `soren-loop/*` branch, through `submit`), read host credentials, or exfiltrate over non-Anthropic egress | ST-01 to ST-05, ST-14, the S7 red test |
 | G-5 | Code the agent writes ships behind the request's flag and stays off for non-targeted users | The SR-04(d) check, plus the SR-23 probe (SHOULD) |
 | G-6 | The requester learns progress at stage granularity and never learns about holds, plans, repos, or PRs | ST-18, ST-33 |
-| G-7 | Self-hosting is one image plus Postgres plus flagd, on two hostnames | A compose file and a quickstart. **Acceptance test:** a scripted fresh-VM run of the setup guide, timed; the target is under 60 minutes, including two Apps, a bot org, passkeys, and two TLS hosts (Zod m12) |
+| G-7 | Self-hosting is one image plus Postgres plus flagd, on two hostnames | A compose file and a quickstart. **Acceptance test:** a scripted fresh-VM run of the setup guide, timed; the target is under 60 minutes, including two Apps and a bot org (public repo) or the repo App and its ruleset (private repo), passkeys, and two TLS hosts (Zod m12) |
 | G-8 | The state machine is the only way state changes, and every change is attributable | ST-23 property tests; the `request_transitions` audit trail (SR-15) |
 
 ## Non-Goals
@@ -73,7 +73,8 @@ source and the phase that would bring it back.
 |------------|--------|-------------------------|
 | Only the stock `claude` binary on the owner's subscription | ADR-1, decision #2 amendment | The `Runner` contract shells out to `claude -p`. No credential reads and no token transit. |
 | Builds start only on an owner command | Decision 6 | No server-to-runner push channel. The CLI polls or pulls. `paused_rate_limited` exits the process by default. |
-| Fork-based PRs from two GitHub Apps | Decisions 7, 24, 25; S1 | ADR-4 (`08` §1): the PR App upstream, the push App on a bot-only fork; no upstream credential can merge |
+| Fork-based PRs from two GitHub Apps (public repos) | Decisions 7, 24, 25; S1 | ADR-4 (`08` §1): the PR App upstream, the push App on a bot-only fork; no upstream credential can merge |
+| Same-repo PRs from one App (private repos) | Owner decision 2026-11-14; S1-F | `08` §1.9: the repo App pushes `soren-loop/*` branches and opens the PR; a default-branch ruleset with no bypass actors blocks every merge until a human approves the latest commit; soren-loop never calls merge |
 | Two hostnames | Decision 18, DC6 | Widget host ≠ dashboard/API host; WebAuthn RP ID choice in `06` §3 |
 | `plan` never runs Bash | Decision 22, SR-03 | The `plan` skill's `allowed-tools` is `Read, Grep, Glob`. The spec is returned in the final message. |
 | tdd-pair vendored at a pinned commit | Decisions 11, 21; SR-20 | `VENDORED.json` with per-file hashes, verified every run |

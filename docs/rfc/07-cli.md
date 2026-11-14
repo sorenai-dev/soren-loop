@@ -28,7 +28,7 @@ Every command emits the §2 machine contract. Idempotency keys are per logical o
    - **Default:** the owner's own git credential, used only for `git fetch` of the exact
      upstream HTTPS URL into the trusted gitdir. The server mints no repo-read capability, so a
      stolen CLI token gains nothing.
-   - **Fallback**, when the owner has no usable credential: the server-minted read-only PR App
+   - **Fallback**, when the owner has no usable credential: the server-minted read-only repo App
      token (`POST …/fetch-token`; `05` §1.3). It requires a DPoP-bound CLI token, and it is
      supplied through the CLI-owned `GIT_ASKPASS` (ST-75).
    - Neither credential ever enters the sandbox.
@@ -36,7 +36,7 @@ Every command emits the §2 machine contract. Idempotency keys are per logical o
    Then export `base_sha` into a fresh run directory with no `.git` entry (SR-28a, §1.3). The
    skill's headless pre-flight sees "not a git repo" and proceeds, which its contract allows.
    Branch chains `soren-loop/<public_ref>/<chain>` exist in the trusted gitdir and on the fork
-   (`03` row 23).
+   (public repos) or the private repo itself (`03` row 23, `08` §1.9).
 3. **PC-A**: L3 and L1 over the revision; L2 over `trusted_sha..base_sha`. Post the record. A
    flag or an error stops here, and the server moves the request to `security_hold`.
 4. Claim the plan lease (`POST /runs`).
@@ -135,7 +135,7 @@ identical. Only the auditor changes. What differs follows from that:
      pointing at a CLI-owned minimal file (the owner's identity and opt-in signing settings
      only), `GIT_TERMINAL_PROMPT=0`, no pager, and `-c core.hooksPath=/dev/null -c
      core.fsmonitor=false -c protocol.file.allow=never -c protocol.ext.allow=never`
-     (SR-28b, ST-41 to ST-43). Commits are **authored** by the push App's bot identity and
+     (SR-28b, ST-41 to ST-43). Commits are **authored** by the push App's (or, on private repos, the repo App's) bot identity and
      **committed** by the owner (optional signing), so attribution is honest (Zod m12).
    - The CLI walks the tree with **lstat only** and never follows symlinks. New symlinks,
      gitlinks, FIFOs, devices, and `.git`-equivalent path components (`.GIT`, `git~1`,
@@ -177,8 +177,10 @@ identical. Only the auditor changes. What differs follows from that:
    listing the `public_ref` and `H_spec`. One commit per submit.
 4. Mint a single-use push token (`POST /runs/{id}/push-token`). It comes from the **push
    App**, scoped to the fork only, with `contents: write`, for 1 h, never `workflows` (`08`
-   §1.4). The CLI treats any error as fatal. Push from the trusted gitdir to an **explicit fork
-   HTTPS URL** (`https://github.com/<bot-org>/<repo>.git`), with the ephemeral token supplied
+   §1.4). On a private repo it comes from the **repo App**, scoped to that repo, with the same
+   permissions (`08` §1.9). The CLI treats any error as fatal. Push from the trusted gitdir to an
+   **explicit HTTPS URL**: the fork (`https://github.com/<bot-org>/<repo>.git`) or, on a private
+   repo, the repo itself, and only to a `soren-loop/*` ref, with the ephemeral token supplied
    through a CLI-owned `GIT_ASKPASS` helper, **never argv** (SR-09, T7.5). Remote config,
    `insteadOf`, and proxy settings are never consulted (SR-28c, ST-42).
 5. Push **fast-forward only** to this run's chain branch `soren-loop/<public_ref>/<chain>`.
@@ -207,10 +209,10 @@ PR was written by an agent. Review it as untrusted code." No spec text, no reque
 | Question | Contract |
 |----------|----------|
 | Instructions | Only owner-approved feedback: +SU `rework.approve` over `sl:rework:v1(h_spec, h_fb)`. The CLI verifies that receipt before running (`17` §1). A GitHub review on its own steers nothing (`03` row 24). |
-| Run tree | An export from the trusted gitdir at the **recorded, pinned `head_sha`** (SR-41, ST-74; `runs.tree_source = pr_head`), never at a fetched fork head. If the commit is missing locally (on another machine), the CLI fetches **that SHA** from the fork with a push App token **down-scoped at mint to `{contents: read}`**, 1 h, audited (Zod m5), and verifies the object ID. Hydrate still comes from the pristine `base_sha` export (SR-02). |
+| Run tree | An export from the trusted gitdir at the **recorded, pinned `head_sha`** (SR-41, ST-74; `runs.tree_source = pr_head`), never at a fetched fork head. If the commit is missing locally (on another machine), the CLI fetches **that SHA** from the fork (or the private repo) with a push App (or repo App) token **down-scoped at mint to `{contents: read}`**, 1 h, audited (Zod m5), and verifies the object ID. Hydrate still comes from the pristine `base_sha` export (SR-02). |
 | Base and PC-C | The run keeps the PR's original `base_sha`. PC-C runs L2 over `trusted_sha..base_sha`. The bot's commits can't touch instruction files (deny-list). |
 | Push | Fast-forward onto the active chain's branch. The server's re-check covers the cumulative diff from the original base. The pin moves to the new head (SR-41). |
-| Upstream moved, conflicts, or a rejected first submit | There is no rebase in V1. `build --fresh` is allowed from any build-start state (`plan_approved`, `changes_requested`, `stalled{build}`). It exports the current `origin/<default>`, runs a full build, and starts a **new chain**. The server opens the new PR, then supersedes the old one: it closes it with a link and revokes its tokens, and `request_prs` records both (`03` rows 23, 40, 46; Zod D1, D3). There is never a force-push. Superseded chain branches are deleted from the fork after 30 days. |
+| Upstream moved, conflicts, or a rejected first submit | There is no rebase in V1. `build --fresh` is allowed from any build-start state (`plan_approved`, `changes_requested`, `stalled{build}`). It exports the current `origin/<default>`, runs a full build, and starts a **new chain**. The server opens the new PR, then supersedes the old one: it closes it with a link and revokes its tokens, and `request_prs` records both (`03` rows 23, 40, 46; Zod D1, D3). There is never a force-push. Superseded chain branches are deleted from the fork (or the private repo) after 30 days. |
 | Context on `retry` | `stalled` keeps `feedback_id` and `rework_of`. `retry` routes by whether `request_prs` has an **active open PR** (`03` row 12, Zod D3) |
 
 ## 2. CLI Machine Contract (Postel B4)
@@ -258,7 +260,8 @@ any `202` the CLI receives.
   `{event: "step", step: "pc_a", status: "passed"}`.
 - `soren-loop schema` prints the JSON Schema for every command result and the error-code list.
 - `doctor --output json` emits stable check IDs (`doctor.widget_rp_subdomain`,
-  `doctor.pr_app_contents_above_read`, …).
+  `doctor.pr_app_contents_above_read`, `doctor.repo_app_ruleset`, `doctor.repo_app_ci_secrets`,
+  …). The private-repo checks are specified in `08` §1.9.
 
 ### 2.3 `--agent`
 

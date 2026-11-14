@@ -24,7 +24,7 @@ flowchart LR
     SB["Sandbox: devcontainer<br/>claude -p + vendored plugin"]
   end
 
-  GH["GitHub: PR App (upstream),<br/>push App (bot-only fork)"]
+  GH["GitHub: PR App (upstream) + push App (bot-only fork),<br/>or repo App (private repo)"]
   ANT["Anthropic"]
 
   HP -- "postMessage getToken" --> WI
@@ -33,14 +33,14 @@ flowchart LR
   DASH -- "HTTPS + WebAuthn" --> API
   API -- "SQL + outbox insert" --> DB
   WK -- "drain outbox" --> DB
-  WK -- "PR App tokens: PR, labels, compare" --> GH
+  WK -- "PR App / repo App tokens: PR, labels, compare" --> GH
   GH -- "webhooks" --> API
   WK -- "flag doc (HTTP sync, internal)" --> FD
   HE -- "evaluate" --> FD
   CLI -- "HTTPS pull/claim/upload/mint" --> API
   CLI -- "spawn, mount run tree (no .git)" --> SB
   SB -- "sealed egress" --> ANT
-  CLI -- "git push (push App token, fork only)" --> GH
+  CLI -- "git push (push App token, fork only;<br/>repo App token, soren-loop/* on private repos)" --> GH
 ```
 
 There are two network directions that matter for security. The **CLI always initiates** to the
@@ -85,10 +85,10 @@ Repo 2 depends on Repo 1 only through `@sorenai/loop-schema` (published) and the
 
 | Component | Owns | Does NOT own |
 |-----------|------|--------------|
-| CLI `login` / `doctor` | Device-flow login (keychain storage); pinning the owner's WebAuthn public keys for receipts (SR-19); environment checks: path policy exists, both Apps' installed permissions match their manifests (the PR App has no `contents` above read; the push App is on the fork only), the fork has no human pushers, `pull_request_target` scan, Docker and image digest, minimum Claude Code version | Claude login (Anthropic's own flow, inside the container) |
+| CLI `login` / `doctor` | Device-flow login (keychain storage); pinning the owner's WebAuthn public keys for receipts (SR-19); environment checks: path policy exists, each App's installed permissions match its manifest (the PR App has no `contents` above read; the push App is on the fork only; the repo App has no `workflows` or `administration`), the fork has no human pushers (public repos), the default-branch ruleset and the CI-secrets rule (private repos, `08` §1.9), `pull_request_target` scan, Docker and image digest, minimum Claude Code version | Claude login (Anthropic's own flow, inside the container) |
 | CLI `pull` / `plan` | Fetching approved requests; recomputing `H_req`; exporting `base_sha` from a CLI-owned trusted gitdir into a run directory with no `.git` (SR-28); running PC-A and PC-B; invoking the `plan` skill read-only; uploading the spec plus the PC-B record | Approving anything; fetching request content from GitHub |
 | CLI `build` | Verifying `H_spec` (and the receipt); running PC-C; the two-phase sandbox; `claude -p` with SR-01 flags and `/soren-loop:tdd-pair auto --headless`; rate-limit detection from the process; post-run deterministic checks; reporting results | Treating the outcome JSON as authority (SR-18); committing inside the sandbox |
-| CLI `submit` | The SR-04 policy (outside the sandbox, no LLM); Conventional Commits; minting a single-use fork push token; push; filling the PR template deterministically; the risk summary | Opening the PR (the server does it, after re-checking the diff); merging |
+| CLI `submit` | The SR-04 policy (outside the sandbox, no LLM); Conventional Commits; minting a single-use push token (fork, or the private repo's `soren-loop/*` branch); push; filling the PR template deterministically; the risk summary | Opening the PR (the server does it, after re-checking the diff); merging |
 | Plugin (vendored) | tdd-pair (headless), Ada and Zod personas, the `plan` skill, `VENDORED.json` | Being fetched or updated at runtime |
 | Sandbox image | Reference-devcontainer-derived image pinned by digest; firewall phases; non-root agent user | Network policy decisions at runtime (fixed by the CLI per phase) |
 
@@ -109,7 +109,7 @@ Repo 2 depends on Repo 1 only through `@sorenai/loop-schema` (published) and the
 | I11 | CLI → API | Sync (pull model) | List and fetch approved work; claim with lease; heartbeat; upload spec and pre-check records; report run results; mint push token; submit | CLI (owner command) |
 | I12 | CLI → sandbox | Local, sync | Worktree mount; Claude auth variable only; the phase flag | CLI |
 | I13 | Sandbox → Anthropic | Sync (model traffic) | Prompts and file contents | `claude -p` |
-| I14 | CLI → fork | Sync (`git push`) | Commits on `soren-loop/<public_ref>` | CLI, with a token minted at I11 |
+| I14 | CLI → fork (public) or the private repo | Sync (`git push`) | Commits on `soren-loop/<public_ref>/<chain>` | CLI, with a token minted at I11 |
 | I15 | Workers → flagd | Async: flagd polls the internal sync endpoint (gRPC push later) | Rendered flag document | flagd (pull) |
 | I16 | Host eval → flagd | Sync | Evaluation by `targetingKey` | Host app |
 | I17 | Workers → Unleash (Phase 2) | Async (outbox) | Admin API calls via `FlagWriter` | Worker |
@@ -138,7 +138,7 @@ sequenceDiagram
   X-->>C: exit + advisory outcome
   C->>C: deterministic checks, SR-04 policy
   C->>S: mint push token (single use)
-  C->>G: push to fork branch
+  C->>G: push to fork branch (or soren-loop/* branch, private repo)
   C->>S: submit(head_sha)
   S->>G: compare re-check, open PR (outbox)
   O->>G: G3 review and merge
@@ -188,7 +188,7 @@ now. `Notifier` stays one implementation behind a thin interface.
 | Data | To |
 |------|----|
 | Approved request and spec, with hashes and receipts | CLI |
-| PR (from the fork) with flag key, `public_ref` (never the widget `request_id`, SR-40a), risk summary | Owner review on GitHub |
+| PR (from the fork, or a same-repo branch on private repos) with flag key, `public_ref` (never the widget `request_id`, SR-40a), risk summary | Owner review on GitHub |
 | Optional issue projection (ID plus owner-edited title) | GitHub |
 | Flag document / vendor targeting | flagd / Unleash, then host evaluation |
 | Requester stage events | Widget feed |
@@ -199,8 +199,9 @@ app (private repo), user `u_123` submits "a dark mode toggle on the settings pag
 form. The request lands in `submitted` with PC-S clean. The owner approves G1 with a passkey;
 the server mints `sl_<random>`. `soren-loop plan <id>` produces a spec and the owner approves
 G2. `soren-loop build <id>` runs headless tdd-pair in the sealed sandbox. `soren-loop
-submit <id>` passes SR-04, pushes to the bot fork, and the server opens an upstream PR that
-fills the repo's template and gates the toggle behind the flag. The owner merges. The demo's
+submit <id>` passes SR-04 and, because the demo repo is private, pushes a `soren-loop/*` branch
+with the repo App's token (`08` §1.9); the server opens the PR, which fills the
+repo's template and gates the toggle behind the flag. The owner approves and merges. The demo's
 deploy workflow posts `deployment_status: success` for `production`. The server verifies
 ancestry and renders `targetingKey in ["u_123"]` into the flagd document. `u_123` reloads and
 sees the toggle; `u_456` does not. `u_123`'s widget shows **available**. In the same run, a

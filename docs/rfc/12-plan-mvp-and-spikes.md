@@ -4,7 +4,7 @@
 
 > Widget (form) → structured request (PC-S) → owner dashboard approve (passkey step-up, G1) →
 > optional GitHub issue projection → owner runs `plan` (PC-A, PC-B) / G2 / `build` (PC-C,
-> sealed sandbox) / `submit` locally → PR from the bot fork → owner merges (G3) → on a verified
+> sealed sandbox) / `submit` locally → PR from the bot fork (public repos) or a `soren-loop/*` branch (private repos) → owner merges (G3) → on a verified
 > GitHub deployment event, set the requester's flag via flagd/OpenFeature.
 
 **In:** form intake; the full state machine in §2 of `03` except Phase 2 states
@@ -29,7 +29,7 @@ uncertainty.
 |-------|-----------|-----------|-----------|
 | 1 | **`packages/schema` + server core**: normalization and hashing, the transition table, the outbox, the WebAuthn challenge service, receipts, the audit tables | Every other component trusts its hashes and guards. ST-23 property tests need it. The hash format becomes a versioned contract the moment the CLI ships. | ST-06, ST-07, ST-09, ST-23, ST-63, ST-73 green; golden vectors (including H-14, H-15, N-10) published |
 | 2 | **CLI runner + sandbox image**: `login`, `doctor`, `plan`, `build`, `submit`, SR-01 flags, two-phase containers, outcome handling, SR-28 tree hygiene | Highest uncertainty (S2, S3, S5, S6, S7) and the main security boundary. If S5 or S6 forces a redesign, the earlier the better. | ST-01 to ST-05, ST-21, ST-22 green; S7 red test passes |
-| 3 | **GitHub integration**: two App manifests, a bot-only fork, the setup wizard, per-operation token minting, webhook ingest and dedup, the compare re-check, deploy detection | S1 fixed its shape (two Apps). What's left is the private-repo follow-ups. | ST-13, ST-14, ST-15, ST-48, ST-49 green on a sandbox org; the start-up check fails closed |
+| 3 | **GitHub integration**: the PR App and push App manifests with a bot-only fork (public repos), the repo App manifest with the ruleset check (private repos), the setup wizard, per-operation token minting, webhook ingest and dedup, the compare re-check, deploy detection | S1 fixed the public-repo shape (two Apps); S1-F fixed the private-repo shape (one repo App behind a ruleset, `08` §1.9). | ST-13, ST-14, ST-15, ST-48, ST-49 green on a sandbox org (the S1-F harness is the ST-48 regression test); the start-up check fails closed, including on a missing or bypassable ruleset |
 
 The widget (form plus session exchange), the dashboard gates, and the flagd writer then close
 the loop for the smoke test.
@@ -58,10 +58,10 @@ At 10x sites in one install (an agency running many clients), the first break is
 Estimates are engineer-weeks, assuming two engineers. Conway will break them into ≤ 15-point
 PR groupings per repo.
 
-### Phase 0: Spikes (1.5 weeks; S1 done)
+### Phase 0: Spikes (1.5 weeks; S1 and S1-F done)
 
-S1-F and S2 to S7 (§5). Exit: each spike has a written result in `docs/spikes/`, and this RFC is
-revised where §5 says it could change.
+S2 to S7 (§5). S1-F is done, and its results are applied to `08` §1. Exit: each spike has a
+written result in `docs/spikes/`, and this RFC is revised where §5 says it could change.
 
 ### Phase 1: MVP, reconciled estimate (Zod M14)
 
@@ -74,7 +74,7 @@ reviews added contract work. Zod's independent estimate was 26–30. The reconci
 | 2 | Widget JWT exchange (`sl.widget_jwt.v1`), form intake, PC-S, feed, caps, shadow-accept | 1 | 1.5 | 1.75 | Postel M5, SR-40b |
 | 3 | Dashboard: queue, gates, review aids, hold console, rollout, effective-diff rendering | 1 | 2.5 | 2.75 | `14` §5 diff view, `If-Match` |
 | 4 | **Owner auth, sessions, recovery codes, site setup and config UI, trusted-commit management** | 1 | — | 1.5 | Missing before (Zod M14) |
-| 5 | Two Apps and the wizard, fork, branch chains, minting (DPoP-gated fallback fetch), webhooks, SR-41 head pinning, site-scoped deploy matching, the Standard Webhooks deploy hook, the start-up check, projection | 1 | 2.5 | 3.5 | Zod M1, M13, D2, D3; Postel M7; SR-41 |
+| 5 | The PR and push Apps, the repo App and its ruleset check (`08` §1.9), the wizard, fork, branch chains, minting (DPoP-gated fallback fetch), webhooks, SR-41 head pinning, site-scoped deploy matching, the Standard Webhooks deploy hook, the start-up check, projection | 1 | 2.5 | 3.5 | Zod M1, M13, D2, D3; Postel M7; SR-41 |
 | 6 | flagd rendering, sync, `FlagWriter` with fence and typed errors, purge, **`createOfrepHandler`** | 1 | 1 | 1.5 | Postel M6, M8; SR-36 |
 | 7 | CLI: login, doctor, pull, plan, build, submit (with waiting), **rework** and `--fresh` chains, offline receipts (G1, G2, rework, clear), outcome port, SR-28, **machine contract**, ops idempotency, the InMemoryProvider flag fixture, the CSI/`\r` TTY filter | 2 | 3.5 | 4.75 | Zod B5, M9, D6; Postel B2, B4, D-M3 |
 | 8 | Sandbox image, two phases, fresh-container checks, L1 host isolation, S7 red test | 2 | 1.5 | 2 | Zod M11, M12 |
@@ -130,7 +130,7 @@ already MUST-MVP (Zod m8).
 | Spike | Status | Question | RFC sections it can change | If it goes badly |
 |-------|--------|----------|---------------------------|------------------|
 | **S1** fork PR permissions | **Done: passed** (decisions 24 and 25) | Fork PR with only `pull_requests: write` upstream; merge 403; workflow pushes rejected; no fork secrets | Applied to `08` §1 and the files referencing it | n/a |
-| **S1-F** private-repo follow-ups | Open | Private upstream and private fork; org fork policy; the private-repo "secrets / write tokens to fork PRs" settings; whether "all external contributors" approval holds App PRs; other `pull_requests: write` capabilities; ST-48 | `08` §1.3 to §1.6, §1.8 | Orgs that forbid private forks use the opt-in same-repo mode (decision 29, Q1). Approval settings stay out of the control set (F1). |
+| **S1-F** private-repo follow-ups | **Done** (2026-11-14, `docs/discovery/spikes/S1F-private-repo-followups.md`) | Private upstream and private fork; org fork policy; the private-repo "secrets / write tokens to fork PRs" settings; whether "all external contributors" approval holds App PRs; other `pull_requests: write` capabilities; ST-48; then the same-repo model for private repos | Applied to `08` §1 (§1.1 to §1.9) and the files referencing it | Went badly for private forks: the PR App can't open a PR from a private fork (P1, 422). **Disposition (owner decision 2026-11-14):** private forks are dropped; every private repo uses the same-repo model with a verified ruleset (`08` §1.9); public repos keep the fork model. ST-48 passes (P5). No PR-App capability bypasses required review (P6). Approval settings stay out of the control set (P3, F1). Private fork-PR settings checks are dropped (P2, P4). The wizard forks with the owner's credential (P7). Residual R5/T10.1 is H for private repos (S2). |
 | **S2** `stream-json` shapes | Open | Machine-readable success, error, and rate-limit events with `resets_at`? | `07` §1.2 step 6 and §2 stream parsing; `03` row 8 | Detect rate limits from error text and exit codes; with no `resets_at`, back off with a fixed default. Never infer success from model text. |
 | **S3** plugin invocation | Open | Namespaced skill as the `-p` prompt with `disable-model-invocation`? Headless `AskUserQuestion`? Plugin auto-update? Agent addressing? | `15` §3 | Pass the vendored `SKILL.md` body as the prompt; load from a local directory only; a hash-recorded patch for agent names |
 | **S4** flagd HTTP sync **and OFREP web provider** | Open | Auth header? Poll interval? Reload latency? **Gating (Postel M6): can the stock OpenFeature OFREP web provider do single-flag evaluation, or does it require the bulk endpoint?** Does flagd keep an on-disk cache? | `16` §2 and §5; `10` §2 and §4 (kill-switch latency); SR-36 | If the web provider needs bulk evaluation: allowlist-filtered bulk in `createOfrepHandler` (the SR-36 amendment, with Sentinel), or the `SorenLoopFlagProvider` fallback (`16` §5). Network-restrict the sync endpoint, or move to gRPC sync with auth or mTLS. If latency is too long for a kill switch, document it and prefer gRPC push. |

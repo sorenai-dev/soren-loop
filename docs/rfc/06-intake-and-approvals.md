@@ -81,8 +81,10 @@ flagged pre-checks in a rolling 24 h. A pause is shadow-accept, not an error (`0
 | **G4** rollout widening | Dashboard | Digest of the target set / percentage / `all` | WebAuthn, UV required | Time enabled for the requester; error rates if the host reports them |
 
 **G3 is not a soren-loop ceremony.** soren-loop can't put a WebAuthn step-up on a GitHub
-merge button. G3's integrity therefore rests on the fork model (the bot can't merge),
-CODEOWNERS and branch rules in the owner's repo, and the merger's GitHub account security. The
+merge button. G3's integrity therefore rests on the fork model on public repos (the bot can't
+merge) or the verified default-branch ruleset on private repos (the bot can't merge until a
+human approves its latest commit, and soren-loop never calls merge; `08` §1.9), CODEOWNERS and
+branch rules in the owner's repo, and the merger's GitHub account security. The
 consequence: under assumption A2, any collaborator who can merge can also trigger enablement
 for the requester. Decision 29 (Q2) keeps automatic enablement as the default and adds two
 site options: `merger_must_be_owner_login`, and `dashboard_confirm`, a +SU "accept for
