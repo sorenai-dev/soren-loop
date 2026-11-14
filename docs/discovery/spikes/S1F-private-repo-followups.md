@@ -13,8 +13,10 @@ App's **full** decision-26 permission set. Date: 2026-11-13. Run against GitHub.
   private and a public upstream. No stop-the-line finding. `contents: read` does not grant merge.
 - The PR App **cannot open a PR whose head is a private fork in the bot org**: `422 "not all refs are
   readable"` (P1). This was the `08` §1.4 UNVERIFIED assumption, and it is refuted. Changing the org
-  fork policy does not change this (P2). For private repos the fork model therefore needs another
-  route, which is the owner's decision (see **Decision Needed**).
+  fork policy does not change this (P2). **Owner decision (2026-11-14): private forks are dropped;
+  private repos use a same-repo ("Dependabot") model, public repos keep the fork model.** The
+  same-repo model was tested the same day (items 7–12): its ruleset control holds, with two costs to
+  design for (S1–S5).
 - No `pull_requests: write` capability bypasses a required review (P6). The fork-PR approval gate
   does not hold App-authored PRs even under the strictest public policy (P3, confirms F1).
 
@@ -89,23 +91,62 @@ the private one; rulesets apply the same way to both.
 returns 404: it has no read access to the private upstream. The setup wizard must fork with the
 owner's credential.
 
-## Decision Needed (decision 29, Q1)
+## Decision (owner, 2026-11-14; extends decision 29, Q1)
 
-P1 means a private upstream cannot use the fork model as `08` §1 specifies. Options for the owner:
+P1 means a private upstream cannot use the fork model as `08` §1 specifies. The options were: (1)
+same-repo mode for private repos, (2) private repos out of MVP scope, (3) owner-credential PR creation.
+The owner chose **(1), framed as the Dependabot model**: an App installed on the owner's repo pushes a
+`soren-loop/*` branch and opens the PR, and a repo member reviews and merges it. It applies to
+**private repos only**; public repos keep the two-App fork model, which gives the stronger guarantee
+(no merge-capable credential, no secrets in fork-PR CI). Private forks are dropped from the design.
+The untested variant (installing the PR App on the bot org too) is no longer needed.
 
-1. **Private repos use same-repo mode only** (`08` §1.8). This is the existing opt-in path, widened
-   from "orgs that forbid private forks" to "all private repos". Cost: it gives up the two-App
-   guarantee for those repos (upstream `contents: write`, R5 and T10.1 back to H) and depends on
-   `doctor`-verified rulesets.
-2. **Private repos are out of MVP scope.** The MVP supports public upstreams only; private repos wait
-   for a design that keeps a no-merge upstream credential.
-3. **Owner-credential PR creation for private repos.** The PR is opened with the owner's own token.
-   Cost: the PR is no longer bot-authored, and the server would hold or borrow an owner credential,
-   which SR-09 and T24 avoid.
+## Same-Repo Model for Private Repos (items 7–12, 2026-11-14)
 
-Untested: whether installing the PR App on the bot org as well changes P1. A PR still needs one token
-that reads both repos, and tokens are per installation, so this is unlikely to help. Checking it
-needs the sandbox PR App made installable on a second org.
+The sandbox PR App was widened to `contents: write` for this run; tokens were minted with
+`{contents: write, pull_requests: write, metadata: read}` on a private upstream. The control under test
+is a default-branch ruleset with no bypass actors: `pull_request` (1 approving review, dismiss stale
+reviews, `require_last_push_approval`), `deletion`, `non_fast_forward`. A repo Actions secret held a
+random UUID so CI could report only whether it was present.
+
+| # | Question | Result | Key status codes and messages |
+|---|----------|--------|------------------|
+| 7 | Can the App do its job? | **Yes** | mint 201 · create `soren-loop/*` branch 201 · commit 201 · open PR 201 |
+| 8 | Can the App write `main` directly? | **No** | contents PUT **409** "Changes must be made through a pull request." · `git push` rejected (GH013) |
+| 9 | Can the App merge without a human review of its latest commit? | **No** | self-approve **422** · merge before review **405** "New changes require approval from someone other than the last pusher." · after a human approval plus a late bot push, merge **405** (same message, twice, after 30 s and 45 s) |
+| 9b | Once a human approves the App's latest commit, can the App press merge? | **Yes** | merge **200** "Pull Request successfully merged" |
+| 10 | Can the App weaken or read the control? | Cannot weaken; **can read** | delete ruleset **403** · disable ruleset **403** · `GET /rules/branches/main` 200 · `GET /rulesets` 200 |
+| 11 | Can the App edit workflows? | **No** | contents PUT on `.github/workflows/*` **403** |
+| 12 | Does CI on the App's PR see repo secrets before review? | **Yes** (the risk) | run by `sl-sandbox-pr-abad[bot]`, `success`, `probe_present=true` |
+
+Evidence: `spikes/s1f/results/run-20261114T205450.json` (authoritative) and
+`run-20261114T205341.json` (the first run, kept for S3). No stop-the-line finding.
+
+**S1. The ruleset is the control, and it holds against the App.** With `contents: write`, nothing
+but the ruleset stops a merge (S1 showed 200 on an unprotected repo). With it, every merge and direct
+write the App tried before a human had approved its latest commit was refused, and the App could not
+delete or disable the ruleset (no `administration` permission).
+
+**S2. "A human presses merge" is not enforceable by GitHub.** Once a human approves the App's latest
+commit, the App's own merge succeeds. Only soren-loop's code (it never calls merge) and the protection
+of the App's key stand in the way; a leaked key can merge any PR a human has approved. Under the fork
+model it cannot. This is the residual R5/T10.1 risk for private repos.
+
+**S3. Don't read `reviewDecision` right after a push.** In the first run, immediately after the late
+bot push GitHub still reported `APPROVED` / `CLEAN`, while the merge was already refused (405, generic
+"Pull Request is not mergeable"). In the second run, read 30 seconds after the same kind of push, it
+reported `REVIEW_REQUIRED` / `BLOCKED` and the merge failed with the explicit rule message. The
+server must not use `reviewDecision` as a merge or state signal without waiting for it to settle.
+
+**S4. The start-up check can verify the ruleset with the App's own token.** Unlike P4, `GET
+/repos/{r}/rules/branches/main` and `GET /rulesets` return 200 for the App, so the backend check
+(`08` §1.4a) can confirm the required rules and an empty bypass list without the owner's credential.
+
+**S5. Same-repo PR CI gets repo secrets before review (confirms S1 Q4 for App-authored PRs).**
+Agent-written code runs in CI with secrets before a human has looked at it. GitHub gives Dependabot's
+own PRs fork-like treatment; a third-party App's PRs do not get it. The mitigation must come from the
+setup: `doctor` refuses to run unless `pull_request` workflows use no secrets, or secrets sit behind
+environments with required reviewers (`08` §1.8 already sketches the first).
 
 ## RFC Sections This Changes (for Arendt)
 
@@ -118,7 +159,9 @@ needs the sandbox PR App made installable on a second org.
 | `08` §1.4a | The start-up check cannot verify the private-repo fork-PR settings (P4); record as a `doctor`-only check |
 | `08` §1.6 | Items 1–5 answered; item 6 (human-merge ruleset) stays a setup recommendation |
 | `08` §1.7 | F1 confirmed under `all_external_contributors` (P3) |
-| `08` §1.8, `13` Q1 | Scope of same-repo mode, per the decision above |
+| `08` §1.8, `13` Q1 | Same-repo mode becomes **the** model for private repos (not an opt-in for orgs that forbid forks); private forks are removed. Its controls: the S1 ruleset verified by the start-up check (S4) and `doctor`, the no-secrets CI rule (S5), never calling merge (S2), settled reads of `reviewDecision` (S3) |
+| `08` §1.1–1.3 | The bot org and push App apply to public repos only; private repos need one App with `contents: write`, `pull_requests: write`, never `workflows` or `administration` |
+| `03` R5, T10.1 | Rated H again for private repos (S2), as `08` §1.8 already anticipated |
 | `12` §5 | S1-F row → Done, with the P1 disposition |
 | `06` ST-48 | Passes in the sandbox; the harness becomes the regression test (Tasks 057, 061) |
 
@@ -126,17 +169,23 @@ needs the sandbox PR App made installable on a second org.
 
 ```bash
 cd soren-loop/spikes/s1f        # Node 24; needs the two keys and `gh` with admin:org, repo, workflow
-node run.ts --org sorenai-dev-sandbox                      # items 1, 3, 4, 5, 6
-node run.ts --org sorenai-dev-sandbox --allow-org-toggle   # adds item 2 (toggles an org setting)
-node run.ts --org sorenai-dev-sandbox --only 5             # ST-48 alone
+node run.ts --org sorenai-dev-sandbox             # items 4, 5, 6 on the public upstream (fork model)
+node run.ts --org sorenai-dev-sandbox --only 5    # ST-48 alone
+node run.ts --org sorenai-dev-sandbox --only 7    # items 7-12 (same-repo model); see below
 ```
 
 Exit 0: every row matches the recorded baseline. Exit 1: something changed; read the table. Exit 2:
 a 2xx on a merge or upstream write (stop the line before Tasks 060–066). The expected values encode the
 GitHub behaviour above, so a change in GitHub's behaviour surfaces as a failure.
 
+Items 1–3 and the private halves of 4 and 5 were removed from the harness once private forks were
+dropped; their code is in commit `1ef94c9`. Item 7 needs a private upstream named
+`sorenai-dev-sandbox/sl-upstream-private` and the PR App widened to `contents: write`; both were
+removed after the 2026-11-14 run.
+
 ## Cleanup
 
-The harness reverts everything it changes. The sandbox Apps, forks and keys stay for Tasks 057, 061
-and 065. To retire them: delete each App's key on its settings page and
-`rm -rf ~/.soren-loop-sandbox`.
+The harness reverts everything it changes. After the runs, the private fork and the private upstream
+were deleted (owner instruction, 2026-11-14), and the PR App's Contents permission goes back to Read so
+it matches SR-08 again. The public upstream and fork, both Apps and the keys stay for Tasks 057, 061
+and 065. To retire them: delete each App's key on its settings page and `rm -rf ~/.soren-loop-sandbox`.
