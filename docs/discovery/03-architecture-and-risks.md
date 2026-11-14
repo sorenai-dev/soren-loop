@@ -154,7 +154,7 @@ sit in `building` for hours. Mitigation: `paused_rate_limited` with `resetsAt`; 
 the requester feed shows "building" without detail; recommend Max or Ultra in docs. Detection:
 rate-limit events from the stream (spike S2).
 
-**R5. "No merge" isn't enforceable on a single repo.** Probability: certain under Option B.
+**R5. "No merge" isn't enforceable on a single repo.** Probability: certain under Option B, which is the private-repo model (decision 37); residual H for private repos.
 Impact: a compromised CLI or leaked token could merge. Mitigation: ADR-4 fork model; installation
 tokens minted per operation, one repo, one hour. Detection: audit log of every token mint.
 

@@ -5,9 +5,14 @@
 **Draft** · Author: Arendt · Date: 2026-10-30 · Next: contract review (Postel), then task
 breakdown (Conway).
 
-ADR-4 (fork model with two GitHub Apps) is **Accepted**: S1 passed, and decisions 24 and 25
-were ratified in Round 4. Spikes S2 to S7 are open, along with S1's untested private-repo areas.
-Section `12` lists which parts of this RFC each one can change.
+ADR-4 is **Accepted**: S1 passed, and decisions 24 and 25 were ratified in Round 4. S1-F
+(2026-11-14) showed the fork model can't serve private repos, so by decision 37 (ratified by
+the owner 2026-11-14) public repos keep the two-App fork model and private repos use a
+same-repo model behind a verified ruleset (`08` §1.9); the five follow-on items in `13` §3b
+(T31 to T35) were confirmed by the owner the same day. S4 is done (2026-11-14): the
+allowlist-filtered bulk OFREP handler is approved under Sentinel's conditions (`16` §5, `13`
+T25). Spikes S2, S3, and S5 to S7 are open. Section `12` lists which parts of this RFC each one
+can change.
 
 Decisions 26 to 31 (Round 5) closed every open question in `13`, accepted SU-2, FL-1, and AU-1,
 added the per-stage notification policy (`14`), and renamed the project to **soren-loop**
@@ -18,7 +23,7 @@ and Claude Code plugin). Paths in this RFC are repo-relative.
 ## Inputs (source of truth, in priority order)
 
 1. `docs/discovery/00-project-brief.md`: decisions 1 to 31 (Round 4: 24 and 25; Round 5: 26 to 31), the decision #2
-   amendment, and A23-1 to A23-8. `docs/discovery/spikes/S1-fork-pr-permissions.md`. This RFC never contradicts a ratified decision. Where I think one is
+   amendment, and A23-1 to A23-8. `docs/discovery/spikes/S1-fork-pr-permissions.md` and `S1F-private-repo-followups.md` (decision 37, ratified 2026-11-14), and `S4-flagd-ofrep.md` (owner approval and Sentinel sign-off, 2026-11-14). This RFC never contradicts a ratified decision. Where I think one is
    wrong, or where two decisions pull against each other, the item is in `13-open-questions.md`.
 2. `docs/discovery/01` to `03`: discovery, research, ADR-1 to ADR-6, spikes, risk register.
 3. `docs/security/threat-model.md` and `01` to `06`: SR-01 to SR-34 (including SR-28 and SR-29), ST-01 to ST-49, S1 to S7.
@@ -40,7 +45,7 @@ marked **UNVERIFIED**. SR and ST IDs refer to `docs/security/06-requirements-tes
 | `05-api-design.md` | API surfaces, error shape, idempotency, IDs; versioning, rollout, and deprecation |
 | `06-intake-and-approvals.md` | Deep dives: intake (form and API-key chat), gates G1 to G4, WebAuthn step-up, pre-check orchestration |
 | `07-cli.md` | Deep dive: CLI `pull/plan/build/submit`, rework, `--interactive`, the CLI machine contract (exit codes, JSON output) |
-| `08-github-and-deploy.md` | Deep dives: GitHub fork model with two Apps (ADR-4, accepted), deploy detection |
+| `08-github-and-deploy.md` | Deep dives: GitHub PR models (ADR-4, accepted): the two-App fork model for public repos, the same-repo model for private repos; deploy detection |
 | `09-security-mapping.md` | Every MUST-MVP SR mapped to its implementing component, plus the ST coverage |
 | `10-cross-cutting.md` | Observability, self-hosted deployment (two hostnames), cost, rollback, the weekly policy-diff job, testing |
 | `11-alternatives-and-tradeoffs.md` | Alternatives compared on fixed criteria, and the decision rationale |
@@ -61,7 +66,8 @@ default, an LLM chat when the owner supplies an API key). The owner approves the
 with a passkey. The owner's CLI then runs `plan` with the owner's own `claude -p`, and the owner
 approves the resulting six-section spec (G2), again with a passkey. Next, `build` runs the
 vendored `/tdd-pair auto --headless` inside a sealed sandbox. `submit` applies deterministic
-checks, pushes to a bot fork, and opens an upstream PR that the owner reviews and merges (G3).
+checks, pushes to a bot fork (public repos) or a `soren-loop/*` branch of the repo itself
+(private repos), and opens a PR that the owner reviews and merges (G3).
 When a verified production deployment contains the merge commit, the backend turns the
 feature's flag on for the requester, and the owner can widen the rollout (G4).
 
@@ -90,7 +96,8 @@ The design rests on four positions:
 | PC-S, PC-I, PC-A, PC-B, PC-C | Pre-check checkpoints: at submission, at intake (LLM mode), step 0 of `plan`, on the generated spec, at `build` start |
 | L1 / L2 / L3 | Pre-check layers: no-tool classifier / instruction-file diff / deterministic rules |
 | Receipt | The stored WebAuthn assertion for an approval, verifiable offline against pinned public keys |
-| PR App / push App | The two GitHub Apps of decision 25: the PR App is installed upstream (`pull_requests: write`); the push App is installed only on the bot-only fork (`contents: write`) |
+| PR App / push App | The two GitHub Apps of decision 25, for public repos: the PR App is installed upstream (`pull_requests: write`); the push App is installed only on the bot-only fork (`contents: write`) |
+| Repo App | The single GitHub App for private repos (decision 37): installed on the owner's private repo with `contents: write` and `pull_requests: write`, never `workflows` or `administration`, behind a verified default-branch ruleset (`08` §1.9) |
 | Runner A | The owner's CLI on the owner's machine (MVP). Runner B is the Claude Code GitHub Action (Phase 2). |
 | `sl_` key | An opaque, random flag key minted at G1 (SR-13) |
 | Hydrate / sealed | Sandbox phase A (lockfile install, registry egress) / phase B (Anthropic-only egress) |

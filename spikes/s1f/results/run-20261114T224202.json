@@ -1,0 +1,1733 @@
+{
+  "runId": "20261114T224202",
+  "rows": [
+    {
+      "item": 7,
+      "check": "owner sets random probe secret (reverted)",
+      "expected": "0",
+      "observed": "0",
+      "ok": true
+    },
+    {
+      "item": 7,
+      "check": "owner adds require-review ruleset, no bypass (reverted)",
+      "expected": "201",
+      "observed": "201",
+      "ok": true
+    },
+    {
+      "item": 7,
+      "check": "App mints {contents:write, pull_requests:write} upstream",
+      "expected": "201",
+      "observed": "201",
+      "ok": true
+    },
+    {
+      "item": 7,
+      "check": "App creates soren-loop/* branch",
+      "expected": "201",
+      "observed": "201",
+      "ok": true
+    },
+    {
+      "item": 7,
+      "check": "App commits to its branch",
+      "expected": "201",
+      "observed": "201",
+      "ok": true
+    },
+    {
+      "item": 8,
+      "check": "App PUT contents on main",
+      "expected": "403|409|422",
+      "observed": "409",
+      "ok": true
+    },
+    {
+      "item": 8,
+      "check": "App git push to main",
+      "expected": "rejected",
+      "observed": "exit 1",
+      "ok": true
+    },
+    {
+      "item": 9,
+      "check": "App opens same-repo PR",
+      "expected": "201",
+      "observed": "201",
+      "ok": true
+    },
+    {
+      "item": 9,
+      "check": "App approves its own PR",
+      "expected": "422",
+      "observed": "422",
+      "ok": true
+    },
+    {
+      "item": 9,
+      "check": "App merges before any review",
+      "expected": "403|405|409|422",
+      "observed": "405",
+      "ok": true
+    },
+    {
+      "item": 9,
+      "check": "owner approves (human review)",
+      "expected": "200",
+      "observed": "200",
+      "ok": true
+    },
+    {
+      "item": 9,
+      "check": "App pushes a new commit after approval",
+      "expected": "201",
+      "observed": "201",
+      "ok": true
+    },
+    {
+      "item": 9,
+      "check": "App merges after its own late push (settled)",
+      "expected": "403|405|409|422",
+      "observed": "405",
+      "ok": true
+    },
+    {
+      "item": 9,
+      "check": "App merges after its own late push (retry +15s)",
+      "expected": "403|405|409|422",
+      "observed": "405",
+      "ok": true
+    },
+    {
+      "item": 10,
+      "check": "App reads branch rules (GET rules/branches/main)",
+      "expected": "200|403|404",
+      "observed": "200",
+      "ok": true
+    },
+    {
+      "item": 10,
+      "check": "App lists rulesets",
+      "expected": "200|403|404",
+      "observed": "200",
+      "ok": true
+    },
+    {
+      "item": 10,
+      "check": "App deletes the ruleset",
+      "expected": "403|404",
+      "observed": "403",
+      "ok": true
+    },
+    {
+      "item": 10,
+      "check": "App disables the ruleset",
+      "expected": "403|404",
+      "observed": "403",
+      "ok": true
+    },
+    {
+      "item": 11,
+      "check": "App adds a workflow file on its branch",
+      "expected": "403|404",
+      "observed": "403",
+      "ok": true
+    },
+    {
+      "item": 12,
+      "check": "same-repo App PR CI sees the repo secret (risk)",
+      "expected": "\"s1g probe_present=true\"",
+      "observed": "\"s1g probe_present=true\"",
+      "ok": true
+    },
+    {
+      "item": 9,
+      "check": "owner approves the latest commit",
+      "expected": "200",
+      "observed": "200",
+      "ok": true
+    },
+    {
+      "item": 9,
+      "check": "App merges a PR whose last push a human approved",
+      "expected": "200|405",
+      "observed": "200",
+      "ok": true
+    },
+    {
+      "item": 13,
+      "check": "owner sets random probe secret (reverted)",
+      "expected": "0",
+      "observed": "0",
+      "ok": true
+    },
+    {
+      "item": 13,
+      "check": "owner adds require-review ruleset, no bypass (reverted)",
+      "expected": "201",
+      "observed": "201",
+      "ok": true
+    },
+    {
+      "item": 13,
+      "check": "App mints the same-repo set",
+      "expected": "201",
+      "observed": "201",
+      "ok": true
+    },
+    {
+      "item": 13,
+      "check": "App pushes a soren-loop/* branch",
+      "expected": "201",
+      "observed": "201",
+      "ok": true
+    },
+    {
+      "item": 13,
+      "check": "T33: push workflow on soren-loop/** sees the repo secret (risk)",
+      "expected": "\"s1g probe_present=true\"",
+      "observed": "\"s1g probe_present=true\"",
+      "ok": true
+    },
+    {
+      "item": 14,
+      "check": "unconfined: App creates feature/* branch (gap)",
+      "expected": "201",
+      "observed": "201",
+      "ok": true
+    },
+    {
+      "item": 14,
+      "check": "unconfined: App git push to release/* (gap)",
+      "expected": "0",
+      "observed": "0",
+      "ok": true
+    },
+    {
+      "item": 14,
+      "check": "owner adds a ruleset confining non-admins to soren-loop/** (reverted)",
+      "expected": "201",
+      "observed": "201",
+      "ok": true
+    },
+    {
+      "item": 14,
+      "check": "confined: App creates feature/* branch",
+      "expected": "403|409|422",
+      "observed": "422",
+      "ok": true
+    },
+    {
+      "item": 14,
+      "check": "confined: App updates the earlier feature/* branch",
+      "expected": "403|409|422",
+      "observed": "409",
+      "ok": true
+    },
+    {
+      "item": 14,
+      "check": "confined: App git push to release/*",
+      "expected": "rejected",
+      "observed": "exit 1",
+      "ok": true
+    },
+    {
+      "item": 14,
+      "check": "confined: App still creates soren-loop/* branch",
+      "expected": "201",
+      "observed": "201",
+      "ok": true
+    },
+    {
+      "item": 14,
+      "check": "confined: owner (admin bypass) creates feature/* branch",
+      "expected": "201",
+      "observed": "201",
+      "ok": true
+    },
+    {
+      "item": 15,
+      "check": "App opens same-repo PR with maintainer_can_modify:false",
+      "expected": "201",
+      "observed": "201",
+      "ok": true
+    },
+    {
+      "item": 15,
+      "check": "same-repo PR: maintainer_can_modify as GitHub reports it",
+      "expected": "false|true",
+      "observed": "false",
+      "ok": true
+    }
+  ],
+  "cleanupFailures": [],
+  "evidence": {
+    "7:owner sets random probe secret (reverted)": {
+      "observed": 0
+    },
+    "7:owner adds require-review ruleset, no bypass (reverted)": {
+      "status": 201,
+      "body": {
+        "id": 27285024,
+        "name": "s1g-require-review-20261114T224202",
+        "target": "branch",
+        "source_type": "Repository",
+        "source": "sorenai-dev-sandbox/sl-upstream-private",
+        "enforcement": "active",
+        "conditions": {
+          "ref_name": {
+            "exclude": [],
+            "include": [
+              "~DEFAULT_BRANCH"
+            ]
+          }
+        },
+        "rules": [
+          {
+            "type": "deletion"
+          },
+          {
+            "type": "non_fast_forward"
+          },
+          {
+            "type": "pull_request",
+            "parameters": {
+              "required_approving_review_count": 1,
+              "dismiss_stale_reviews_on_push": true,
+              "required_reviewers": [],
+              "require_code_owner_review": false,
+              "dismissal_restriction": {
+                "enabled": false,
+                "allowed_actors": []
+              },
+              "require_last_push_approval": true,
+              "required_review_thread_resolution": false,
+              "require_extra_approval_for_unattributed_changes": true,
+              "allowed_merge_methods": [
+                "merge",
+                "squash",
+                "rebase"
+              ]
+            }
+          }
+        ],
+        "node_id": "RRS_lACqUmVwb3NpdG9yec5W6u_ZzgGgViA",
+        "created_at": "2026-11-14T16:42:04.308-06:00",
+        "updated_at": "2026-11-14T16:42:04.339-06:00",
+        "bypass_actors": [],
+        "current_user_can_bypass": "never",
+        "_links": {
+          "self": {
+            "href": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/rulesets/27285024"
+          },
+          "html": {
+            "href": "https://github.com/sorenai-dev-sandbox/sl-upstream-private/rules/27285024"
+          }
+        }
+      }
+    },
+    "7:App mints {contents:write, pull_requests:write} upstream": {
+      "status": 201,
+      "body": {
+        "permissions": {
+          "contents": "write",
+          "metadata": "read",
+          "pull_requests": "write"
+        },
+        "repository_selection": "selected"
+      }
+    },
+    "7:App creates soren-loop/* branch": {
+      "status": 201,
+      "body": {
+        "ref": "refs/heads/soren-loop/s1g-20261114T224202",
+        "node_id": "REF_kwDOVurv2doAKXJlZnMvaGVhZHMvc29yZW4tbG9vcC9zMWctMjAyNjExMTRUMjI0MjAy",
+        "url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/refs/heads/soren-loop/s1g-20261114T224202",
+        "object": {
+          "sha": "8f1b3db5e7cc8c4f41ddd9ee7a20c5d571fbce1b",
+          "type": "commit",
+          "url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/commits/8f1b3db5e7cc8c4f41ddd9ee7a20c5d571fbce1b"
+        }
+      }
+    },
+    "7:App commits to its branch": {
+      "status": 201,
+      "body": {
+        "content": {
+          "name": "20261114T224202.txt",
+          "path": "s1g/20261114T224202.txt",
+          "sha": "5626abf0f72e58d7a153368ba57db4c673c0e171",
+          "size": 4,
+          "url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/contents/s1g/20261114T224202.txt?ref=soren-loop/s1g-20261114T224202",
+          "html_url": "https://github.com/sorenai-dev-sandbox/sl-upstream-private/blob/soren-loop/s1g-20261114T224202/s1g/20261114T224202.txt",
+          "git_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/blobs/5626abf0f72e58d7a153368ba57db4c673c0e171",
+          "download_url": "https://raw.githubusercontent.com/sorenai-dev-sandbox/sl-upstream-private/soren-loop/s1g-20261114T224202/s1g/20261114T224202.txt?token=CT4HFFXRG5M636JVISGBVJ3K7DR7VAVPNFXHG5DBNRWGC5DJN5XF62LEZ4AAAAAFDV7TWAVRNFXHG5DBNRWGC5DJN5XF65DZOBS32U3DN5YGKZCJNZ2GKZ3SMF2GS33OJFXHG5DBNRWGC5DJN5XA",
+          "type": "file",
+          "_links": {
+            "self": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/contents/s1g/20261114T224202.txt?ref=soren-loop/s1g-20261114T224202",
+            "git": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/blobs/5626abf0f72e58d7a153368ba57db4c673c0e171",
+            "html": "https://github.com/sorenai-dev-sandbox/sl-upstream-private/blob/soren-loop/s1g-20261114T224202/s1g/20261114T224202.txt"
+          }
+        },
+        "commit": {
+          "sha": "b0465b4d2366f312319e631a5138049528590601",
+          "node_id": "C_kwDOVurv2doAKGIwNDY1YjRkMjM2NmYzMTIzMTllNjMxYTUxMzgwNDk1Mjg1OTA2MDE",
+          "url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/commits/b0465b4d2366f312319e631a5138049528590601",
+          "html_url": "https://github.com/sorenai-dev-sandbox/sl-upstream-private/commit/b0465b4d2366f312319e631a5138049528590601",
+          "author": {
+            "name": "sl-sandbox-pr-abad[bot]",
+            "email": "351826582+sl-sandbox-pr-abad[bot]@users.noreply.github.com",
+            "date": "2026-11-14T22:42:05Z"
+          },
+          "committer": {
+            "name": "GitHub",
+            "email": "noreply@github.com",
+            "date": "2026-11-14T22:42:05Z"
+          },
+          "tree": {
+            "sha": "3d575968f6e752b7bbc310feee1c4d8bf02553a3",
+            "url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/trees/3d575968f6e752b7bbc310feee1c4d8bf02553a3"
+          },
+          "message": "feat: s1g probe",
+          "parents": [
+            {
+              "sha": "8f1b3db5e7cc8c4f41ddd9ee7a20c5d571fbce1b",
+              "url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/commits/8f1b3db5e7cc8c4f41ddd9ee7a20c5d571fbce1b",
+              "html_url": "https://github.com/sorenai-dev-sandbox/sl-upstream-private/commit/8f1b3db5e7cc8c4f41ddd9ee7a20c5d571fbce1b"
+            }
+          ],
+          "verification": {
+            "verified": true,
+            "reason": "valid",
+            "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJq+OO+CRC1aQ7uu5UhlAAAwFwQAGA8GlYUGbKXXJGGWPF+1O7P\nLISZR4rjHegM0YzVnMlTa4MLIqSTJdjBrZC3/6BLeUW17evYzEmAeSUipfkwYT3h\no/9Sv8OFjr/BA/wk43RpsK/7jDdsyAM8xAe5g6D2/y9E8iRxpbjBlm2xOzBcZqej\nZUPURhJdywGC3eyBEQTGaDt10QmOP7rQS+BeD9+zySJE2ONNMrm4ePLCvszwGYB+\n0eyWX1jHNzjZAsSyy/RVqjH9bqm2Hct/sJY36pfGMr+hYDFxAd3AVsqaYCQ9U44i\nwGr3HA0gLMAWmTkx2Y2e7AHsrbamu+hq0j9+QqS+0DswInYdCrmP4B9x7JECmuYl\nyNpCKPZe5Z/BhSbq7M9KQwrGhheUK9qS3vgaGUKd/+8tZg7KTQxU6dOygtOopmyh\n3qxSmJ6i6YnNJlgw7Qn07CadPHgntsAPM1Wmlpqb+efy6Z+uOW1qKSGxcjzsF8GW\nIJp0XSPHSz1/dpOOm1MS9zIlMagjD2KYgZyaOk/GmwjLsGah30iBYPeAVW/xr683\nXfBENimbEZ+5EC5Z+hRZchJwEttLJg3BduOOxlhTqCIiydLxEUk11iFWhuW0jM9y\nAhcBqEkPxu+ZZ05ozvMnu7b9mrFyjyGD2UPL2TPv6x4DDQZVXeusVdillKd3FukP\ni3tTWS0IC++QS3BsrUj7\n=5m6d\n-----END PGP SIGNATURE-----\n",
+            "payload": "tree 3d575968f6e752b7bbc310feee1c4d8bf02553a3\nparent 8f1b3db5e7cc8c4f41ddd9ee7a20c5d571fbce1b\nauthor sl-sandbox-pr-abad[bot] <351826582+sl-sandbox-pr-abad[bot]@users.noreply.github.com> 1794696125 +0000\ncommitter GitHub <noreply@github.com> 1794696125 +0000\n\nfeat: s1g probe",
+            "verified_at": "2026-11-14T22:42:06Z"
+          }
+        }
+      }
+    },
+    "8:App PUT contents on main": {
+      "status": 409,
+      "body": {
+        "message": "Repository rule violations found\n\nChanges must be made through a pull request.\n\n",
+        "metadata": {},
+        "documentation_url": "https://docs.github.com/rest/repos/contents#create-or-update-file-contents",
+        "status": "409"
+      }
+    },
+    "8:App git push to main": {
+      "code": 1,
+      "stderr": "remote: error: GH013: Repository rule violations found for refs/heads/main.        \nremote: Review all repository rules at https://github.com/sorenai-dev-sandbox/sl-upstream-private/rules?ref=refs%2Fheads%2Fmain        \nremote: \nremote: - Changes must be made through a pull request.        \nremote: \nTo https://github.com/sorenai-dev-sandbox/sl-upstream-private.git\n ! [remote rejected] HEAD -> main (push declined due to repository rule violations)\nerror: failed to push some refs to 'https://github.com/sorenai-dev-sandbox/sl-upstream-private.git'"
+    },
+    "9:App opens same-repo PR": {
+      "status": 201,
+      "body": {
+        "url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/pulls/2",
+        "id": 5316957505,
+        "node_id": "PR_kwDOVurv2c8AAAABPOpVQQ",
+        "html_url": "https://github.com/sorenai-dev-sandbox/sl-upstream-private/pull/2",
+        "diff_url": "https://github.com/sorenai-dev-sandbox/sl-upstream-private/pull/2.diff",
+        "patch_url": "https://github.com/sorenai-dev-sandbox/sl-upstream-private/pull/2.patch",
+        "issue_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/issues/2",
+        "number": 2,
+        "state": "open",
+        "locked": false,
+        "title": "S1-G probe 20261114T224202",
+        "user": {
+          "login": "sl-sandbox-pr-abad[bot]",
+          "id": 351826582,
+          "node_id": "BOT_kgDOFPhylg",
+          "avatar_url": "https://avatars.githubusercontent.com/u/351662524?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/sl-sandbox-pr-abad%5Bbot%5D",
+          "html_url": "https://github.com/apps/sl-sandbox-pr-abad",
+          "followers_url": "https://api.github.com/users/sl-sandbox-pr-abad%5Bbot%5D/followers",
+          "following_url": "https://api.github.com/users/sl-sandbox-pr-abad%5Bbot%5D/following{/other_user}",
+          "gists_url": "https://api.github.com/users/sl-sandbox-pr-abad%5Bbot%5D/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/sl-sandbox-pr-abad%5Bbot%5D/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/sl-sandbox-pr-abad%5Bbot%5D/subscriptions",
+          "organizations_url": "https://api.github.com/users/sl-sandbox-pr-abad%5Bbot%5D/orgs",
+          "repos_url": "https://api.github.com/users/sl-sandbox-pr-abad%5Bbot%5D/repos",
+          "events_url": "https://api.github.com/users/sl-sandbox-pr-abad%5Bbot%5D/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/sl-sandbox-pr-abad%5Bbot%5D/received_events",
+          "type": "Bot",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "body": "Spike S1-G sandbox probe. Safe to close.",
+        "created_at": "2026-11-14T22:42:09Z",
+        "updated_at": "2026-11-14T22:42:09Z",
+        "closed_at": null,
+        "merged_at": null,
+        "merge_commit_sha": null,
+        "assignees": [],
+        "requested_reviewers": [],
+        "requested_teams": [],
+        "labels": [],
+        "milestone": null,
+        "draft": false,
+        "commits_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/pulls/2/commits",
+        "review_comments_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/pulls/2/comments",
+        "review_comment_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/pulls/comments{/number}",
+        "comments_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/issues/2/comments",
+        "statuses_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/statuses/b0465b4d2366f312319e631a5138049528590601",
+        "head": {
+          "label": "sorenai-dev-sandbox:soren-loop/s1g-20261114T224202",
+          "ref": "soren-loop/s1g-20261114T224202",
+          "sha": "b0465b4d2366f312319e631a5138049528590601",
+          "user": {
+            "login": "sorenai-dev-sandbox",
+            "id": 351662524,
+            "node_id": "O_kgDOFPXxvA",
+            "avatar_url": "https://avatars.githubusercontent.com/u/351662524?v=4",
+            "gravatar_id": "",
+            "url": "https://api.github.com/users/sorenai-dev-sandbox",
+            "html_url": "https://github.com/sorenai-dev-sandbox",
+            "followers_url": "https://api.github.com/users/sorenai-dev-sandbox/followers",
+            "following_url": "https://api.github.com/users/sorenai-dev-sandbox/following{/other_user}",
+            "gists_url": "https://api.github.com/users/sorenai-dev-sandbox/gists{/gist_id}",
+            "starred_url": "https://api.github.com/users/sorenai-dev-sandbox/starred{/owner}{/repo}",
+            "subscriptions_url": "https://api.github.com/users/sorenai-dev-sandbox/subscriptions",
+            "organizations_url": "https://api.github.com/users/sorenai-dev-sandbox/orgs",
+            "repos_url": "https://api.github.com/users/sorenai-dev-sandbox/repos",
+            "events_url": "https://api.github.com/users/sorenai-dev-sandbox/events{/privacy}",
+            "received_events_url": "https://api.github.com/users/sorenai-dev-sandbox/received_events",
+            "type": "Organization",
+            "user_view_type": "public",
+            "site_admin": false
+          },
+          "repo": {
+            "id": 1458237401,
+            "node_id": "R_kgDOVurv2Q",
+            "name": "sl-upstream-private",
+            "full_name": "sorenai-dev-sandbox/sl-upstream-private",
+            "private": true,
+            "owner": {
+              "login": "sorenai-dev-sandbox",
+              "id": 351662524,
+              "node_id": "O_kgDOFPXxvA",
+              "avatar_url": "https://avatars.githubusercontent.com/u/351662524?v=4",
+              "gravatar_id": "",
+              "url": "https://api.github.com/users/sorenai-dev-sandbox",
+              "html_url": "https://github.com/sorenai-dev-sandbox",
+              "followers_url": "https://api.github.com/users/sorenai-dev-sandbox/followers",
+              "following_url": "https://api.github.com/users/sorenai-dev-sandbox/following{/other_user}",
+              "gists_url": "https://api.github.com/users/sorenai-dev-sandbox/gists{/gist_id}",
+              "starred_url": "https://api.github.com/users/sorenai-dev-sandbox/starred{/owner}{/repo}",
+              "subscriptions_url": "https://api.github.com/users/sorenai-dev-sandbox/subscriptions",
+              "organizations_url": "https://api.github.com/users/sorenai-dev-sandbox/orgs",
+              "repos_url": "https://api.github.com/users/sorenai-dev-sandbox/repos",
+              "events_url": "https://api.github.com/users/sorenai-dev-sandbox/events{/privacy}",
+              "received_events_url": "https://api.github.com/users/sorenai-dev-sandbox/received_events",
+              "type": "Organization",
+              "user_view_type": "public",
+              "site_admin": false
+            },
+            "html_url": "https://github.com/sorenai-dev-sandbox/sl-upstream-private",
+            "description": "S1-F same-repo model fixture (throwaway)",
+            "fork": false,
+            "url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private",
+            "forks_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/forks",
+            "keys_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/keys{/key_id}",
+            "collaborators_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/collaborators{/collaborator}",
+            "teams_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/teams",
+            "hooks_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/hooks",
+            "issue_events_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/issues/events{/number}",
+            "events_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/events",
+            "assignees_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/assignees{/user}",
+            "branches_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/branches{/branch}",
+            "tags_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/tags",
+            "blobs_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/blobs{/sha}",
+            "git_tags_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/tags{/sha}",
+            "git_refs_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/refs{/sha}",
+            "trees_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/trees{/sha}",
+            "statuses_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/statuses/{sha}",
+            "languages_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/languages",
+            "stargazers_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/stargazers",
+            "contributors_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/contributors",
+            "subscribers_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/subscribers",
+            "subscription_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/subscription",
+            "commits_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/commits{/sha}",
+            "git_commits_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/commits{/sha}",
+            "comments_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/comments{/number}",
+            "issue_comment_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/issues/comments{/number}",
+            "contents_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/contents/{+path}",
+            "compare_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/compare/{base}...{head}",
+            "merges_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/merges",
+            "archive_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/{archive_format}{/ref}",
+            "downloads_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/downloads",
+            "issues_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/issues{/number}",
+            "pulls_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/pulls{/number}",
+            "milestones_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/milestones{/number}",
+            "notifications_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/notifications{?since,all,participating}",
+            "labels_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/labels{/name}",
+            "releases_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/releases{/id}",
+            "deployments_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/deployments",
+            "created_at": "2026-11-14T22:25:36Z",
+            "updated_at": "2026-11-14T22:25:38Z",
+            "pushed_at": "2026-11-14T22:42:06Z",
+            "git_url": "git://github.com/sorenai-dev-sandbox/sl-upstream-private.git",
+            "ssh_url": "git@github.com:sorenai-dev-sandbox/sl-upstream-private.git",
+            "clone_url": "https://github.com/sorenai-dev-sandbox/sl-upstream-private.git",
+            "svn_url": "https://github.com/sorenai-dev-sandbox/sl-upstream-private",
+            "homepage": null,
+            "size": 0,
+            "stargazers_count": 0,
+            "watchers_count": 0,
+            "language": null,
+            "has_issues": true,
+            "has_projects": true,
+            "has_downloads": false,
+            "has_wiki": true,
+            "has_pages": false,
+            "has_discussions": false,
+            "forks_count": 0,
+            "mirror_url": null,
+            "archived": false,
+            "disabled": false,
+            "open_issues_count": 1,
+            "license": null,
+            "allow_forking": true,
+            "is_template": false,
+            "web_commit_signoff_required": false,
+            "has_pull_requests": true,
+            "pull_request_creation_policy": "all",
+            "topics": [],
+            "visibility": "private",
+            "forks": 0,
+            "open_issues": 1,
+            "watchers": 0,
+            "default_branch": "main"
+          }
+        },
+        "base": {
+          "label": "sorenai-dev-sandbox:main",
+          "ref": "main",
+          "sha": "8f1b3db5e7cc8c4f41ddd9ee7a20c5d571fbce1b",
+          "user": {
+            "login": "sorenai-dev-sandbox",
+            "id": 351662524,
+            "node_id": "O_kgDOFPXxvA",
+            "avatar_url": "https://avatars.githubusercontent.com/u/351662524?v=4",
+            "gravatar_id": "",
+            "url": "https://api.github.com/users/sorenai-dev-sandbox",
+            "html_url": "https://github.com/sorenai-dev-sandbox",
+            "followers_url": "https://api.github.com/users/sorenai-dev-sandbox/followers",
+            "following_url": "https://api.github.com/users/sorenai-dev-sandbox/following{/other_user}",
+            "gists_url": "https://api.github.com/users/sorenai-dev-sandbox/gists{/gist_id}",
+            "starred_url": "https://api.github.com/users/sorenai-dev-sandbox/starred{/owner}{/repo}",
+            "subscriptions_url": "https://api.github.com/users/sorenai-dev-sandbox/subscriptions",
+            "organizations_url": "https://api.github.com/users/sorenai-dev-sandbox/orgs",
+            "repos_url": "https://api.github.com/users/sorenai-dev-sandbox/repos",
+            "events_url": "https://api.github.com/users/sorenai-dev-sandbox/events{/privacy}",
+            "received_events_url": "https://api.github.com/users/sorenai-dev-sandbox/received_events",
+            "type": "Organization",
+            "user_view_type": "public",
+            "site_admin": false
+          },
+          "repo": {
+            "id": 1458237401,
+            "node_id": "R_kgDOVurv2Q",
+            "name": "sl-upstream-private",
+            "full_name": "sorenai-dev-sandbox/sl-upstream-private",
+            "private": true,
+            "owner": {
+              "login": "sorenai-dev-sandbox",
+              "id": 351662524,
+              "node_id": "O_kgDOFPXxvA",
+              "avatar_url": "https://avatars.githubusercontent.com/u/351662524?v=4",
+              "gravatar_id": "",
+              "url": "https://api.github.com/users/sorenai-dev-sandbox",
+              "html_url": "https://github.com/sorenai-dev-sandbox",
+              "followers_url": "https://api.github.com/users/sorenai-dev-sandbox/followers",
+              "following_url": "https://api.github.com/users/sorenai-dev-sandbox/following{/other_user}",
+              "gists_url": "https://api.github.com/users/sorenai-dev-sandbox/gists{/gist_id}",
+              "starred_url": "https://api.github.com/users/sorenai-dev-sandbox/starred{/owner}{/repo}",
+              "subscriptions_url": "https://api.github.com/users/sorenai-dev-sandbox/subscriptions",
+              "organizations_url": "https://api.github.com/users/sorenai-dev-sandbox/orgs",
+              "repos_url": "https://api.github.com/users/sorenai-dev-sandbox/repos",
+              "events_url": "https://api.github.com/users/sorenai-dev-sandbox/events{/privacy}",
+              "received_events_url": "https://api.github.com/users/sorenai-dev-sandbox/received_events",
+              "type": "Organization",
+              "user_view_type": "public",
+              "site_admin": false
+            },
+            "html_url": "https://github.com/sorenai-dev-sandbox/sl-upstream-private",
+            "description": "S1-F same-repo model fixture (throwaway)",
+            "fork": false,
+            "url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private",
+            "forks_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/forks",
+            "keys_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/keys{/key_id}",
+            "collaborators_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/collaborators{/collaborator}",
+            "teams_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/teams",
+            "hooks_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/hooks",
+            "issue_events_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/issues/events{/number}",
+            "events_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/events",
+            "assignees_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/assignees{/user}",
+            "branches_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/branches{/branch}",
+            "tags_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/tags",
+            "blobs_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/blobs{/sha}",
+            "git_tags_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/tags{/sha}",
+            "git_refs_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/refs{/sha}",
+            "trees_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/trees{/sha}",
+            "statuses_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/statuses/{sha}",
+            "languages_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/languages",
+            "stargazers_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/stargazers",
+            "contributors_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/contributors",
+            "subscribers_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/subscribers",
+            "subscription_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/subscription",
+            "commits_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/commits{/sha}",
+            "git_commits_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/commits{/sha}",
+            "comments_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/comments{/number}",
+            "issue_comment_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/issues/comments{/number}",
+            "contents_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/contents/{+path}",
+            "compare_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/compare/{base}...{head}",
+            "merges_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/merges",
+            "archive_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/{archive_format}{/ref}",
+            "downloads_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/downloads",
+            "issues_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/issues{/number}",
+            "pulls_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/pulls{/number}",
+            "milestones_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/milestones{/number}",
+            "notifications_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/notifications{?since,all,participating}",
+            "labels_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/labels{/name}",
+            "releases_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/releases{/id}",
+            "deployments_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/deployments",
+            "created_at": "2026-11-14T22:25:36Z",
+            "updated_at": "2026-11-14T22:25:38Z",
+            "pushed_at": "2026-11-14T22:42:06Z",
+            "git_url": "git://github.com/sorenai-dev-sandbox/sl-upstream-private.git",
+            "ssh_url": "git@github.com:sorenai-dev-sandbox/sl-upstream-private.git",
+            "clone_url": "https://github.com/sorenai-dev-sandbox/sl-upstream-private.git",
+            "svn_url": "https://github.com/sorenai-dev-sandbox/sl-upstream-private",
+            "homepage": null,
+            "size": 0,
+            "stargazers_count": 0,
+            "watchers_count": 0,
+            "language": null,
+            "has_issues": true,
+            "has_projects": true,
+            "has_downloads": false,
+            "has_wiki": true,
+            "has_pages": false,
+            "has_discussions": false,
+            "forks_count": 0,
+            "mirror_url": null,
+            "archived": false,
+            "disabled": false,
+            "open_issues_count": 1,
+            "license": null,
+            "allow_forking": true,
+            "is_template": false,
+            "web_commit_signoff_required": false,
+            "has_pull_requests": true,
+            "pull_request_creation_policy": "all",
+            "topics": [],
+            "visibility": "private",
+            "forks": 0,
+            "open_issues": 1,
+            "watchers": 0,
+            "default_branch": "main"
+          }
+        },
+        "_links": {
+          "self": {
+            "href": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/pulls/2"
+          },
+          "html": {
+            "href": "https://github.com/sorenai-dev-sandbox/sl-upstream-private/pull/2"
+          },
+          "issue": {
+            "href": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/issues/2"
+          },
+          "comments": {
+            "href": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/issues/2/comments"
+          },
+          "review_comments": {
+            "href": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/pulls/2/comments"
+          },
+          "review_comment": {
+            "href": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/pulls/comments{/number}"
+          },
+          "commits": {
+            "href": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/pulls/2/commits"
+          },
+          "statuses": {
+            "href": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/statuses/b0465b4d2366f312319e631a5138049528590601"
+          }
+        },
+        "author_association": "NONE",
+        "auto_merge": null,
+        "assignee": null,
+        "active_lock_reason": null,
+        "merged": false,
+        "mergeable": null,
+        "rebaseable": null,
+        "mergeable_state": "unknown",
+        "merged_by": null,
+        "comments": 0,
+        "review_comments": 0,
+        "maintainer_can_modify": false,
+        "commits": 1,
+        "additions": 1,
+        "deletions": 0,
+        "changed_files": 1
+      }
+    },
+    "9:App approves its own PR": {
+      "status": 422,
+      "body": {
+        "message": "Unprocessable Entity",
+        "errors": [
+          "Review Can not approve your own pull request"
+        ],
+        "documentation_url": "https://docs.github.com/rest/pulls/reviews#create-a-review-for-a-pull-request",
+        "status": "422"
+      }
+    },
+    "9:App merges before any review": {
+      "status": 405,
+      "body": {
+        "message": "Repository rule violations found\n\nNew changes require approval from someone other than the last pusher.\n\n",
+        "documentation_url": "https://docs.github.com/rest/pulls/pulls#merge-a-pull-request",
+        "status": "405"
+      }
+    },
+    "9:owner approves (human review)": {
+      "status": 200,
+      "body": {
+        "id": 5907552621,
+        "node_id": "PRR_kwDOVurv2c8AAAABYB4ZbQ",
+        "user": {
+          "login": "mandelbro",
+          "id": 1639034,
+          "node_id": "MDQ6VXNlcjE2MzkwMzQ=",
+          "avatar_url": "https://avatars.githubusercontent.com/u/1639034?u=7057de6c304818329f05981b9185afbe82764ce4&v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/mandelbro",
+          "html_url": "https://github.com/mandelbro",
+          "followers_url": "https://api.github.com/users/mandelbro/followers",
+          "following_url": "https://api.github.com/users/mandelbro/following{/other_user}",
+          "gists_url": "https://api.github.com/users/mandelbro/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/mandelbro/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/mandelbro/subscriptions",
+          "organizations_url": "https://api.github.com/users/mandelbro/orgs",
+          "repos_url": "https://api.github.com/users/mandelbro/repos",
+          "events_url": "https://api.github.com/users/mandelbro/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/mandelbro/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "body": "",
+        "state": "APPROVED",
+        "html_url": "https://github.com/sorenai-dev-sandbox/sl-upstream-private/pull/2#pullrequestreview-5907552621",
+        "pull_request_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/pulls/2",
+        "author_association": "MEMBER",
+        "is_copilot_code_review": false,
+        "copilot_code_review_effort": null,
+        "_links": {
+          "html": {
+            "href": "https://github.com/sorenai-dev-sandbox/sl-upstream-private/pull/2#pullrequestreview-5907552621"
+          },
+          "pull_request": {
+            "href": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/pulls/2"
+          }
+        },
+        "submitted_at": "2026-11-14T22:42:12Z",
+        "commit_id": "b0465b4d2366f312319e631a5138049528590601"
+      }
+    },
+    "9:App pushes a new commit after approval": {
+      "status": 201,
+      "body": {
+        "content": {
+          "name": "20261114T224202-late.txt",
+          "path": "s1g/20261114T224202-late.txt",
+          "sha": "7f39ac4c6e16534411f5d94b2c7b32c8d12e0dd2",
+          "size": 5,
+          "url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/contents/s1g/20261114T224202-late.txt?ref=soren-loop/s1g-20261114T224202",
+          "html_url": "https://github.com/sorenai-dev-sandbox/sl-upstream-private/blob/soren-loop/s1g-20261114T224202/s1g/20261114T224202-late.txt",
+          "git_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/blobs/7f39ac4c6e16534411f5d94b2c7b32c8d12e0dd2",
+          "download_url": "https://raw.githubusercontent.com/sorenai-dev-sandbox/sl-upstream-private/soren-loop/s1g-20261114T224202/s1g/20261114T224202-late.txt?token=CT4HFFVFSFF62ILQE3PQKMTK7DSADAVPNFXHG5DBNRWGC5DJN5XF62LEZ4AAAAAFDV7TWAVRNFXHG5DBNRWGC5DJN5XF65DZOBS32U3DN5YGKZCJNZ2GKZ3SMF2GS33OJFXHG5DBNRWGC5DJN5XA",
+          "type": "file",
+          "_links": {
+            "self": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/contents/s1g/20261114T224202-late.txt?ref=soren-loop/s1g-20261114T224202",
+            "git": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/blobs/7f39ac4c6e16534411f5d94b2c7b32c8d12e0dd2",
+            "html": "https://github.com/sorenai-dev-sandbox/sl-upstream-private/blob/soren-loop/s1g-20261114T224202/s1g/20261114T224202-late.txt"
+          }
+        },
+        "commit": {
+          "sha": "d9a86e7210a8ccc1f9260ae106e4af5a65ac758a",
+          "node_id": "C_kwDOVurv2doAKGQ5YTg2ZTcyMTBhOGNjYzFmOTI2MGFlMTA2ZTRhZjVhNjVhYzc1OGE",
+          "url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/commits/d9a86e7210a8ccc1f9260ae106e4af5a65ac758a",
+          "html_url": "https://github.com/sorenai-dev-sandbox/sl-upstream-private/commit/d9a86e7210a8ccc1f9260ae106e4af5a65ac758a",
+          "author": {
+            "name": "sl-sandbox-pr-abad[bot]",
+            "email": "351826582+sl-sandbox-pr-abad[bot]@users.noreply.github.com",
+            "date": "2026-11-14T22:42:13Z"
+          },
+          "committer": {
+            "name": "GitHub",
+            "email": "noreply@github.com",
+            "date": "2026-11-14T22:42:13Z"
+          },
+          "tree": {
+            "sha": "33c767b0901bf0f12a74e59a4d34cf202ed2225a",
+            "url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/trees/33c767b0901bf0f12a74e59a4d34cf202ed2225a"
+          },
+          "message": "feat: s1g late push",
+          "parents": [
+            {
+              "sha": "b0465b4d2366f312319e631a5138049528590601",
+              "url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/commits/b0465b4d2366f312319e631a5138049528590601",
+              "html_url": "https://github.com/sorenai-dev-sandbox/sl-upstream-private/commit/b0465b4d2366f312319e631a5138049528590601"
+            }
+          ],
+          "verification": {
+            "verified": true,
+            "reason": "valid",
+            "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJq+OPFCRC1aQ7uu5UhlAAAZowQAC9FEslCuhibscQ8GlHp+z31\nnfXURzJVJq6mNSzIaoFpLcRqolfAzZFl0MiS/Bu2qQFQ5W7ggtGc6YbMWdOvvxKl\nJKr0hf3Zq56YOxTF/V0grNmFkZE7h2mU98Y3ohzV04HkEjSs9FBiCcLG1/gl/p0D\nsPV5zTcDJDmrUrQmw/VJNfFO86AYnK/2Sr5OkGxlpTuHi1VwuhWkN+ghyK5unecc\nCuAKNTC4CteiMhXnZ1eofAxtO0ncV7uzaF/GQcQ3JHMqc6L2ONlGXsrDrBchnW+n\nNTokDbjAErtsNoL08NjYX8TUXNKJATzlMQZ9PIlxaq1ulK6aDL10eixqa5e+Xr4N\nEbIlJQvcWwTAUMBAnmVc6CYk5QgTSDOAczDVwRAxfy542cY25Bc9h+ejIjINvs6U\nZ3m5gwFHiW9byr6/WDGYn3Sjc30e4No17wGSvuGndaUZeukaYsBKepJmigj/Zxc1\n+OkzFGreIC0q1GJvC3CCcW7ndLf+X1Su4NlyScIxB8XF2SrQiOpvv9//VmFeUNpp\ngo/43nfDpVsWuTFaPtfr/BhzIjYLW0J0dLz8r9Ex/4VB00J7qNx/DbDAcG5SSFDc\n14pDfOhgniPKtjyuLuLqETNag5A8soKpFncLmMwYEAN5jD1JVMlXY+cNrv9uaKCk\n22EoocIo6zJOHkEUmBCs\n=WnqT\n-----END PGP SIGNATURE-----\n",
+            "payload": "tree 33c767b0901bf0f12a74e59a4d34cf202ed2225a\nparent b0465b4d2366f312319e631a5138049528590601\nauthor sl-sandbox-pr-abad[bot] <351826582+sl-sandbox-pr-abad[bot]@users.noreply.github.com> 1794696133 +0000\ncommitter GitHub <noreply@github.com> 1794696133 +0000\n\nfeat: s1g late push",
+            "verified_at": "2026-11-14T22:42:13Z"
+          }
+        }
+      }
+    },
+    "9:decision 30s after the bot push": {
+      "reviewDecision": "REVIEW_REQUIRED",
+      "mergeStateStatus": "BLOCKED"
+    },
+    "9:App merges after its own late push (settled)": {
+      "status": 405,
+      "body": {
+        "message": "Repository rule violations found\n\nNew changes require approval from someone other than the last pusher.\n\n",
+        "documentation_url": "https://docs.github.com/rest/pulls/pulls#merge-a-pull-request",
+        "status": "405"
+      }
+    },
+    "9:App merges after its own late push (retry +15s)": {
+      "status": 405,
+      "body": {
+        "message": "Repository rule violations found\n\nNew changes require approval from someone other than the last pusher.\n\n",
+        "documentation_url": "https://docs.github.com/rest/pulls/pulls#merge-a-pull-request",
+        "status": "405"
+      }
+    },
+    "10:App reads branch rules (GET rules/branches/main)": {
+      "status": 200,
+      "body": [
+        {
+          "type": "deletion",
+          "ruleset_source_type": "Repository",
+          "ruleset_source": "sorenai-dev-sandbox/sl-upstream-private",
+          "ruleset_id": 27285024
+        },
+        {
+          "type": "non_fast_forward",
+          "ruleset_source_type": "Repository",
+          "ruleset_source": "sorenai-dev-sandbox/sl-upstream-private",
+          "ruleset_id": 27285024
+        },
+        {
+          "type": "pull_request",
+          "parameters": {
+            "required_approving_review_count": 1,
+            "dismiss_stale_reviews_on_push": true,
+            "required_reviewers": [],
+            "require_code_owner_review": false,
+            "dismissal_restriction": {
+              "enabled": false,
+              "allowed_actors": []
+            },
+            "require_last_push_approval": true,
+            "required_review_thread_resolution": false,
+            "require_extra_approval_for_unattributed_changes": true,
+            "allowed_merge_methods": [
+              "merge",
+              "squash",
+              "rebase"
+            ]
+          },
+          "ruleset_source_type": "Repository",
+          "ruleset_source": "sorenai-dev-sandbox/sl-upstream-private",
+          "ruleset_id": 27285024
+        }
+      ]
+    },
+    "10:App lists rulesets": {
+      "status": 200,
+      "body": [
+        {
+          "id": 27285024,
+          "name": "s1g-require-review-20261114T224202",
+          "target": "branch",
+          "source_type": "Repository",
+          "source": "sorenai-dev-sandbox/sl-upstream-private",
+          "enforcement": "active",
+          "node_id": "RRS_lACqUmVwb3NpdG9yec5W6u_ZzgGgViA",
+          "_links": {
+            "self": {
+              "href": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/rulesets/27285024"
+            },
+            "html": {
+              "href": "https://github.com/sorenai-dev-sandbox/sl-upstream-private/rules/27285024"
+            }
+          },
+          "created_at": "2026-11-14T22:42:04.308Z",
+          "updated_at": "2026-11-14T22:42:04.339Z"
+        }
+      ]
+    },
+    "10:App deletes the ruleset": {
+      "status": 403,
+      "body": {
+        "message": "Resource not accessible by integration",
+        "documentation_url": "https://docs.github.com/rest/repos/rules#delete-a-repository-ruleset",
+        "status": "403"
+      }
+    },
+    "10:App disables the ruleset": {
+      "status": 403,
+      "body": {
+        "message": "Resource not accessible by integration",
+        "documentation_url": "https://docs.github.com/rest/repos/rules#update-a-repository-ruleset",
+        "status": "403"
+      }
+    },
+    "11:App adds a workflow file on its branch": {
+      "status": 403,
+      "body": {
+        "message": "Resource not accessible by integration",
+        "documentation_url": "https://docs.github.com/rest/repos/contents#create-or-update-file-contents",
+        "status": "403"
+      }
+    },
+    "12:run for head": {
+      "id": 43649475316,
+      "conclusion": "success",
+      "actor": "sl-sandbox-pr-abad[bot]"
+    },
+    "12:same-repo App PR CI sees the repo secret (risk)": {
+      "observed": "s1g probe_present=true",
+      "extra": {
+        "id": 43649475316,
+        "conclusion": "success",
+        "actor": "sl-sandbox-pr-abad[bot]"
+      }
+    },
+    "9:owner approves the latest commit": {
+      "status": 200,
+      "body": {
+        "id": 5907558238,
+        "node_id": "PRR_kwDOVurv2c8AAAABYB4vXg",
+        "user": {
+          "login": "mandelbro",
+          "id": 1639034,
+          "node_id": "MDQ6VXNlcjE2MzkwMzQ=",
+          "avatar_url": "https://avatars.githubusercontent.com/u/1639034?u=7057de6c304818329f05981b9185afbe82764ce4&v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/mandelbro",
+          "html_url": "https://github.com/mandelbro",
+          "followers_url": "https://api.github.com/users/mandelbro/followers",
+          "following_url": "https://api.github.com/users/mandelbro/following{/other_user}",
+          "gists_url": "https://api.github.com/users/mandelbro/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/mandelbro/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/mandelbro/subscriptions",
+          "organizations_url": "https://api.github.com/users/mandelbro/orgs",
+          "repos_url": "https://api.github.com/users/mandelbro/repos",
+          "events_url": "https://api.github.com/users/mandelbro/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/mandelbro/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "body": "",
+        "state": "APPROVED",
+        "html_url": "https://github.com/sorenai-dev-sandbox/sl-upstream-private/pull/2#pullrequestreview-5907558238",
+        "pull_request_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/pulls/2",
+        "author_association": "MEMBER",
+        "is_copilot_code_review": false,
+        "copilot_code_review_effort": null,
+        "_links": {
+          "html": {
+            "href": "https://github.com/sorenai-dev-sandbox/sl-upstream-private/pull/2#pullrequestreview-5907558238"
+          },
+          "pull_request": {
+            "href": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/pulls/2"
+          }
+        },
+        "submitted_at": "2026-11-14T22:43:06Z",
+        "commit_id": "d9a86e7210a8ccc1f9260ae106e4af5a65ac758a"
+      }
+    },
+    "9:App merges a PR whose last push a human approved": {
+      "status": 200,
+      "body": {
+        "sha": "6be8816321d98644cd575ab44eb047aba8f0bfd1",
+        "merged": true,
+        "message": "Pull Request successfully merged"
+      }
+    },
+    "13:owner sets random probe secret (reverted)": {
+      "observed": 0
+    },
+    "13:owner adds require-review ruleset, no bypass (reverted)": {
+      "status": 201,
+      "body": {
+        "id": 27285084,
+        "name": "s1g-require-review-20261114T224202",
+        "target": "branch",
+        "source_type": "Repository",
+        "source": "sorenai-dev-sandbox/sl-upstream-private",
+        "enforcement": "active",
+        "conditions": {
+          "ref_name": {
+            "exclude": [],
+            "include": [
+              "~DEFAULT_BRANCH"
+            ]
+          }
+        },
+        "rules": [
+          {
+            "type": "deletion"
+          },
+          {
+            "type": "non_fast_forward"
+          },
+          {
+            "type": "pull_request",
+            "parameters": {
+              "required_approving_review_count": 1,
+              "dismiss_stale_reviews_on_push": true,
+              "required_reviewers": [],
+              "require_code_owner_review": false,
+              "dismissal_restriction": {
+                "enabled": false,
+                "allowed_actors": []
+              },
+              "require_last_push_approval": true,
+              "required_review_thread_resolution": false,
+              "require_extra_approval_for_unattributed_changes": true,
+              "allowed_merge_methods": [
+                "merge",
+                "squash",
+                "rebase"
+              ]
+            }
+          }
+        ],
+        "node_id": "RRS_lACqUmVwb3NpdG9yec5W6u_ZzgGgVlw",
+        "created_at": "2026-11-14T16:43:30.172-06:00",
+        "updated_at": "2026-11-14T16:43:30.206-06:00",
+        "bypass_actors": [],
+        "current_user_can_bypass": "never",
+        "_links": {
+          "self": {
+            "href": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/rulesets/27285084"
+          },
+          "html": {
+            "href": "https://github.com/sorenai-dev-sandbox/sl-upstream-private/rules/27285084"
+          }
+        }
+      }
+    },
+    "13:App mints the same-repo set": {
+      "status": 201,
+      "body": {
+        "permissions": {
+          "contents": "write",
+          "metadata": "read",
+          "pull_requests": "write"
+        },
+        "repository_selection": "selected"
+      }
+    },
+    "13:App pushes a soren-loop/* branch": {
+      "status": 201,
+      "body": {
+        "content": {
+          "name": "soren-loop_s1g-push-20261114T224202.txt",
+          "path": "s1g/soren-loop_s1g-push-20261114T224202.txt",
+          "sha": "203abdbec414acb714996b525a938ecb0a539e91",
+          "size": 36,
+          "url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/contents/s1g/soren-loop_s1g-push-20261114T224202.txt?ref=soren-loop/s1g-push-20261114T224202",
+          "html_url": "https://github.com/sorenai-dev-sandbox/sl-upstream-private/blob/soren-loop/s1g-push-20261114T224202/s1g/soren-loop_s1g-push-20261114T224202.txt",
+          "git_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/blobs/203abdbec414acb714996b525a938ecb0a539e91",
+          "download_url": "https://raw.githubusercontent.com/sorenai-dev-sandbox/sl-upstream-private/soren-loop/s1g-push-20261114T224202/s1g/soren-loop_s1g-push-20261114T224202.txt?token=CT4HFFUCDPGZX4ZJG3JBI2DK7DSFBAVPNFXHG5DBNRWGC5DJN5XF62LEZ4AAAAAFDWDXBJNRNFXHG5DBNRWGC5DJN5XF65DZOBS32U3DN5YGKZCJNZ2GKZ3SMF2GS33OJFXHG5DBNRWGC5DJN5XA",
+          "type": "file",
+          "_links": {
+            "self": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/contents/s1g/soren-loop_s1g-push-20261114T224202.txt?ref=soren-loop/s1g-push-20261114T224202",
+            "git": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/blobs/203abdbec414acb714996b525a938ecb0a539e91",
+            "html": "https://github.com/sorenai-dev-sandbox/sl-upstream-private/blob/soren-loop/s1g-push-20261114T224202/s1g/soren-loop_s1g-push-20261114T224202.txt"
+          }
+        },
+        "commit": {
+          "sha": "7bac437010d718fce6f4c8f599ddb49bf7df8c5f",
+          "node_id": "C_kwDOVurv2doAKDdiYWM0MzcwMTBkNzE4ZmNlNmY0YzhmNTk5ZGRiNDliZjdkZjhjNWY",
+          "url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/commits/7bac437010d718fce6f4c8f599ddb49bf7df8c5f",
+          "html_url": "https://github.com/sorenai-dev-sandbox/sl-upstream-private/commit/7bac437010d718fce6f4c8f599ddb49bf7df8c5f",
+          "author": {
+            "name": "sl-sandbox-pr-abad[bot]",
+            "email": "351826582+sl-sandbox-pr-abad[bot]@users.noreply.github.com",
+            "date": "2026-11-14T22:43:32Z"
+          },
+          "committer": {
+            "name": "GitHub",
+            "email": "noreply@github.com",
+            "date": "2026-11-14T22:43:32Z"
+          },
+          "tree": {
+            "sha": "9d84134e3b379b67e430c02097f8097764cb0be7",
+            "url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/trees/9d84134e3b379b67e430c02097f8097764cb0be7"
+          },
+          "message": "feat: s1g probe",
+          "parents": [
+            {
+              "sha": "1a55f89e5690f4c821574cf6d0a43166a300aba0",
+              "url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/commits/1a55f89e5690f4c821574cf6d0a43166a300aba0",
+              "html_url": "https://github.com/sorenai-dev-sandbox/sl-upstream-private/commit/1a55f89e5690f4c821574cf6d0a43166a300aba0"
+            }
+          ],
+          "verification": {
+            "verified": true,
+            "reason": "valid",
+            "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJq+OQUCRC1aQ7uu5UhlAAA8WsQAI2Kk0i30a8Cit3htiiqkWIR\ngIyGEGd8P8of5WE7A96gxD/XT3cfk9uGBqicGvmLoel5d597mezvpYMIJIYSnsPc\nRd3CMxRbcHGF0BeCaJTGyyfbsBAGIvXNgSArgaXIfceWDnB859srKh+cE7uZf+5I\nnrZ5wEb25yfVpTIUoKD/sPjyh74OBY8KL14bhxncSFRUPvBX1sOOe9ApbsRtLsNK\nkpl3WTfLagYKuNnq3XTBygMzAIXEv8wEJwNIbPlIR5u4OKlBOjuDdGpy16Xp12y2\nwO9MFrrUrJwisQBVWbgdBX6mpKlpdWTGlQY6h+n9yMtTvWqp6lkTjCFR+wQDi5kQ\n/v13NK+32M1KnX1bTxY84bwpKux/DP4RSyzXS2XosNNu2wHZRwEcJ3+MC38GfpJO\nXIdIGD3Nttcb3OnkbK+3Plpa9gyMhprJzvsoCx8ptX38C3xLeWkKAOxu/K8euDwG\nz6Em6/RsSRh+jIBc4RJg670ErGo9YrXMtCfal1yIOg0/W/3ZSNmxAijcQxric3Yf\n2nEs6gQrxraSaMSH+psxaSUYbQ9y9+Hbze3+9Akwz6JgnoGa0Ev3LqLLl/WWDlXS\n+cWUPz8zYZgjzm0GK2oJoAMda7E2LsTwKxF8hcb4F5vEk2SMVVU/jCHeGJqSZoVF\neyHJwvkJ5A4xCMh/nGEj\n=NTuj\n-----END PGP SIGNATURE-----\n",
+            "payload": "tree 9d84134e3b379b67e430c02097f8097764cb0be7\nparent 1a55f89e5690f4c821574cf6d0a43166a300aba0\nauthor sl-sandbox-pr-abad[bot] <351826582+sl-sandbox-pr-abad[bot]@users.noreply.github.com> 1794696212 +0000\ncommitter GitHub <noreply@github.com> 1794696212 +0000\n\nfeat: s1g probe",
+            "verified_at": "2026-11-14T22:43:32Z"
+          }
+        }
+      }
+    },
+    "13:push run": {
+      "id": 43649584481,
+      "conclusion": "success",
+      "actor": "sl-sandbox-pr-abad[bot]"
+    },
+    "13:T33: push workflow on soren-loop/** sees the repo secret (risk)": {
+      "observed": "s1g probe_present=true",
+      "extra": {
+        "id": 43649584481,
+        "conclusion": "success",
+        "actor": "sl-sandbox-pr-abad[bot]"
+      }
+    },
+    "14:unconfined: App creates feature/* branch (gap)": {
+      "status": 201,
+      "body": {
+        "ref": "refs/heads/feature/s1g-20261114T224202",
+        "node_id": "REF_kwDOVurv2doAJnJlZnMvaGVhZHMvZmVhdHVyZS9zMWctMjAyNjExMTRUMjI0MjAy",
+        "url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/refs/heads/feature/s1g-20261114T224202",
+        "object": {
+          "sha": "1a55f89e5690f4c821574cf6d0a43166a300aba0",
+          "type": "commit",
+          "url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/commits/1a55f89e5690f4c821574cf6d0a43166a300aba0"
+        }
+      }
+    },
+    "14:unconfined: App git push to release/* (gap)": {
+      "observed": 0,
+      "extra": "remote: \nremote: Create a pull request for 'release/s1g-20261114T224202' on GitHub by visiting:        \nremote:      https://github.com/sorenai-dev-sandbox/sl-upstream-private/pull/new/release/s1g-20261114T224202        \nremote:"
+    },
+    "14:owner adds a ruleset confining non-admins to soren-loop/** (reverted)": {
+      "status": 201,
+      "body": {
+        "id": 27285096,
+        "name": "s1g-confine-app-20261114T224202",
+        "target": "branch",
+        "source_type": "Repository",
+        "source": "sorenai-dev-sandbox/sl-upstream-private",
+        "enforcement": "active",
+        "conditions": {
+          "ref_name": {
+            "exclude": [
+              "refs/heads/soren-loop/**",
+              "~DEFAULT_BRANCH"
+            ],
+            "include": [
+              "~ALL"
+            ]
+          }
+        },
+        "rules": [
+          {
+            "type": "creation"
+          },
+          {
+            "type": "update"
+          },
+          {
+            "type": "deletion"
+          }
+        ],
+        "node_id": "RRS_lACqUmVwb3NpdG9yec5W6u_ZzgGgVmg",
+        "created_at": "2026-11-14T16:43:49.405-06:00",
+        "updated_at": "2026-11-14T16:43:49.447-06:00",
+        "bypass_actors": [
+          {
+            "actor_id": 5,
+            "actor_type": "RepositoryRole",
+            "bypass_mode": "always"
+          }
+        ],
+        "current_user_can_bypass": "always",
+        "_links": {
+          "self": {
+            "href": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/rulesets/27285096"
+          },
+          "html": {
+            "href": "https://github.com/sorenai-dev-sandbox/sl-upstream-private/rules/27285096"
+          }
+        }
+      }
+    },
+    "14:confined: App creates feature/* branch": {
+      "status": 422,
+      "body": {
+        "message": "Reference update failed",
+        "documentation_url": "https://docs.github.com/rest/git/refs#create-a-reference",
+        "status": "422"
+      }
+    },
+    "14:confined: App updates the earlier feature/* branch": {
+      "status": 409,
+      "body": {
+        "message": "Repository rule violations found\n\nCannot update this protected ref.\n\n",
+        "metadata": {},
+        "documentation_url": "https://docs.github.com/rest/repos/contents#create-or-update-file-contents",
+        "status": "409"
+      }
+    },
+    "14:confined git push": {
+      "code": 1,
+      "stderr": "remote: error: GH013: Repository rule violations found for refs/heads/release/s1g-b-20261114T224202.        \nremote: Review all repository rules at https://github.com/sorenai-dev-sandbox/sl-upstream-private/rules?ref=refs%2Fheads%2Frelease%2Fs1g-b-20261114T224202        \nremote: \nremote: - Cannot create ref due to creations being restricted.        \nremote: \nTo https://github.com/sorenai-dev-sandbox/sl-upstream-private.git\n ! [remote rejected] HEAD -> release/s1g-b-20261114T224202 (push declined due to repository rule violations)\nerror: failed to push some refs to 'https://github.com/sorenai-dev-sandbox/sl-upstream-private.git'"
+    },
+    "14:confined: App still creates soren-loop/* branch": {
+      "status": 201,
+      "body": {
+        "content": {
+          "name": "soren-loop_s1g-ok-20261114T224202.txt",
+          "path": "s1g/soren-loop_s1g-ok-20261114T224202.txt",
+          "sha": "ba4f6510743e830b37f9107a584a6622e1c4848d",
+          "size": 34,
+          "url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/contents/s1g/soren-loop_s1g-ok-20261114T224202.txt?ref=soren-loop/s1g-ok-20261114T224202",
+          "html_url": "https://github.com/sorenai-dev-sandbox/sl-upstream-private/blob/soren-loop/s1g-ok-20261114T224202/s1g/soren-loop_s1g-ok-20261114T224202.txt",
+          "git_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/blobs/ba4f6510743e830b37f9107a584a6622e1c4848d",
+          "download_url": "https://raw.githubusercontent.com/sorenai-dev-sandbox/sl-upstream-private/soren-loop/s1g-ok-20261114T224202/s1g/soren-loop_s1g-ok-20261114T224202.txt?token=CT4HFFSAYKCU5NNR3SJPXI3K7DSGLAVPNFXHG5DBNRWGC5DJN5XF62LEZ4AAAAAFDWDXBJNRNFXHG5DBNRWGC5DJN5XF65DZOBS32U3DN5YGKZCJNZ2GKZ3SMF2GS33OJFXHG5DBNRWGC5DJN5XA",
+          "type": "file",
+          "_links": {
+            "self": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/contents/s1g/soren-loop_s1g-ok-20261114T224202.txt?ref=soren-loop/s1g-ok-20261114T224202",
+            "git": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/blobs/ba4f6510743e830b37f9107a584a6622e1c4848d",
+            "html": "https://github.com/sorenai-dev-sandbox/sl-upstream-private/blob/soren-loop/s1g-ok-20261114T224202/s1g/soren-loop_s1g-ok-20261114T224202.txt"
+          }
+        },
+        "commit": {
+          "sha": "db5438ecb3cc6117a749cf953438d989496381a4",
+          "node_id": "C_kwDOVurv2doAKGRiNTQzOGVjYjNjYzYxMTdhNzQ5Y2Y5NTM0MzhkOTg5NDk2MzgxYTQ",
+          "url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/commits/db5438ecb3cc6117a749cf953438d989496381a4",
+          "html_url": "https://github.com/sorenai-dev-sandbox/sl-upstream-private/commit/db5438ecb3cc6117a749cf953438d989496381a4",
+          "author": {
+            "name": "sl-sandbox-pr-abad[bot]",
+            "email": "351826582+sl-sandbox-pr-abad[bot]@users.noreply.github.com",
+            "date": "2026-11-14T22:43:52Z"
+          },
+          "committer": {
+            "name": "GitHub",
+            "email": "noreply@github.com",
+            "date": "2026-11-14T22:43:52Z"
+          },
+          "tree": {
+            "sha": "6e27cc1307fdc5ee03337f643ea1f77e59411b01",
+            "url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/trees/6e27cc1307fdc5ee03337f643ea1f77e59411b01"
+          },
+          "message": "feat: s1g probe",
+          "parents": [
+            {
+              "sha": "1a55f89e5690f4c821574cf6d0a43166a300aba0",
+              "url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/commits/1a55f89e5690f4c821574cf6d0a43166a300aba0",
+              "html_url": "https://github.com/sorenai-dev-sandbox/sl-upstream-private/commit/1a55f89e5690f4c821574cf6d0a43166a300aba0"
+            }
+          ],
+          "verification": {
+            "verified": true,
+            "reason": "valid",
+            "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJq+OQoCRC1aQ7uu5UhlAAA4lAQAFBEFzfl4ogH+omoqpSrFi/R\nTTgLXmjJsf8gZjsvTQEF6YTB/m+PyKLqKq9pA58dkk6b6OqJRpNrzOFz/8PUj0jU\nd73NNiAUuxGShFdlfN1DLOx3D3/rzBeWs8yLqqGq9RsTv76wKFUYy2RmJqXvXVbS\nov3cIi0/Un+bTBXmtVss601kTVKOeANrThrALT26gWejmoQlgMEOyUhjw1yKlh38\n4dO4B2546uJk41v9KLfvDUpYT5krCBnVrTyxaUBOtoRbXEumGA6wznIVj464rfot\nP1yxzDnCRBZHQjfy+Z0+qDov9onfTy97D1dW1/6VnueJkqaInyg+7ZVv5hc5msls\nFIAJj9AH/UylITwGVdUB7nXc+OgrifxfS4nMqyebpVeIv/S+1xR0iXCxL8SkBUk7\nQXoJk/ebBPy52qpRn0miJWzByd503o392hl20bFOXlOAm5NXIaOFUmKjn/zspEd5\ncFMsPKS04fLZFZC1XXwTjWemYwXVRLojAd1urgdVh8wkGDgEDCidV02RjS5yhLc8\nrTyWDX97FCmFrZHTyCkEHio7a1P1YPijmA4C8HFhQajzoj6VMACd/SOFIRiY2jEI\nyePWfECodMO/s/drJhbFPXmrNcbnbqrAWI38YwebGJ1F05hFuPcteYM+FhwTGJ0t\nQ9F4UfSAdy2JFav8IrAc\n=TNw+\n-----END PGP SIGNATURE-----\n",
+            "payload": "tree 6e27cc1307fdc5ee03337f643ea1f77e59411b01\nparent 1a55f89e5690f4c821574cf6d0a43166a300aba0\nauthor sl-sandbox-pr-abad[bot] <351826582+sl-sandbox-pr-abad[bot]@users.noreply.github.com> 1794696232 +0000\ncommitter GitHub <noreply@github.com> 1794696232 +0000\n\nfeat: s1g probe",
+            "verified_at": "2026-11-14T22:43:53Z"
+          }
+        }
+      }
+    },
+    "14:confined: owner (admin bypass) creates feature/* branch": {
+      "status": 201,
+      "body": {
+        "ref": "refs/heads/feature/s1g-owner-20261114T224202",
+        "node_id": "REF_kwDOVurv2doALHJlZnMvaGVhZHMvZmVhdHVyZS9zMWctb3duZXItMjAyNjExMTRUMjI0MjAy",
+        "url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/refs/heads/feature/s1g-owner-20261114T224202",
+        "object": {
+          "sha": "1a55f89e5690f4c821574cf6d0a43166a300aba0",
+          "type": "commit",
+          "url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/commits/1a55f89e5690f4c821574cf6d0a43166a300aba0"
+        }
+      }
+    },
+    "15:App opens same-repo PR with maintainer_can_modify:false": {
+      "status": 201,
+      "body": {
+        "url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/pulls/3",
+        "id": 5316972775,
+        "node_id": "PR_kwDOVurv2c8AAAABPOqQ5w",
+        "html_url": "https://github.com/sorenai-dev-sandbox/sl-upstream-private/pull/3",
+        "diff_url": "https://github.com/sorenai-dev-sandbox/sl-upstream-private/pull/3.diff",
+        "patch_url": "https://github.com/sorenai-dev-sandbox/sl-upstream-private/pull/3.patch",
+        "issue_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/issues/3",
+        "number": 3,
+        "state": "open",
+        "locked": false,
+        "title": "S1-G probe 20261114T224202",
+        "user": {
+          "login": "sl-sandbox-pr-abad[bot]",
+          "id": 351826582,
+          "node_id": "BOT_kgDOFPhylg",
+          "avatar_url": "https://avatars.githubusercontent.com/u/351662524?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/sl-sandbox-pr-abad%5Bbot%5D",
+          "html_url": "https://github.com/apps/sl-sandbox-pr-abad",
+          "followers_url": "https://api.github.com/users/sl-sandbox-pr-abad%5Bbot%5D/followers",
+          "following_url": "https://api.github.com/users/sl-sandbox-pr-abad%5Bbot%5D/following{/other_user}",
+          "gists_url": "https://api.github.com/users/sl-sandbox-pr-abad%5Bbot%5D/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/sl-sandbox-pr-abad%5Bbot%5D/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/sl-sandbox-pr-abad%5Bbot%5D/subscriptions",
+          "organizations_url": "https://api.github.com/users/sl-sandbox-pr-abad%5Bbot%5D/orgs",
+          "repos_url": "https://api.github.com/users/sl-sandbox-pr-abad%5Bbot%5D/repos",
+          "events_url": "https://api.github.com/users/sl-sandbox-pr-abad%5Bbot%5D/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/sl-sandbox-pr-abad%5Bbot%5D/received_events",
+          "type": "Bot",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "body": "Spike S1-G probe. Safe to close.",
+        "created_at": "2026-11-14T22:43:54Z",
+        "updated_at": "2026-11-14T22:43:54Z",
+        "closed_at": null,
+        "merged_at": null,
+        "merge_commit_sha": null,
+        "assignees": [],
+        "requested_reviewers": [],
+        "requested_teams": [],
+        "labels": [],
+        "milestone": null,
+        "draft": false,
+        "commits_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/pulls/3/commits",
+        "review_comments_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/pulls/3/comments",
+        "review_comment_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/pulls/comments{/number}",
+        "comments_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/issues/3/comments",
+        "statuses_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/statuses/7bac437010d718fce6f4c8f599ddb49bf7df8c5f",
+        "head": {
+          "label": "sorenai-dev-sandbox:soren-loop/s1g-push-20261114T224202",
+          "ref": "soren-loop/s1g-push-20261114T224202",
+          "sha": "7bac437010d718fce6f4c8f599ddb49bf7df8c5f",
+          "user": {
+            "login": "sorenai-dev-sandbox",
+            "id": 351662524,
+            "node_id": "O_kgDOFPXxvA",
+            "avatar_url": "https://avatars.githubusercontent.com/u/351662524?v=4",
+            "gravatar_id": "",
+            "url": "https://api.github.com/users/sorenai-dev-sandbox",
+            "html_url": "https://github.com/sorenai-dev-sandbox",
+            "followers_url": "https://api.github.com/users/sorenai-dev-sandbox/followers",
+            "following_url": "https://api.github.com/users/sorenai-dev-sandbox/following{/other_user}",
+            "gists_url": "https://api.github.com/users/sorenai-dev-sandbox/gists{/gist_id}",
+            "starred_url": "https://api.github.com/users/sorenai-dev-sandbox/starred{/owner}{/repo}",
+            "subscriptions_url": "https://api.github.com/users/sorenai-dev-sandbox/subscriptions",
+            "organizations_url": "https://api.github.com/users/sorenai-dev-sandbox/orgs",
+            "repos_url": "https://api.github.com/users/sorenai-dev-sandbox/repos",
+            "events_url": "https://api.github.com/users/sorenai-dev-sandbox/events{/privacy}",
+            "received_events_url": "https://api.github.com/users/sorenai-dev-sandbox/received_events",
+            "type": "Organization",
+            "user_view_type": "public",
+            "site_admin": false
+          },
+          "repo": {
+            "id": 1458237401,
+            "node_id": "R_kgDOVurv2Q",
+            "name": "sl-upstream-private",
+            "full_name": "sorenai-dev-sandbox/sl-upstream-private",
+            "private": true,
+            "owner": {
+              "login": "sorenai-dev-sandbox",
+              "id": 351662524,
+              "node_id": "O_kgDOFPXxvA",
+              "avatar_url": "https://avatars.githubusercontent.com/u/351662524?v=4",
+              "gravatar_id": "",
+              "url": "https://api.github.com/users/sorenai-dev-sandbox",
+              "html_url": "https://github.com/sorenai-dev-sandbox",
+              "followers_url": "https://api.github.com/users/sorenai-dev-sandbox/followers",
+              "following_url": "https://api.github.com/users/sorenai-dev-sandbox/following{/other_user}",
+              "gists_url": "https://api.github.com/users/sorenai-dev-sandbox/gists{/gist_id}",
+              "starred_url": "https://api.github.com/users/sorenai-dev-sandbox/starred{/owner}{/repo}",
+              "subscriptions_url": "https://api.github.com/users/sorenai-dev-sandbox/subscriptions",
+              "organizations_url": "https://api.github.com/users/sorenai-dev-sandbox/orgs",
+              "repos_url": "https://api.github.com/users/sorenai-dev-sandbox/repos",
+              "events_url": "https://api.github.com/users/sorenai-dev-sandbox/events{/privacy}",
+              "received_events_url": "https://api.github.com/users/sorenai-dev-sandbox/received_events",
+              "type": "Organization",
+              "user_view_type": "public",
+              "site_admin": false
+            },
+            "html_url": "https://github.com/sorenai-dev-sandbox/sl-upstream-private",
+            "description": "S1-F same-repo model fixture (throwaway)",
+            "fork": false,
+            "url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private",
+            "forks_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/forks",
+            "keys_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/keys{/key_id}",
+            "collaborators_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/collaborators{/collaborator}",
+            "teams_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/teams",
+            "hooks_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/hooks",
+            "issue_events_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/issues/events{/number}",
+            "events_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/events",
+            "assignees_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/assignees{/user}",
+            "branches_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/branches{/branch}",
+            "tags_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/tags",
+            "blobs_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/blobs{/sha}",
+            "git_tags_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/tags{/sha}",
+            "git_refs_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/refs{/sha}",
+            "trees_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/trees{/sha}",
+            "statuses_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/statuses/{sha}",
+            "languages_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/languages",
+            "stargazers_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/stargazers",
+            "contributors_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/contributors",
+            "subscribers_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/subscribers",
+            "subscription_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/subscription",
+            "commits_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/commits{/sha}",
+            "git_commits_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/commits{/sha}",
+            "comments_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/comments{/number}",
+            "issue_comment_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/issues/comments{/number}",
+            "contents_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/contents/{+path}",
+            "compare_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/compare/{base}...{head}",
+            "merges_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/merges",
+            "archive_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/{archive_format}{/ref}",
+            "downloads_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/downloads",
+            "issues_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/issues{/number}",
+            "pulls_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/pulls{/number}",
+            "milestones_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/milestones{/number}",
+            "notifications_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/notifications{?since,all,participating}",
+            "labels_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/labels{/name}",
+            "releases_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/releases{/id}",
+            "deployments_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/deployments",
+            "created_at": "2026-11-14T22:25:36Z",
+            "updated_at": "2026-11-14T22:25:38Z",
+            "pushed_at": "2026-11-14T22:43:53Z",
+            "git_url": "git://github.com/sorenai-dev-sandbox/sl-upstream-private.git",
+            "ssh_url": "git@github.com:sorenai-dev-sandbox/sl-upstream-private.git",
+            "clone_url": "https://github.com/sorenai-dev-sandbox/sl-upstream-private.git",
+            "svn_url": "https://github.com/sorenai-dev-sandbox/sl-upstream-private",
+            "homepage": null,
+            "size": 0,
+            "stargazers_count": 0,
+            "watchers_count": 0,
+            "language": null,
+            "has_issues": true,
+            "has_projects": true,
+            "has_downloads": false,
+            "has_wiki": true,
+            "has_pages": false,
+            "has_discussions": false,
+            "forks_count": 0,
+            "mirror_url": null,
+            "archived": false,
+            "disabled": false,
+            "open_issues_count": 1,
+            "license": null,
+            "allow_forking": true,
+            "is_template": false,
+            "web_commit_signoff_required": false,
+            "has_pull_requests": true,
+            "pull_request_creation_policy": "all",
+            "topics": [],
+            "visibility": "private",
+            "forks": 0,
+            "open_issues": 1,
+            "watchers": 0,
+            "default_branch": "main"
+          }
+        },
+        "base": {
+          "label": "sorenai-dev-sandbox:main",
+          "ref": "main",
+          "sha": "1a55f89e5690f4c821574cf6d0a43166a300aba0",
+          "user": {
+            "login": "sorenai-dev-sandbox",
+            "id": 351662524,
+            "node_id": "O_kgDOFPXxvA",
+            "avatar_url": "https://avatars.githubusercontent.com/u/351662524?v=4",
+            "gravatar_id": "",
+            "url": "https://api.github.com/users/sorenai-dev-sandbox",
+            "html_url": "https://github.com/sorenai-dev-sandbox",
+            "followers_url": "https://api.github.com/users/sorenai-dev-sandbox/followers",
+            "following_url": "https://api.github.com/users/sorenai-dev-sandbox/following{/other_user}",
+            "gists_url": "https://api.github.com/users/sorenai-dev-sandbox/gists{/gist_id}",
+            "starred_url": "https://api.github.com/users/sorenai-dev-sandbox/starred{/owner}{/repo}",
+            "subscriptions_url": "https://api.github.com/users/sorenai-dev-sandbox/subscriptions",
+            "organizations_url": "https://api.github.com/users/sorenai-dev-sandbox/orgs",
+            "repos_url": "https://api.github.com/users/sorenai-dev-sandbox/repos",
+            "events_url": "https://api.github.com/users/sorenai-dev-sandbox/events{/privacy}",
+            "received_events_url": "https://api.github.com/users/sorenai-dev-sandbox/received_events",
+            "type": "Organization",
+            "user_view_type": "public",
+            "site_admin": false
+          },
+          "repo": {
+            "id": 1458237401,
+            "node_id": "R_kgDOVurv2Q",
+            "name": "sl-upstream-private",
+            "full_name": "sorenai-dev-sandbox/sl-upstream-private",
+            "private": true,
+            "owner": {
+              "login": "sorenai-dev-sandbox",
+              "id": 351662524,
+              "node_id": "O_kgDOFPXxvA",
+              "avatar_url": "https://avatars.githubusercontent.com/u/351662524?v=4",
+              "gravatar_id": "",
+              "url": "https://api.github.com/users/sorenai-dev-sandbox",
+              "html_url": "https://github.com/sorenai-dev-sandbox",
+              "followers_url": "https://api.github.com/users/sorenai-dev-sandbox/followers",
+              "following_url": "https://api.github.com/users/sorenai-dev-sandbox/following{/other_user}",
+              "gists_url": "https://api.github.com/users/sorenai-dev-sandbox/gists{/gist_id}",
+              "starred_url": "https://api.github.com/users/sorenai-dev-sandbox/starred{/owner}{/repo}",
+              "subscriptions_url": "https://api.github.com/users/sorenai-dev-sandbox/subscriptions",
+              "organizations_url": "https://api.github.com/users/sorenai-dev-sandbox/orgs",
+              "repos_url": "https://api.github.com/users/sorenai-dev-sandbox/repos",
+              "events_url": "https://api.github.com/users/sorenai-dev-sandbox/events{/privacy}",
+              "received_events_url": "https://api.github.com/users/sorenai-dev-sandbox/received_events",
+              "type": "Organization",
+              "user_view_type": "public",
+              "site_admin": false
+            },
+            "html_url": "https://github.com/sorenai-dev-sandbox/sl-upstream-private",
+            "description": "S1-F same-repo model fixture (throwaway)",
+            "fork": false,
+            "url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private",
+            "forks_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/forks",
+            "keys_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/keys{/key_id}",
+            "collaborators_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/collaborators{/collaborator}",
+            "teams_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/teams",
+            "hooks_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/hooks",
+            "issue_events_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/issues/events{/number}",
+            "events_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/events",
+            "assignees_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/assignees{/user}",
+            "branches_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/branches{/branch}",
+            "tags_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/tags",
+            "blobs_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/blobs{/sha}",
+            "git_tags_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/tags{/sha}",
+            "git_refs_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/refs{/sha}",
+            "trees_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/trees{/sha}",
+            "statuses_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/statuses/{sha}",
+            "languages_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/languages",
+            "stargazers_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/stargazers",
+            "contributors_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/contributors",
+            "subscribers_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/subscribers",
+            "subscription_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/subscription",
+            "commits_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/commits{/sha}",
+            "git_commits_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/git/commits{/sha}",
+            "comments_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/comments{/number}",
+            "issue_comment_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/issues/comments{/number}",
+            "contents_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/contents/{+path}",
+            "compare_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/compare/{base}...{head}",
+            "merges_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/merges",
+            "archive_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/{archive_format}{/ref}",
+            "downloads_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/downloads",
+            "issues_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/issues{/number}",
+            "pulls_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/pulls{/number}",
+            "milestones_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/milestones{/number}",
+            "notifications_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/notifications{?since,all,participating}",
+            "labels_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/labels{/name}",
+            "releases_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/releases{/id}",
+            "deployments_url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/deployments",
+            "created_at": "2026-11-14T22:25:36Z",
+            "updated_at": "2026-11-14T22:25:38Z",
+            "pushed_at": "2026-11-14T22:43:53Z",
+            "git_url": "git://github.com/sorenai-dev-sandbox/sl-upstream-private.git",
+            "ssh_url": "git@github.com:sorenai-dev-sandbox/sl-upstream-private.git",
+            "clone_url": "https://github.com/sorenai-dev-sandbox/sl-upstream-private.git",
+            "svn_url": "https://github.com/sorenai-dev-sandbox/sl-upstream-private",
+            "homepage": null,
+            "size": 0,
+            "stargazers_count": 0,
+            "watchers_count": 0,
+            "language": null,
+            "has_issues": true,
+            "has_projects": true,
+            "has_downloads": false,
+            "has_wiki": true,
+            "has_pages": false,
+            "has_discussions": false,
+            "forks_count": 0,
+            "mirror_url": null,
+            "archived": false,
+            "disabled": false,
+            "open_issues_count": 1,
+            "license": null,
+            "allow_forking": true,
+            "is_template": false,
+            "web_commit_signoff_required": false,
+            "has_pull_requests": true,
+            "pull_request_creation_policy": "all",
+            "topics": [],
+            "visibility": "private",
+            "forks": 0,
+            "open_issues": 1,
+            "watchers": 0,
+            "default_branch": "main"
+          }
+        },
+        "_links": {
+          "self": {
+            "href": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/pulls/3"
+          },
+          "html": {
+            "href": "https://github.com/sorenai-dev-sandbox/sl-upstream-private/pull/3"
+          },
+          "issue": {
+            "href": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/issues/3"
+          },
+          "comments": {
+            "href": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/issues/3/comments"
+          },
+          "review_comments": {
+            "href": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/pulls/3/comments"
+          },
+          "review_comment": {
+            "href": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/pulls/comments{/number}"
+          },
+          "commits": {
+            "href": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/pulls/3/commits"
+          },
+          "statuses": {
+            "href": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-private/statuses/7bac437010d718fce6f4c8f599ddb49bf7df8c5f"
+          }
+        },
+        "author_association": "NONE",
+        "auto_merge": null,
+        "assignee": null,
+        "active_lock_reason": null,
+        "merged": false,
+        "mergeable": null,
+        "rebaseable": null,
+        "mergeable_state": "unknown",
+        "merged_by": null,
+        "comments": 0,
+        "review_comments": 0,
+        "maintainer_can_modify": false,
+        "commits": 1,
+        "additions": 1,
+        "deletions": 0,
+        "changed_files": 1
+      }
+    },
+    "15:same-repo PR: maintainer_can_modify as GitHub reports it": {
+      "observed": false
+    }
+  }
+}

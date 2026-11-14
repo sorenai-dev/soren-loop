@@ -146,7 +146,7 @@ Covered in depth in `03` §4 (indirect injection). The STRIDE summary:
 
 | ID | STRIDE | Threat | L | I | Risk | Mitigation | Status | Residual |
 |----|--------|--------|---|---|------|------------|--------|----------|
-| T10.1 | E | Bot can merge or push to `main` (`Contents: write` grants merge; S1's control merge confirmed it) | L | H | H | **Fork model confirmed by S1 (decision 24).** **Two Apps (decision 25).** The upstream PR App holds no `contents: write`, so no upstream credential can merge, whatever the minting code does (S1 F2). | R (dec. 24, 25) | L |
+| T10.1 | E | Bot can merge or push to `main` (`Contents: write` grants merge; S1's control merge confirmed it) | L | H | H | **Fork model confirmed by S1 (decision 24).** **Two Apps (decision 25).** The upstream PR App holds no `contents: write`, so no upstream credential can merge, whatever the minting code does (S1 F2). **Private repos (decision 37):** residual H; a leaked repo-App key merges any human-approved PR (S1-F S2). | R (dec. 24, 25) | L |
 | T10.2 | E | A workflow-file write gives a CI-secrets foothold | L | H | M | Never request `Workflows`. GitHub rejects workflow writes without it, via both git push and the Contents API (verified, S1 Q3). `.github/**` is hard-blocked in `submit`. | R | L |
 | T10.3 | E | **"Pwn request"**: the owner's existing `pull_request_target` or `workflow_run` workflows check out the fork PR's head with secrets | M | H | **H** | `doctor` scans the repo's workflows and blocks or warns; documented | **N** | M (the owner's config) |
 | T10.4 | S | Forged webhooks | M | H | H | HMAC-SHA256 constant-time verify; reject when unsigned | D | L |

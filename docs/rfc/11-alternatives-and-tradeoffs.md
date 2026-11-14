@@ -17,18 +17,18 @@ B is acceptable. **A ≈ B** means the tradeoffs cancel, and the canceling trade
 runners). A wins because the state machine's table *is* the security spec (ST-23), and putting
 it inside a function-shaped engine would hide the guards.
 
-## 2. PR Model (ADR-4, accepted: decisions 24 and 25)
+## 2. PR Model (ADR-4, accepted: decisions 24 and 25; decision 37)
 
 | Criterion | **A: Fork + two Apps** | A′: Fork + one App | B: Same-repo branch + rulesets | C: Owner's own git credentials |
 |-----------|------------------------|--------------------|--------------------------------|--------------------------------|
 | Meets goals ("cannot merge") | Yes, structurally: no upstream credential can merge | Only if the minting code is correct (S1 F2: the installation can mint a merging token) | Only if the owner's rulesets are correct | No |
 | Complexity | Two registrations, two keys, a bot-only org | One App | `doctor` ruleset checks | Lowest |
 | Operational burden | Owner manages two keys; rotation per App | One key | Owner maintains rulesets | None |
-| Failure modes | Owner misconfigures the fork's human access (F1, caught by `doctor`) | A bug or leaked key means merge | A misconfigured ruleset means merge; same-repo PRs get secrets (S1 Q4) | The owner's credential sits next to agent output |
+| Failure modes | Owner misconfigures the fork's human access (F1, caught by `doctor`); **can't serve private repos** (S1-F P1: 422 on a private-fork head) | A bug or leaked key means merge | A misconfigured ruleset means merge (checked at start-up and by `doctor`); a leaked key merges any human-approved PR (S1-F S2); same-repo PRs get secrets (S1 Q4, S1-F S5) | The owner's credential sits next to agent output |
 | Reversibility | High | High | High | — |
 
 **A > A′ >> B >> C.** A over A′ is the F2 argument: the cost is setup friction, and it buys a
-property the minting code can't break. B is rejected by decision 24 as the design, and survives only as the opt-in path for orgs that forbid private forks, by decision 29 / Q1 (`08` §1.8). C puts the owner's
+property the minting code can't break. B is rejected by decision 24 for public repos. For private repos A can't work (S1-F P1), and by decision 37 B is the model for every private repo, not an opt-in (`08` §1.8, §1.9). The other private-repo options were taking private repos out of MVP scope, or opening PRs with the owner's credential, which is C's cost. C puts the owner's
 credential in the `submit` path.
 
 ## 3. Sandbox Default

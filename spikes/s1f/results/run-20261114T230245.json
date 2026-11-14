@@ -1,0 +1,201 @@
+{
+  "runId": "20261114T230245",
+  "rows": [
+    {
+      "item": 16,
+      "check": "App mints the same-repo set",
+      "expected": "201",
+      "observed": "201",
+      "ok": true
+    },
+    {
+      "item": 16,
+      "check": "owner adds a ruleset confining the App to soren-loop/**, bypass roles 4,2,5 (reverted)",
+      "expected": "201",
+      "observed": "201",
+      "ok": true
+    },
+    {
+      "item": 16,
+      "check": "write+maintain+admin bypass: App creates feature/* branch",
+      "expected": "403|409|422",
+      "observed": "422",
+      "ok": true
+    },
+    {
+      "item": 16,
+      "check": "write+maintain+admin bypass: App creates soren-loop/* branch",
+      "expected": "201",
+      "observed": "201",
+      "ok": true
+    },
+    {
+      "item": 16,
+      "check": "write+maintain+admin bypass: owner creates feature/* branch",
+      "expected": "201",
+      "observed": "201",
+      "ok": true
+    },
+    {
+      "item": 16,
+      "check": "S9: App GET ruleset includes bypass_actors",
+      "expected": "false",
+      "observed": "false",
+      "ok": true
+    },
+    {
+      "item": 16,
+      "check": "S9: App current_user_can_bypass (App not a bypass actor)",
+      "expected": "\"never\"",
+      "observed": "\"never\"",
+      "ok": true
+    },
+    {
+      "item": 16,
+      "check": "S9: App current_user_can_bypass once the App is a bypass actor",
+      "expected": "\"always\"",
+      "observed": "\"always\"",
+      "ok": true
+    }
+  ],
+  "cleanupFailures": [],
+  "evidence": {
+    "16:App mints the same-repo set": {
+      "status": 201,
+      "body": {
+        "permissions": {
+          "contents": "write",
+          "metadata": "read",
+          "pull_requests": "write"
+        },
+        "repository_selection": "selected"
+      }
+    },
+    "16:owner adds a ruleset confining the App to soren-loop/**, bypass roles 4,2,5 (reverted)": {
+      "status": 201,
+      "body": {
+        "id": 27285643,
+        "name": "s1g-confine-app-20261114T230245",
+        "target": "branch",
+        "source_type": "Repository",
+        "source": "sorenai-dev-sandbox/sl-upstream-public",
+        "enforcement": "active",
+        "conditions": {
+          "ref_name": {
+            "exclude": [
+              "refs/heads/soren-loop/**",
+              "~DEFAULT_BRANCH"
+            ],
+            "include": [
+              "~ALL"
+            ]
+          }
+        },
+        "rules": [
+          {
+            "type": "creation"
+          },
+          {
+            "type": "update"
+          },
+          {
+            "type": "deletion"
+          }
+        ],
+        "node_id": "RRS_lACqUmVwb3NpdG9yec5WCiWIzgGgWIs",
+        "created_at": "2026-11-14T17:02:46.392-06:00",
+        "updated_at": "2026-11-14T17:02:46.499-06:00",
+        "bypass_actors": [
+          {
+            "actor_id": 2,
+            "actor_type": "RepositoryRole",
+            "bypass_mode": "always"
+          },
+          {
+            "actor_id": 4,
+            "actor_type": "RepositoryRole",
+            "bypass_mode": "always"
+          },
+          {
+            "actor_id": 5,
+            "actor_type": "RepositoryRole",
+            "bypass_mode": "always"
+          }
+        ],
+        "current_user_can_bypass": "always",
+        "_links": {
+          "self": {
+            "href": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-public/rulesets/27285643"
+          },
+          "html": {
+            "href": "https://github.com/sorenai-dev-sandbox/sl-upstream-public/rules/27285643"
+          }
+        }
+      }
+    },
+    "16:ruleset bypass as GitHub stores it": [
+      {
+        "id": 27285643,
+        "name": "s1g-confine-app-20261114T230245",
+        "target": "branch",
+        "source_type": "Repository",
+        "source": "sorenai-dev-sandbox/sl-upstream-public",
+        "enforcement": "active",
+        "node_id": "RRS_lACqUmVwb3NpdG9yec5WCiWIzgGgWIs",
+        "_links": {
+          "self": {
+            "href": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-public/rulesets/27285643"
+          },
+          "html": {
+            "href": "https://github.com/sorenai-dev-sandbox/sl-upstream-public/rules/27285643"
+          }
+        },
+        "created_at": "2026-11-14T17:02:46.392-06:00",
+        "updated_at": "2026-11-14T17:02:46.499-06:00"
+      }
+    ],
+    "16:write+maintain+admin bypass: App creates feature/* branch": {
+      "status": 422,
+      "body": {
+        "message": "Reference update failed",
+        "documentation_url": "https://docs.github.com/rest/git/refs#create-a-reference",
+        "status": "422"
+      }
+    },
+    "16:write+maintain+admin bypass: App creates soren-loop/* branch": {
+      "status": 201,
+      "body": {
+        "ref": "refs/heads/soren-loop/s1g-roles-20261114T230245",
+        "node_id": "REF_kwDOVgoliNoAL3JlZnMvaGVhZHMvc29yZW4tbG9vcC9zMWctcm9sZXMtMjAyNjExMTRUMjMwMjQ1",
+        "url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-public/git/refs/heads/soren-loop/s1g-roles-20261114T230245",
+        "object": {
+          "sha": "7d1a8f581f98b7b3be77593d99d42e7ff0552936",
+          "type": "commit",
+          "url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-public/git/commits/7d1a8f581f98b7b3be77593d99d42e7ff0552936"
+        }
+      }
+    },
+    "16:write+maintain+admin bypass: owner creates feature/* branch": {
+      "status": 201,
+      "body": {
+        "ref": "refs/heads/feature/s1g-roles-owner-20261114T230245",
+        "node_id": "REF_kwDOVgoliNoAMnJlZnMvaGVhZHMvZmVhdHVyZS9zMWctcm9sZXMtb3duZXItMjAyNjExMTRUMjMwMjQ1",
+        "url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-public/git/refs/heads/feature/s1g-roles-owner-20261114T230245",
+        "object": {
+          "sha": "7d1a8f581f98b7b3be77593d99d42e7ff0552936",
+          "type": "commit",
+          "url": "https://api.github.com/repos/sorenai-dev-sandbox/sl-upstream-public/git/commits/7d1a8f581f98b7b3be77593d99d42e7ff0552936"
+        }
+      }
+    },
+    "16:S9: App GET ruleset includes bypass_actors": {
+      "observed": false
+    },
+    "16:S9: App current_user_can_bypass (App not a bypass actor)": {
+      "observed": "never"
+    },
+    "16:S9: App current_user_can_bypass once the App is a bypass actor": {
+      "observed": "always"
+    }
+  }
+}

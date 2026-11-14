@@ -26,6 +26,7 @@ type OwnerEventKind =
   | "owner.app_permission_check_failed" | "owner.outbox_dead"
   | "owner.policy_changed" | "owner.audit_chain_mismatch" | "owner.authenticator_changed"
   | "owner.cli_device_approved" | "owner.owner_contact_changed" | "owner.pr_head_changed"
+  | "owner.flag_sync_stale" | "owner.bot_merged_pr"
   // tunable
   | "owner.request_submitted" | "owner.plan_ready" | "owner.run_stalled"
   | "owner.rate_limited" | "owner.pr_opened" | "owner.deploy_wait_exceeded"
@@ -58,6 +59,8 @@ records them (the audit row, or the outbox status change), under the same rule.
 | Owner | `owner.security_hold_entered`, `owner.precheck_unavailable`, `owner.app_permission_check_failed`, `owner.outbox_dead` | `[email, dashboard_inbox]` | **Yes** |
 | Owner | `owner.policy_changed` (otherwise whoever edits the policy could hide the edit), `owner.audit_chain_mismatch` (SR-37), `owner.authenticator_changed`, `owner.cli_device_approved`, `owner.owner_contact_changed` (email to the real owner is how a stolen synced passkey gets noticed) | `[email, dashboard_inbox]` | **Yes** |
 | Owner | `owner.pr_head_changed` (SR-41: the active PR's head moved off its pin, or a superseded PR was merged; `reason` carries which) | `[email, dashboard_inbox]` | **Yes** (the tenth locked kind) |
+| Owner | `owner.flag_sync_stale` (S4 F3: a flagd instance's canary lags the server's by more than 3× the poll interval, so a kill may not be reaching hosts; `16` §2. Without it a broken sync is silent) | `[email, dashboard_inbox]` | **Yes** |
+| Owner | `owner.bot_merged_pr` (decision 37, T34: a PR was merged by the soren-loop repo App on a private repo. soren-loop never calls merge, so this means a leaked key or push token; enablement is blocked; `08` §1.9) | `[email, dashboard_inbox]` | **Yes** |
 | Owner | `owner.request_submitted`, `owner.plan_ready`, `owner.run_stalled`, `owner.rate_limited`, `owner.deploy_wait_exceeded`, `owner.enablement_confirm_needed` | `[email, dashboard_inbox]` | No |
 | Owner | `owner.pr_opened`, `owner.flag_enabled`, `owner.requester_throttled` | `[dashboard_inbox]` | No |
 

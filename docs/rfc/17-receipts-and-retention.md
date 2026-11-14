@@ -50,7 +50,7 @@ The pin set grows only through a receipt from an already-pinned key (SR-19).
 | `request_revisions.fields`, `questions.body`, `feedback.body`, `specs.envelope.body_md` | Request text, plus spec text that can echo it | Deleted at `text_purge_after` or `purge_after`, whichever comes first |
 | `runs.advisory` | Model `spec_gaps` and findings that echo request text | Deleted with the text |
 | `requesters.sub`, `display_name`, `email_enc` | Identity and address | Replaced with a tombstone ID at `purge_after`. `email_enc` is also deleted when the site turns off `requester_email_enabled`. |
-| `flags.targets` and the rendered flagd document | `sub`s | A `FlagWriter` effect removes the `sub` at `purge_after`, and the document re-renders. flagd keeps no history, because it is served from the DB (S4 verifies no on-disk cache). |
+| `flags.targets` and the rendered flagd document | `sub`s | A `FlagWriter` effect removes the `sub` at `purge_after`, and the document re-renders. flagd keeps no history, because it is served from the DB, and writes nothing to disk (S4 F8). The browser OFREP provider's `localStorage` cache would hold evaluations for 30 days, out of the purge's reach, so the provider factory disables it (`16` §5). |
 | `outbox.payload` | None by design (`04` §5) | `suppressed` and `done` rows are deleted after 30 days |
 | `idempotency_keys.response` | Can echo submitted text | Expires after 24 h; a sweeper deletes it |
 | `inbox_items` | The fixed title (the owner-edited title) | Deleted with the request text |
