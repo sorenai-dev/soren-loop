@@ -12,7 +12,8 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "test": "vitest run"
+    "test": "vitest run",
+    "gen:unicode": "node scripts/gen-unicode-table.ts"
   },
   "dependencies": {
     "@noble/hashes": "2.4.0"

@@ -11,6 +11,9 @@ export type SchemaErrorReason =
   | 'path_absolute'
   | 'path_empty'
   | 'path_invalid'
+  // Task 012: normalization
+  | 'unassigned_code_point'
+  | 'too_long'
 
 export class SchemaError extends Error {
   readonly reason: SchemaErrorReason
