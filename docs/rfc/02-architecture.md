@@ -76,7 +76,7 @@ Repo 2 depends on Repo 1 only through `@sorenai/loop-schema` (published) and the
 | `apps/dashboard` (SPA on the API host) | Owner UI: queues, review aids (SR-22), span highlighting from verified offsets, the hold console (clear, retry, reject), the rollout console, the token and authenticator lists | Any authority of its own. Every mutation is an API call guarded server-side. It never renders model-written strings as HTML. |
 | `packages/widget` (loader plus iframe app, served from the widget host) | Launcher, iframe panel, `postMessage` handshake then `MessageChannel`, form intake, chat UI (LLM mode), status feed view; the session token in iframe memory only | Identity (it only relays the host JWT); any owner route; any knowledge of states finer than requester stages |
 | `packages/node` | `createWidgetToken(user, opts)` (ES256/EdDSA, `sl.widget_jwt.v1`), `createOfrepHandler` (the SR-36 proxy, `16` §5), `evaluationContext(user)` returning the same ID as `targetingKey` | Flag evaluation (OpenFeature does it); flag writes; any network call to the control plane |
-| `packages/react` | `<SorenLoopWidget getToken>`, a hook that wires the OpenFeature context from the same user | A custom flag provider (stock flagd/OFREP providers are used) |
+| `packages/react` | `<SorenLoopWidget getToken>`, a hook that wires the OpenFeature context from the same user, the OFREP web provider factory (`16` §5) | A custom flag provider (stock flagd/OFREP providers are used; the provider factory only configures the stock web provider, pinning `cacheMode: 'disabled'`, `16` §5) |
 | `packages/flag-adapters` | The `FlagWriter` port; the flagd document renderer; the Unleash adapter (Phase 2); `sl_` namespace enforcement | Choosing who is enabled (the state machine decides); being imported by host apps (server-only package) |
 | `packages/schema` | zod schemas for the request, spec envelope, status events, CLI API payloads, the pre-check verdict, and the vendored tdd-pair outcome; JSON Schema export; the normalization and hashing functions shared by server and CLI | Business rules beyond shape (those live in server guards) |
 | flagd (third party) | Evaluating flags for host apps from our rendered document | Being a source of truth (Postgres is) |
@@ -110,7 +110,7 @@ Repo 2 depends on Repo 1 only through `@sorenai/loop-schema` (published) and the
 | I12 | CLI → sandbox | Local, sync | Worktree mount; Claude auth variable only; the phase flag | CLI |
 | I13 | Sandbox → Anthropic | Sync (model traffic) | Prompts and file contents | `claude -p` |
 | I14 | CLI → fork (public) or the private repo | Sync (`git push`) | Commits on `soren-loop/<public_ref>/<chain>` | CLI, with a token minted at I11 |
-| I15 | Workers → flagd | Async: flagd polls the internal sync endpoint (gRPC push later) | Rendered flag document | flagd (pull) |
+| I15 | Workers → flagd | Async: flagd polls the internal sync endpoint with a per-site bearer, every 1 s, ETag-honoured (S4; gRPC push later) | Rendered flag document | flagd (pull) |
 | I16 | Host eval → flagd | Sync | Evaluation by `targetingKey` | Host app |
 | I17 | Workers → Unleash (Phase 2) | Async (outbox) | Admin API calls via `FlagWriter` | Worker |
 | I18 | Policy-diff job → Anthropic pages, GitHub Issues | Async (weekly cron) | Normalized page text; issue on change | GitHub Actions in Repo 1 |

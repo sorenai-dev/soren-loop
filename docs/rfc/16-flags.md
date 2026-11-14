@@ -40,14 +40,46 @@ class FlagWriterError extends Error {
 
 ## 2. Default: flagd sourced from Postgres (ADR-6)
 
-- The server renders one flagd document per site from `flags`. Each flag is
+- The server renders one flagd document per site from `flags`. Each targeted flag is
   `{state: ENABLED, variants: {on: true, off: false}, defaultVariant: "off", targeting:
-  {"if": [{"in": [{"var": "targetingKey"}, [<targets>]]}, "on", "off"]}}`. `all` sets
-  `defaultVariant: "on"`. `pct` uses `fractional`, salted by flag key (Phase 2).
-- **The sync endpoint is internal.** It binds to a separate listener (`--flagd-listen
-  127.0.0.1:8014` or a private network), never the public hostnames. It requires a bearer
-  credential if flagd can send one. That is **UNVERIFIED** (S4). If it can't, the endpoint is
-  network-restricted only, or moves to gRPC sync with auth or mTLS (ST-19, T11.2).
+  {"if": [{"in": [{"var": "targetingKey"}, [<targets>]]}, "on", "off"]}}`. When `all` is set,
+  the flag is rendered `{state: ENABLED, variants: {on: true, off: false}, defaultVariant: "on"}`
+  with **no `targeting` rule**. flagd uses the variant the targeting returns, so keeping the
+  rule's `"off"` else-branch would leave every user outside the target list off (Sentinel, S4).
+  A unit test renders `all` and evaluates a non-targeted identity as on. `pct` uses
+  `fractional`, salted by flag key (Phase 2).
+- **The sync endpoint is internal and authenticated** (S4 F1, ST-19). It binds to a separate
+  listener (`--flagd-listen 127.0.0.1:8014` or a private network), never the public hostnames,
+  and requires a bearer credential. flagd's HTTP source sends it with `authHeader: "Bearer …"`
+  on every poll and honours `ETag`/`If-None-Match`, so unchanged polls are 304s. A missing
+  credential gets 401. A wrong credential at start makes flagd exit 1 (fails closed, loudly).
+- **The credential.** One credential per site, scoped to that site's document only, because the
+  document carries `sub` lists (Sentinel M4). It is kept out of flagd's process arguments and
+  environment: flagd reads its sources from a config file (`--config`) mounted read-only. With
+  `--sources` on the command line, `docker inspect` shows the bearer (F2). The config-file path
+  is **UNVERIFIED** (S4 didn't run it); ST-19 checks that neither `docker inspect` nor
+  `/proc/<pid>/cmdline` shows it (Sentinel condition 9, Task 081).
+- **Rotation.** The sync endpoint accepts the old and new credential during an overlap window,
+  then flagd is restarted on the new one and the old one is revoked. A test checks that an
+  overlapped rotation never produces a 401 poll (condition 8).
+- **Stale-sync detection** (S4 F3, condition 7). A sync that breaks after a good start does not
+  stop flagd: it keeps serving its last good document, `healthz` and `readyz` stay 200, and a
+  killed flag stays on. flagd's sync metrics can't tell this from "no change", because 304s
+  aren't counted. Tracking the last authenticated poll isn't enough either: flagd keeps its last
+  good document when it rejects an accepted one. So each site's document carries a **canary**,
+  a non-allowlisted `sl_` flag whose value changes with every document generation. The server
+  also regenerates the document on a fixed canary period (proposed 30 s), so a quiet site still
+  has a fresh canary while most polls stay 304s. A server-side probe evaluates the canary through
+  each flagd instance. A served canary that lags the server's current one by more than 3× the
+  poll interval marks that instance stale and raises the locked `flag_sync_stale` alert (`10` §1, SR-39(e)). While
+  an instance is stale, `createOfrepHandler` returns 503 for it, so browsers fall back to
+  defaults (off; this fails closed only with the browser cache disabled, §5). Host backends
+  using the flagd provider directly get the same signal from the metric.
+- **Poll interval: 1 s by default.** The flagd interval bounds kill latency at the flagd layer
+  (`10` §4), and unchanged polls are 304s, so a short interval is cheap.
+- **flagd writes nothing to disk** (S4 F8), so the SR-27 purge needs no flagd step beyond
+  re-rendering the served document. The browser's provider cache is the persistence to account
+  for instead (§5).
 - **Host evaluation.** Server-side evaluation through the flagd provider in the host backend is
   the recommended pattern. Browser evaluation is in §5.
 - **The 500-target cap** per flag (R9). Past it, `widen_rollout` returns `422` with
@@ -60,7 +92,9 @@ the default.
 
 **Second-order cost.** The flagd document carries `sub` lists. That's PII on a second system
 (SR-27 purge must rewrite the document), and its size grows linearly. Mitigation: the cap, the
-purge effect, and an internal-only endpoint.
+purge effect, a per-site credential, and an internal-only endpoint. The canary probe and
+rotation overlap are extra moving parts, but without them a broken sync is a silent kill-switch
+failure.
 
 ## 3. Unleash adapter (decision 8; Phase 2 by decision 29, Q3)
 
@@ -89,37 +123,72 @@ code may expose only what the server already authorizes for that user (T11.1).
 
 ## 5. Browser Evaluation: OFREP Contract (FL-1, SR-36, decision 28; Postel M6)
 
-**Gating question for S4 (UNVERIFIED).** Postel reports that the stock OpenFeature OFREP **web**
-provider evaluates in bulk (`POST /ofrep/v1/evaluate/flags`), to fit the static-context model.
-SR-36 currently says the bulk path is never proxied. If both are true, the stock provider gets
-404s and every flag silently resolves to its default, which is "off". **S4 must confirm** whether
-the web provider can be configured for single-flag evaluation
-(`/ofrep/v1/evaluate/flags/{key}`).
+**The gating question is answered (S4 F5; T25 closed: owner approval 2026-11-14 (S4), with Sentinel's ten conditions).** The stock
+OpenFeature OFREP web provider evaluates **only** in bulk (`POST /ofrep/v1/evaluate/flags`). It has
+no single-flag mode, so a handler that blocks bulk would make every flag resolve to its default.
+Through a handler that forwards bulk and filters it to the allowlist, the stock provider works
+unchanged (ST-68 shape passes). The default branch below is confirmed, and the
+`SorenLoopFlagProvider` fallback is **not needed** and is dropped. flagd's own bulk endpoint
+returns every flag, so enumeration is closed only by the handler's filter: flagd's OFREP port must
+never be reachable from a browser (SR-36's private binding is necessary, not defence in depth).
 
-**Default (SR-36 as amended and confirmed by Sentinel; S4 confirms provider compatibility,
-ST-68).** `@sorenai/loop-node` ships the proxy, so hosts never hand-roll a security-critical
-handler:
+**The handler (SR-36 as amended; Sentinel's S4 conditions 1 to 5, Task 082).**
+`@sorenai/loop-node` ships the proxy, so hosts never hand-roll a security-critical handler:
 
 ```ts
 createOfrepHandler({ flagdUrl, allowlist: FlagKey[], getUser: (req) => SorenLoopUser | null })
   : (req: Request) => Promise<Response>      // Fetch API, mountable in any framework
 ```
 
-- It strips any browser-sent evaluation context, and injects `evaluationContext(user)`, which
-  sets `targetingKey` from the host session.
-- It forwards single-flag requests only for allowlisted keys, and returns 404 for anything
-  else.
-- **Bulk handling:** the handler accepts `POST /ofrep/v1/evaluate/flags` too, forwards it to
-  flagd, **filters every response to allowlisted keys**, and drops all metadata. Enumeration is
-  closed by the allowlist and the injected `targetingKey`, not by blocking the path.
+- **Context.** It strips any browser-sent evaluation context, and injects
+  `evaluationContext(user)`, which sets `targetingKey` from the host session. A forged browser
+  `targetingKey` is ignored (S4). No session → 401; the provider then fails to initialise and
+  every flag resolves to its default.
+- **Single flag.** It forwards single-flag requests only for allowlisted keys, and returns a
+  uniform 404 body for anything else.
+- **Bulk.** It accepts `POST /ofrep/v1/evaluate/flags`, forwards it to flagd, and **rebuilds every
+  entry from an allowed field list**: `key`, `value`, `variant`, `errorCode`. No `reason`, no
+  `metadata`, no flagd `eventStreams`. Non-allowlisted keys are dropped (condition 2).
+- **Its own ETag** (condition 1). The handler computes the ETag over the filtered body and the
+  allowlist version, and answers `If-None-Match` with 304 itself. flagd's ETag (computed over the
+  unfiltered body, so a side channel on hidden flags) never reaches the browser, and the
+  browser's `If-None-Match` never reaches flagd. An allowlist change changes every ETag, so a
+  client never misses a new key.
+- **Its own change stream** (conditions 3, 4). The handler advertises its own `eventStreams`
+  entry for a handler-owned SSE route. It holds **one upstream flagd subscription per process**,
+  checks the session when a client connects, sends clients only `{"type": "refetchEvaluation"}`
+  (no flagd bytes; the stock provider reads only `type`, `etag` and `lastModified`), and closes
+  each stream on disconnect and on session expiry. Bounded browser kill latency is the default,
+  not a host choice: a sync change reaches a foreground tab within the flagd interval + 2 s
+  (`10` §4). Without a change stream or polling, the stock provider never sees a kill in a
+  foreground tab (S4 F6).
+- **Forwarded-request hardening** (condition 5). No browser headers go upstream. An upstream
+  timeout fails closed with a generic 503. Malformed input gives a 4xx or 503, never a thrown 500.
+  Responses carry `Cache-Control: private, no-store` and no CORS headers (same-origin only).
+  Construction fails on an empty allowlist or on any key outside the `sl_<random>` pattern.
+- **Stale instance.** While the canary marks the flagd instance stale, the handler returns 503
+  (§2, condition 7).
 - **The allowlist is the `sl_` keys present in the shipped client bundle**, generated at build
   time. It is never "all `sl_` keys" (Sentinel).
 - `createWidgetToken` and `evaluationContext` take the same `SorenLoopUser` type
   (`{sub, name?, email?, emailVerified?}`), so `sub` and `targetingKey` can't drift.
 
-**Fallback contract, only if S4 shows the stock provider can't work through the handler.**
-`@sorenai/loop-react` ships
-`SorenLoopFlagProvider`. This is a thin OpenFeature web provider that calls the proxy's
-single-flag route per key, on demand, with a short cache and an explicit `keys` prop for
-prefetch. It is a provider wrapper, not an evaluator: flagd still evaluates. Its cost is a small
-custom provider to maintain, against discovery's "no custom provider" preference.
+**The provider factory** (condition 6, Tasks 082 and 087). `@sorenai/loop-react` ships a factory
+that builds the **stock** OFREP web provider against the handler's base URL and pins
+`cacheMode: 'disabled'`. It is configuration, not a custom provider: flagd still evaluates. The
+reason is the stock cache (S4 F7):
+
+- The default `local-cache-first` keeps evaluations in `localStorage` for 30 days and resolves
+  from them before the network, so after a kill and a reload a flag reads **on** at `ready`, and a
+  first render shows the killed feature.
+- Its key is built from the base URL, headers, domain and the **browser-side** `targetingKey`.
+  The handler ignores that context and the session is a cookie, so two users on one browser share
+  an entry, and user B's first render can show user A's evaluations (Sentinel H2).
+- `network-first` is not a fix: it still writes the 30-day cache and falls back to it on 5xx and
+  network errors, which is exactly what the stale-instance 503 triggers.
+- The cache also holds per-user evaluations the SR-27 purge can't reach.
+
+ST-68 adds two assertions: after a kill and a reload the value at `ready` is off, and on one
+browser profile user B never sees user A's evaluations. Task 087's docs name the provider cache
+and why the factory disables it. Hosts that build the provider themselves are told to set the
+same option; `doctor` can't check browser code, so this is documentation, not enforcement.

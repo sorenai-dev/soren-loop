@@ -8,7 +8,7 @@ came up in the notification-policy design (decision 30). Those need the owner's 
 
 | # | Question | Decision |
 |---|----------|----------|
-| Q1 | Orgs that forbid private forks | **29**, then **extended and narrowed by the owner decision of 2026-11-14 (S1-F).** Decision 29 kept the same-repo mode as an opt-in. S1-F showed the PR App can't open a PR from a private fork at all (P1), so private forks are dropped and the same-repo ("Dependabot") model is **the** model for every private repo, not an opt-in: one repo App with `contents: write` and `pull_requests: write`, never `workflows` or `administration`, behind a default-branch ruleset with no bypass actors that the start-up check and `doctor` verify, the CI-secrets rule, no merge call, and settled review reads (`08` §1.8, §1.9). Public repos keep the fork model. Pending the brief update (T31 to T35). |
+| Q1 | Orgs that forbid private forks | **29**, then **extended and narrowed by decision 37 (2026-11-14, S1-F).** Decision 29 kept the same-repo mode as an opt-in. S1-F showed the PR App can't open a PR from a private fork at all (P1), so private forks are dropped and the same-repo ("Dependabot") model is **the** model for every private repo, not an opt-in: one repo App with `contents: write` and `pull_requests: write`, never `workflows` or `administration`, behind a default-branch ruleset with no bypass actors that the start-up check and `doctor` verify, the CI-secrets rule, no merge call, and settled review reads (`08` §1.8, §1.9). Public repos keep the fork model. Ratified as decision 37 (2026-11-14); T31 to T35 confirmed by the owner the same day. |
 | Q2 | Enablement after a GitHub merge (G3) | **29.** Automatic by default. Site options: `merger_must_be_owner_login`, `dashboard_confirm` (+SU) (`06` §2, `08` §2). |
 | Q3 | MVP flag store | **29.** flagd only. Unleash is the first Phase 2 adapter, LaunchDarkly second. |
 | Q4 | `build --wait` through a rate-limit window | **29.** Phase 2, opt-in, on an owner-started run, at most one resume per invocation (`07` §1.2). |
@@ -64,32 +64,33 @@ conditions.
 Residual accepted by Sentinel: a rejection after a hold during `planning` looks like an owner
 rejecting at plan review (T12.4).
 
-## 3a. New Tensions from the Zod and Postel Revision (closed by decision 34, except T25)
+## 3a. New Tensions from the Zod and Postel Revision (closed by decision 34; T25 closed after S4)
 
 | # | Tension | Recommendation |
 |---|---------|----------------|
 | T23 | Decision 29 (Q11) accepted GitHub `changes_requested` reviews by the owner login as rework feedback. Zod B5 shows that unsigned feedback steering a write-capable agent breaks content-bound approvals. | GitHub reviews create **pending** feedback, and the owner confirms it with one +SU `rework.approve` (`03` row 24). This tightens Q11. It needs the owner's OK. **Closed: decision 34.** |
 | T24 | The private-repo fetch token (Zod M13) means a stolen CLI token could read the private upstream for 1 h | **Sentinel ruling (rated H inherent):** the default is the owner's own git credential, used only for `git fetch` of the exact upstream URL, so nothing is minted. The server-minted token is a fallback, and it requires a DPoP-bound CLI token (SR-09, T7.6, ST-75). Residual: L by default, M on the fallback. The owner should confirm the default. **Closed: decision 34.** |
-| T25 | SR-36 says "bulk never proxied", but the stock OFREP web provider may need bulk (Postel M6, UNVERIFIED) | S4 gates it. Allowlist-filtered bulk is the proposed amendment (with Sentinel), and `SorenLoopFlagProvider` is the fallback (`16` §5). **Open: gated on S4.** |
+| T25 | SR-36 says "bulk never proxied", but the stock OFREP web provider may need bulk (Postel M6, UNVERIFIED) | S4 answered it: the stock web provider is bulk-only (F5). Allowlist-filtered bulk in `createOfrepHandler` is the design, under Sentinel's ten conditions (sign-off 2026-11-14): the handler's own ETag, entries rebuilt from `key`/`value`/`variant`/`errorCode`, a handler-owned change stream, forwarded-request hardening, a provider factory pinning `cacheMode: 'disabled'`, the stale-sync canary, rotation overlap, the credential out of process arguments, and ST-51 superseded (`16` §2, §5). `SorenLoopFlagProvider` is dropped. **Closed: owner approval 2026-11-14 (S4), with Sentinel's ten conditions.** |
 | T26 | The reconciled MVP is ≈ 30.5 eng-weeks (15–17 calendar weeks), up from ~19.5 (10–12) | The owner picks from the pullback table in `12` §4 (up to ≈ 5 eng-weeks). Nothing has been cut. **Closed: decision 34.** |
 | T27 | `build --fresh` opens a new PR and closes the old one, so review comments split across two PRs | Accepted for V1 (no force-push is the stronger property). The new PR links the old one. **Closed: decision 34.** |
 | T28 | Agent commits are now authored by the push App's bot identity and committed by the owner (Zod m12). Repos with DCO or CLA bots may reject them. | `doctor` detects DCO and CLA checks and warns. The owner can choose a `Co-authored-by` trailer mode instead. **Closed: decision 34.** |
 | T29 | The deterministic flag-off gate (Zod D6) adds an onboarding step: the owner adds a test-setup file that installs OpenFeature's `InMemoryProvider` from `SL_FLAG_FIXTURE` | Accept. `doctor` checks for it, and the onboarding guide ships a snippet per test runner (Jest, Vitest, pytest). **Closed: decision 34.** |
 | T30 | Branch chains (Zod D3): every build from base opens a new PR. A rejected first submit, or `--fresh`, splits review history across PRs, and the fork accumulates branches. | Accept. Superseded PRs link to their successor, superseded branches are deleted after 30 days, and rework within a chain keeps a single PR. **Closed: decision 34.** |
 
-## 3b. New Tensions from S1-F (owner decision 2026-11-14)
+## 3b. New Tensions from S1-F (decision 37, ratified 2026-11-14)
 
 S1-F (`docs/discovery/spikes/S1F-private-repo-followups.md`) refuted the private-fork
-assumption, and the owner chose the same-repo model for private repos (`08` §1.8, §1.9). These
-items follow from it and need the owner's confirmation.
+assumption, and the owner chose the same-repo model for private repos (`08` §1.8, §1.9),
+ratified as decision 37 (ratified 2026-11-14). These items follow from it. All five were **confirmed by the owner
+(2026-11-14)**.
 
 | # | Tension | Recommendation |
 |---|---------|----------------|
-| T31 | Decision 25 names two Apps. Because permissions are App-wide (S1 F2), the private-repo App can't be the PR App widened to `contents: write` without giving every public upstream installation a merge-capable credential. | A third, separate registration, the **repo App** (`soren-loop-repo`), installed only on private repos, with its own key (`08` §1.1, §1.5). A deployment registers only the Apps its repos need. Name is a placeholder. |
-| T32 | Decision 26 and SR-08 say the start-up check and `doctor` fail on any `contents` permission above read. The repo App needs `contents: write`. | Scope that rule to the PR App. The repo App's expected set is exactly `contents: write`, `pull_requests: write`, `metadata: read`, `deployments: read`, optional `issues: write`; anything else, including `workflows` or `administration`, fails closed (`08` §1.4a). Needs SR-08 and ST-48 wording (owner). |
-| T33 | S5 covers `pull_request` workflows. A push to a `soren-loop/**` branch also triggers `push` workflows in the same repo, which normally get repo secrets; S1-F didn't test it. | `doctor` applies the same no-secrets-or-gated-environment rule to `push` workflows that match `soren-loop/**`. Verify in the S1-F harness before Tasks 060 to 066 (**UNVERIFIED**). |
-| T34 | S2: the repo App (and the 1 h push token) can merge a PR once a human approves its latest commit. GitHub can't enforce "a human presses merge". | No merge call in the codebase (lint), and a `03` row 25 guard: a `pr_merged` whose merger is `soren-loop-repo[bot]` raises a locked owner alert and blocks enablement. Residual R5/T10.1 rated H for private repos. |
-| T35 | A binding's model follows the repo's visibility. A repo that changes visibility after binding would run the wrong model (a public repo in same-repo mode; a private repo whose fork PRs fail with 422). | The start-up check compares the repo's `private` flag with the binding's model and fails closed for that binding; re-binding is a +SU setup action. |
+| T31 | Decision 25 names two Apps. Because permissions are App-wide (S1 F2), the private-repo App can't be the PR App widened to `contents: write` without giving every public upstream installation a merge-capable credential. | A third, separate registration, the **repo App** (`soren-loop-repo`), installed only on private repos, with its own key (`08` §1.1, §1.5). A deployment registers only the Apps its repos need. Name is a placeholder. **Confirmed by the owner (2026-11-14).** |
+| T32 | Decision 26 and SR-08 say the start-up check and `doctor` fail on any `contents` permission above read. The repo App needs `contents: write`. | Scope that rule to the PR App. The repo App's expected set is exactly `contents: write`, `pull_requests: write`, `metadata: read`, `deployments: read`, optional `issues: write`; anything else, including `workflows` or `administration`, fails closed (`08` §1.4a). Needs SR-08 and ST-48 wording (owner). **Confirmed by the owner (2026-11-14).** |
+| T33 | S5 covers `pull_request` workflows. A push to a `soren-loop/**` branch also triggers `push` workflows in the same repo, which normally get repo secrets; S1-F didn't test it. | `doctor` applies the same no-secrets-or-gated-environment rule to `push` workflows that match `soren-loop/**`. Verify in the S1-F harness before Tasks 060 to 066 (**UNVERIFIED**). **Confirmed by the owner (2026-11-14).** |
+| T34 | S2: the repo App (and the 1 h push token) can merge a PR once a human approves its latest commit. GitHub can't enforce "a human presses merge". | No merge call in the codebase (lint), and a `03` row 25 guard: a `pr_merged` whose merger is `soren-loop-repo[bot]` raises a locked owner alert and blocks enablement. Residual R5/T10.1 rated H for private repos. **Confirmed by the owner (2026-11-14).** |
+| T35 | A binding's model follows the repo's visibility. A repo that changes visibility after binding would run the wrong model (a public repo in same-repo mode; a private repo whose fork PRs fail with 422). | The start-up check compares the repo's `private` flag with the binding's model and fails closed for that binding; re-binding is a +SU setup action. **Confirmed by the owner (2026-11-14).** |
 
 ## 5. Review Findings → Fix Map (2026-10-31)
 
@@ -120,7 +121,7 @@ items follow from it and need the owner's confirmation.
 | Postel M1, M2 | Step-up `targets[]` and `action` enum, one body shape; `allowed_actions` with routes; `If-Match` → `412` | `05` §1.2, §2; `04` §3.4 |
 | Postel M3, M4 | `/v1/meta` capabilities and the compatibility promise; open response enums | `05` §4 |
 | Postel M5 | `sl.widget_jwt.v1` (per-install `aud`, `typ`, `kid`, leeway: Sentinel to confirm) | `06` §1.1 |
-| Postel M6 | `createOfrepHandler`; S4 gating; fallback provider | `16` §5; `12` §5 |
+| Postel M6 | `createOfrepHandler`; S4 gating (answered: bulk-only, allowlist-filtered bulk; the fallback provider dropped) | `16` §5; `12` §5 |
 | Postel M7 | Standard Webhooks deploy hook | `08` §2.1 |
 | Postel M8 | `FlagWriter` version fence, typed errors, basis points, `limits()`, API version | `16` §1 |
 | Postel M9 | Lease and heartbeat contract, `cancel_requested`, `lease_lost` | `05` §1.4; `03` row 45 |
@@ -174,7 +175,7 @@ binding text, and the SR-02 mount text.
 `claude -p` flag spellings (`--plugin-dir`, `--permission-prompts none`, zero-tool mode) and
 `CLAUDE.md` loading under `--setting-sources user` (S6); `stream-json` rate-limit events (S2);
 plugin skill invocation with `disable-model-invocation` and plugin agent addressing (S3); flagd
-sync auth and latency (S4); whether `push` workflows on `soren-loop/**` branches of a private
+reading its sync credential from a `--config` file (S4 F2; sync auth and latency are verified); whether `push` workflows on `soren-loop/**` branches of a private
 repo receive secrets, and how long `reviewDecision` takes to settle after a push (S1-F left
 both open, `08` §1.9); which hosts emit GitHub deployments; Unleash endpoint paths; pg-boss and
 graphile-worker maintenance; subscription quota per feature; intake cost per request. Each is

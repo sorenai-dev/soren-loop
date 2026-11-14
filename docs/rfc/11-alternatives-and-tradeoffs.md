@@ -17,7 +17,7 @@ B is acceptable. **A ≈ B** means the tradeoffs cancel, and the canceling trade
 runners). A wins because the state machine's table *is* the security spec (ST-23), and putting
 it inside a function-shaped engine would hide the guards.
 
-## 2. PR Model (ADR-4, accepted: decisions 24 and 25; owner decision 2026-11-14)
+## 2. PR Model (ADR-4, accepted: decisions 24 and 25; decision 37)
 
 | Criterion | **A: Fork + two Apps** | A′: Fork + one App | B: Same-repo branch + rulesets | C: Owner's own git credentials |
 |-----------|------------------------|--------------------|--------------------------------|--------------------------------|
@@ -28,7 +28,7 @@ it inside a function-shaped engine would hide the guards.
 | Reversibility | High | High | High | — |
 
 **A > A′ >> B >> C.** A over A′ is the F2 argument: the cost is setup friction, and it buys a
-property the minting code can't break. B is rejected by decision 24 for public repos. For private repos A can't work (S1-F P1), and by owner decision 2026-11-14 B is the model for every private repo, not an opt-in (`08` §1.8, §1.9). The other private-repo options were taking private repos out of MVP scope, or opening PRs with the owner's credential, which is C's cost. C puts the owner's
+property the minting code can't break. B is rejected by decision 24 for public repos. For private repos A can't work (S1-F P1), and by decision 37 B is the model for every private repo, not an opt-in (`08` §1.8, §1.9). The other private-repo options were taking private repos out of MVP scope, or opening PRs with the owner's credential, which is C's cost. C puts the owner's
 credential in the `submit` path.
 
 ## 3. Sandbox Default

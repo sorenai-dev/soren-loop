@@ -2,12 +2,12 @@
 
 Flags (`FlagWriter`, flagd, Unleash, the OFREP contract) are in `16-flags.md`.
 
-## 1. ADR-4: Fork Model for Public Repos, Same-Repo Model for Private Repos (decisions 7, 24, 25; owner decision 2026-11-14)
+## 1. ADR-4: Fork Model for Public Repos, Same-Repo Model for Private Repos (decisions 7, 24, 25; decision 37)
 
 **Status: Accepted.** S1 passed every question (`docs/discovery/spikes/S1-fork-pr-permissions.md`).
 Decision 24 keeps the fork model and rejects Option B. Decision 25 splits GitHub access into two
 Apps. S1-F (`docs/discovery/spikes/S1F-private-repo-followups.md`) then showed that the fork
-model **does not work for private repos** (P1, §1.6). The owner decision of 2026-11-14 (S1-F)
+model **does not work for private repos** (P1, §1.6). Decision 37 (2026-11-14, S1-F)
 splits the design by the upstream's visibility:
 
 | Upstream | Model | Apps | Who can merge |
@@ -240,12 +240,12 @@ depend on rulesets the owner configures and soren-loop can only check. The fork 
 stronger guarantee: no merge-capable credential and no secrets in fork-PR CI.
 
 For private repos, S1-F P1 rules the fork model out. Decision 29 (Q1) had kept Option B as an
-opt-in, off by default, for orgs that forbid private forks. The owner decision of 2026-11-14
-(S1-F) replaces that: Option B, framed as the Dependabot model, is **the** model for every
+opt-in, off by default, for orgs that forbid private forks. Decision 37 (2026-11-14,
+S1-F) replaces that: Option B, framed as the Dependabot model, is **the** model for every
 private repo. It is not an opt-in, and there is no private-fork path to opt out to. §1.9
 specifies it.
 
-### 1.9 Same-Repo Model for Private Repos (owner decision 2026-11-14, S1-F)
+### 1.9 Same-Repo Model for Private Repos (decision 37, S1-F)
 
 **Flow.** The repo App, installed on the owner's private repo, mints the `submit` push token
 (§1.4). The CLI pushes the chain branch `soren-loop/<public_ref>/<chain>` to the repo itself.
@@ -278,7 +278,7 @@ the ruleset (403, item 10) or write `.github/workflows/*` (403, item 11).
   `pull_request_target` / `workflow_run` scan from §1.3.
 - **Visibility.** The binding's model is fixed by the repo's visibility when it is bound. The
   start-up check also compares the repo's current `private` flag with the binding's model and
-  fails closed on a mismatch (proposed; `13` T35).
+  fails closed on a mismatch (`13` T35, confirmed by the owner 2026-11-14).
 
 **CI secrets before review (S5).** Same-repo PR CI receives repo secrets before any human has
 looked at the agent's code (S1-F item 12, `probe_present=true`). GitHub gives Dependabot's own

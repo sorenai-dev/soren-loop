@@ -15,7 +15,7 @@ signing is in `08` §2.1. Postel's review is folded in, and finding IDs are cite
 | `/v1/owner/*` | Dashboard/API host | `__Host-` session only; CSRF token; exact `Origin`; `Sec-Fetch-Site: same-origin` (SR-29); +SU per action (SR-35) | Dashboard SPA |
 | `/v1/cli/*` | Dashboard/API host | CLI bearer (device flow) | Owner CLI |
 | `/v1/webhooks/github`, `/v1/webhooks/deploy/{site_id}` | Dashboard/API host | GitHub HMAC; Standard Webhooks (`08` §2.1) | GitHub, owner CD |
-| `/internal/flagd/*`, `/metrics` | Internal listener only | Network restriction (S4) | flagd, Prometheus |
+| `/internal/flagd/*`, `/metrics` | Internal listener only | Network restriction plus a per-site bearer (S4, `16` §2) | flagd, Prometheus |
 
 The widget host serves only the iframe app, the versioned loader (`/loader/v1.x.y.js`, with
 SRI), and `/v1/widget/*` (T1.4).

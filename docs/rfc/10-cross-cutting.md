@@ -24,6 +24,7 @@ isolates metrics per tenant (SR-34).
 | `notifications_sent_total{kind,channel}`, `notifications_suppressed_total{kind}`, `notification_policy_version{site}` | Tuning the decision-30 policy (`14` §4); a sudden jump in suppressions after a policy change is visible |
 | `webhook_rejected_total{reason}` | Forged or replayed webhooks |
 | `token_mints_total{kind}`, `push_token_refused_total{reason}` | T7.2 detection |
+| `flag_sync_canary_age_seconds{instance}`, `flag_sync_stale{instance}` | S4 F3: a sync broken after start is otherwise silent (flagd stays healthy on its last good document); drives the locked `flag_sync_stale` alert (`16` §2) |
 | `intake_llm_spend_usd{site}` (Phase 2) | The SR-30 hard cap |
 | `cli_requests_total{cli_version}`, `sdk_requests_total{sdk,version}` | The deprecation prerequisite (`05` §4) |
 | `rate_limited_runs_total`, `run_duration_seconds{phase}` | Subscription fit (R4) |
@@ -37,7 +38,8 @@ server. Run logs stay local in `~/.soren-loop/runs/<run_id>/`, with stream lines
 **Alerts** go through the notification policy (`14`). Locked: `security_hold_entered`,
 `precheck_unavailable`, App permission-check failure, outbox `dead`, `policy_changed`,
 `audit_chain_mismatch`, `authenticator_changed`, `cli_device_approved`,
-`owner_contact_changed`, and `pr_head_changed` (SR-41). The metric
+`owner_contact_changed`, `pr_head_changed` (SR-41), and `flag_sync_stale` (a flagd instance's
+canary lags the server's by more than 3× the poll interval; S4 F3, SR-39(e), `16` §2). The metric
 `widget_auth_failures_total{reason}` tracks rejected widget tokens (Postel D-M4). Tunable: a request in
 `merged` for more than 7 days, and the flag-rate threshold for a requester (sent once). Project
 CI alerts (a policy-diff issue opened, a webhook signature-failure spike) go to maintainers or
@@ -78,8 +80,11 @@ flowchart LR
 - **Secrets.** `SL_MASTER_KEY` (the envelope key) comes from the environment or a file. The two GitHub App
   private keys are separate `0400` files in `SL_SECRETS_DIR`, written once by `--setup` and mounted read-only afterwards
   (`08` §1.5). None of these is ever stored in Postgres.
-- **The flagd sync listener** binds to localhost or a private network only (`16` §2).
-- **GitHub App creation.** Two Apps (decision 25) plus a bot-only org for the fork for public repos, and one repo App for private repos (owner decision 2026-11-14, `08` §1.9). Each is registered through a manifest flow from the dashboard setup wizard (`08` §1.3). The manifests are checked into
+- **The flagd sync listener** binds to localhost or a private network only and requires a
+  per-site bearer credential, which flagd reads from a read-only config-file mount, never its
+  command line or environment (`16` §2). flagd's OFREP port is never published to browsers;
+  only `createOfrepHandler` reaches it (`16` §5).
+- **GitHub App creation.** Two Apps (decision 25) plus a bot-only org for the fork for public repos, and one repo App for private repos (decision 37, `08` §1.9). Each is registered through a manifest flow from the dashboard setup wizard (`08` §1.3). The manifests are checked into
   Repo 1 under CODEOWNERS (SC8). `doctor` diffs each App's installed permissions against its manifest.
 - **Backups.** A standard `pg_dump`. The receipts and the audit chain are inside it.
 
@@ -100,7 +105,7 @@ That shapes the 10x analysis in `12` §3.
 
 | What | How |
 |------|-----|
-| A bad feature after rollout | `kill_flag` (no step-up: the safe direction) sets the flag off within one flagd poll interval (**UNVERIFIED** latency, S4). Then a normal revert PR, owner-authored. |
+| A bad feature after rollout | `kill_flag` (no step-up: the safe direction) re-renders the flagd document. Then a normal revert PR, owner-authored. **Latency (S4, measured):** the flagd poll interval bounds it. Source change to evaluation change: 1 s interval p50 593 ms, p95 979 ms; 5 s: 1655 / 4338 ms; 10 s: 6286 / 9988 ms; none missed. The default is **1 s** (unchanged polls are 304s, so it's cheap). Browsers add their refresh path: through the handler's change stream a foreground tab sees the kill within the interval + 2 s (relayed SSE measured 517 ms; provider polling at 1 s measured 1553 ms). With the provider cache disabled, a reload never shows the killed value (`16` §5). A stale sync is caught by the canary alert, not by flagd's health checks (`16` §2). |
 | A bad server release | Images are immutable and digest-pinned, so the rollback is to the previous digest. DB migrations are expand/contract (`05` §4), so the previous release runs against the newer schema for one release. Every migration ships its `down` and is tested in CI. |
 | A bad CLI release | `npm i -g soren-loop@<previous>`. The server's `X-SL-Min-CLI` is raised only in a server release, never by itself, so old CLIs keep working until the owner upgrades the server. |
 | A bad vendored prompt (tdd-pair or personas) | Revert the vendor-sync PR and release the CLI. Because prompts are pinned and never fetched, a bad upstream change never reaches an owner without a CLI release (SC3). |
