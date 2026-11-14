@@ -15,9 +15,9 @@ function gitPushRow(ctx: Context, check: string, r: { code: number | null; stder
   ctx.evidence[`5:${check}`] = r;
 }
 
-async function probe(ctx: Context, which: 'private' | 'public'): Promise<void> {
-  const up = which === 'private' ? ctx.cfg.upstreamPrivate : ctx.cfg.upstreamPublic;
-  const n = await sharedPr(ctx, which);
+async function probe(ctx: Context, which: 'public'): Promise<void> {
+  const up = ctx.cfg.upstreamPublic;
+  const n = await sharedPr(ctx);
   const t = await mint(ctx.cfg, 'pr', up, PR_APP_FULL);
   expectStatus(ctx, 5, `${which}: mint full PR App set`, t.evidence, [201]);
   expectValue(ctx, 5, `${which}: minted permissions equal the SR-08 set`, (t.evidence.body as { permissions?: unknown }).permissions, [PR_APP_FULL]);
@@ -48,6 +48,6 @@ async function probe(ctx: Context, which: 'private' | 'public'): Promise<void> {
 }
 
 export async function run(ctx: Context): Promise<void> {
-  await probe(ctx, 'private');
+  // The fork model (and so ST-48) now covers public repos only; the private run is in the S1-F write-up.
   await probe(ctx, 'public');
 }

@@ -11,7 +11,7 @@ interface Run {
 }
 
 export async function run(ctx: Context): Promise<void> {
-  const { upstreamPublic: pub, forkPublic, upstreamPrivate: priv, forkPrivate } = ctx.cfg;
+  const { upstreamPublic: pub, forkPublic } = ctx.cfg;
 
   ensureWorkflow(ctx, pub);
   const policy = withSetting(ctx, `/repos/${pub}/actions/permissions/fork-pr-contributor-approval`, 'PUT', {
@@ -32,9 +32,5 @@ export async function run(ctx: Context): Promise<void> {
     expectValue(ctx, 4, 'public: App fork PR run starts WITHOUT approval (P3, F1)', seen.status, ['queued', 'in_progress', 'completed'], seen);
   }
 
-  // Private: the App cannot author a private-fork PR at all (P1), so the private approval flag never
-  // gets an App-authored PR to gate. Recorded so the dependency on P1 is explicit.
-  const privBranch = `s1f-item4-private-${ctx.runId}`;
-  expectStatus(ctx, 4, 'private: push App writes fork branch', await pushForkBranch(ctx, forkPrivate, privBranch), [201]);
-  expectStatus(ctx, 4, 'private: PR App fork PR refused, so approval gating is moot (P1)', await openPr(ctx, priv, privBranch), [422]);
+  // Private repos: no fork PRs any more (P1); see the same-repo model, item 7.
 }

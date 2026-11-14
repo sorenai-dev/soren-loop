@@ -52,11 +52,10 @@ async function reviewDecision(upstream: string, n: number): Promise<Decision | n
 }
 
 export async function run(ctx: Context): Promise<void> {
-  // Public upstream: self-approval needs an App-authored PR, which item 1 shows is impossible from a
-  // private fork. The review rules under test are the same for both visibilities.
+  // Public upstream: the fork model is public-repos only (S1-F P1).
   const up = ctx.cfg.upstreamPublic;
   addRuleset(ctx, up);
-  const n = await sharedPr(ctx, 'public');
+  const n = await sharedPr(ctx);
   const t = await mint(ctx.cfg, 'pr', up, PR_APP_FULL);
   if (!t.token) throw new Error('PR App mint failed');
   const tok = t.token;

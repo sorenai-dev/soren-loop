@@ -24,13 +24,13 @@ function check(res: Res, what: string): Res {
 }
 
 // A pull_request workflow on upstream main, so fork-PR approval gating is observable (item 4).
-export function ensureWorkflow(ctx: Context, upstream: string): void {
-  const existing = owner('GET', `/repos/${upstream}/contents/${WORKFLOW_PATH}?ref=main`);
+export function ensureWorkflow(ctx: Context, upstream: string, path = WORKFLOW_PATH, content = WORKFLOW): void {
+  const existing = owner('GET', `/repos/${upstream}/contents/${path}?ref=main`);
   if (existing.status === 200) return;
   const put = check(
-    owner('PUT', `/repos/${upstream}/contents/${WORKFLOW_PATH}`, {
+    owner('PUT', `/repos/${upstream}/contents/${path}`, {
       message: 'chore: add s1f probe workflow (spike S1-F)',
-      content: b64(WORKFLOW),
+      content: b64(content),
       branch: 'main',
     }),
     `add workflow to ${upstream}`,
@@ -38,7 +38,7 @@ export function ensureWorkflow(ctx: Context, upstream: string): void {
   const sha = (put.body as { content: { sha: string } }).content.sha;
   defer(ctx, `remove workflow from ${upstream}`, () => {
     check(
-      owner('DELETE', `/repos/${upstream}/contents/${WORKFLOW_PATH}`, {
+      owner('DELETE', `/repos/${upstream}/contents/${path}`, {
         message: 'chore: remove s1f probe workflow (spike S1-F)',
         sha,
         branch: 'main',
@@ -69,24 +69,17 @@ export async function pushForkBranch(ctx: Context, fork: string, branch: string)
   });
 }
 
-// Opens a fork-head PR, by default with the PR App's full installed set; closes it on cleanup.
-// `as: 'owner'` is the control: the same request with the owner's (human) credential.
-export async function openPr(ctx: Context, upstream: string, branch: string, as: 'app' | 'owner' = 'app'): Promise<Res> {
-  const payload = {
+// Opens a fork-head PR with the PR App's full installed set; closes it on cleanup.
+export async function openPr(ctx: Context, upstream: string, branch: string): Promise<Res> {
+  const t = await mint(ctx.cfg, 'pr', upstream, PR_APP_FULL);
+  if (!t.token) throw new Error(`PR App mint on ${upstream} failed: ${JSON.stringify(t.evidence)}`);
+  const res = await api(t.token, 'POST', `/repos/${upstream}/pulls`, {
     title: `S1-F probe ${branch}`,
     head: `${ctx.cfg.botOrg}:${branch}`,
     base: 'main',
     body: 'Spike S1-F sandbox probe. Safe to close.',
     maintainer_can_modify: false,
-  };
-  let res: Res;
-  if (as === 'owner') {
-    res = owner('POST', `/repos/${upstream}/pulls`, payload);
-  } else {
-    const t = await mint(ctx.cfg, 'pr', upstream, PR_APP_FULL);
-    if (!t.token) throw new Error(`PR App mint on ${upstream} failed: ${JSON.stringify(t.evidence)}`);
-    res = await api(t.token, 'POST', `/repos/${upstream}/pulls`, payload);
-  }
+  });
   const n = (res.body as { number?: number } | null)?.number;
   if (res.status === 201 && n) {
     defer(ctx, `close ${upstream}#${n}`, () => {
@@ -96,22 +89,15 @@ export async function openPr(ctx: Context, upstream: string, branch: string, as:
   return res;
 }
 
-// One shared fork-head PR per upstream for items that only need "an open bot PR".
-export async function sharedPr(ctx: Context, which: 'private' | 'public'): Promise<number> {
-  const upstream = which === 'private' ? ctx.cfg.upstreamPrivate : ctx.cfg.upstreamPublic;
-  const fork = which === 'private' ? ctx.cfg.forkPrivate : ctx.cfg.forkPublic;
+// One shared fork-head PR on the public upstream for items that only need "an open bot PR".
+// (Private forks were dropped after S1-F finding P1; private repos use the same-repo model, item 7.)
+export async function sharedPr(ctx: Context): Promise<number> {
+  const { upstreamPublic: upstream, forkPublic: fork } = ctx.cfg;
   const cached = ctx.prs.get(upstream);
   if (cached) return cached;
-  const branch = `s1f-${which}-${ctx.runId}`;
+  const branch = `s1f-public-${ctx.runId}`;
   check(await pushForkBranch(ctx, fork, branch), `push ${fork}:${branch}`);
-  let pr = await openPr(ctx, upstream, branch);
-  if (pr.status === 422 && which === 'private') {
-    // Item 1 finding: the PR App cannot name a private fork as head. Merge-denial checks only need
-    // *an* open fork PR on upstream, so the owner opens it instead.
-    note(ctx, 0, `shared PR ${upstream}: App open refused, owner opened instead`, pick(pr));
-    pr = await openPr(ctx, upstream, branch, 'owner');
-  }
-  check(pr, `open PR on ${upstream}`);
+  const pr = check(await openPr(ctx, upstream, branch), `open PR on ${upstream}`);
   const n = (pr.body as { number: number }).number;
   ctx.prs.set(upstream, n);
   note(ctx, 0, `shared PR ${upstream}`, pick(pr, ['number', 'html_url', 'maintainer_can_modify']));

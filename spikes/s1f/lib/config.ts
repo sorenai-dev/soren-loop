@@ -10,10 +10,8 @@ export interface Config {
   botOrg: string;
   upstreamPrivate: string;
   upstreamPublic: string;
-  forkPrivate: string;
   forkPublic: string;
   apps: Record<AppName, { id: number; slug: string; keyPath: string }>;
-  allowOrgToggle: boolean;
   only: Set<number> | null;
 }
 
@@ -34,15 +32,14 @@ export function parseArgs(argv: string[]): Config {
   return {
     org,
     botOrg,
+    // Item 7 only. Deleted after the 2026-11-14 run; re-create a private repo of this name to rerun.
     upstreamPrivate: `${org}/sl-upstream-private`,
     upstreamPublic: `${org}/sl-upstream-public`,
-    forkPrivate: `${botOrg}/sl-upstream-private`,
     forkPublic: `${botOrg}/sl-upstream-public`,
     apps: {
       pr: { id: 5590874, slug: 'sl-sandbox-pr-abad', keyPath: join(KEY_DIR, 'pr', 'app.pem') },
       push: { id: 5590892, slug: 'sl-sandbox-push-abad', keyPath: join(KEY_DIR, 'push', 'app.pem') },
     },
-    allowOrgToggle: argv.includes('--allow-org-toggle'),
     only: only ? new Set(only.split(',').map(Number)) : null,
   };
 }
