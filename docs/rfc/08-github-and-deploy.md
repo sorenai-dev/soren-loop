@@ -254,7 +254,7 @@ merges it (G3). S1-F item 7 showed the App can do each step (branch 201, commit 
 Everything else in this RFC (SR-04, SR-41 head pinning, branch chains, deploy matching) is
 unchanged; "the fork" reads as "the repo's `soren-loop/*` branches".
 
-**The control is a default-branch ruleset, with no bypass actors:**
+**The control is two rulesets.** First, a default-branch ruleset with no bypass actors:
 
 | Rule | Setting |
 |------|---------|
@@ -268,14 +268,31 @@ S1-F showed it holds against the App (S1): a direct write to `main` is 409 or re
 including after a late bot push following an approval (item 9); the App can't delete or disable
 the ruleset (403, item 10) or write `.github/workflows/*` (403, item 11).
 
+Second, a **branch-confinement ruleset** (owner decision 2026-11-14, S1-F S7), because without it the
+App and its push token can create and update any non-default branch (S1-F item 14a):
+
+| Rule | Setting |
+|------|---------|
+| Target | `~ALL`, excluding `refs/heads/soren-loop/**` and `~DEFAULT_BRANCH` |
+| Rules | `creation`, `update`, `deletion` |
+| Bypass list | Exactly the built-in repository roles write (4), maintain (2) and admin (5); nothing else, never an `Integration` |
+
+With it, the App's `feature/*` create is 422, an update is 409 and a `git push` to `release/*` is
+rejected (GH013), while `soren-loop/*` branches and the owner still work (S1-F items 14b and 16).
+Human writers keep working through the role bypass (GitHub's documented behaviour; S1-F had no
+non-admin account to show it). The role IDs are undocumented and not sequential: write is 4, not 3.
+
 **Checks.**
 
-- **Start-up check (S4).** The repo App can read the rules with its own token (`GET
-  /repos/{r}/rules/branches/{default}` and `GET /repos/{r}/rulesets`, both 200). The §1.4a
-  check confirms every rule above and an **empty bypass list** for each private-repo binding,
-  at start and hourly, and fails closed for that binding.
-- **`doctor`** runs the same ruleset check, plus the CI-secrets rule below, and the
-  `pull_request_target` / `workflow_run` scan from §1.3.
+- **Start-up check (S4, S9).** The repo App can read both rulesets' rules with its own token
+  (`GET /repos/{r}/rules/branches/{branch}`, `GET /repos/{r}/rulesets/{id}`, 200), but **not their
+  bypass lists**: GitHub omits `bypass_actors` without Administration access. It does report
+  `current_user_can_bypass` for the App itself (`"never"`, or `"always"` once the App is a bypass
+  actor). So the §1.4a check confirms every rule above and `current_user_can_bypass: "never"` on both
+  rulesets, at start and hourly, and fails closed for that binding.
+- **`doctor`** checks what only the owner's credential can see: the default-branch ruleset's bypass
+  list is empty and the confinement ruleset's is exactly roles 4, 2 and 5. It also runs the
+  CI-secrets rule below and the `pull_request_target` / `workflow_run` scan from §1.3.
 - **Visibility.** The binding's model is fixed by the repo's visibility when it is bound. The
   start-up check also compares the repo's current `private` flag with the binding's model and
   fails closed on a mismatch (`13` T35, confirmed by the owner 2026-11-14).
@@ -286,7 +303,7 @@ PRs fork-like treatment; a third-party App's PRs don't get it. So `doctor` **ref
 for a private-repo binding unless every workflow that runs on `pull_request` either references
 no secrets, or references them only inside jobs bound to an environment with required
 reviewers. Workflows triggered by `push` on `soren-loop/**` branches get the same treatment
-(they run with repo secrets too; S1-F did not test this, **UNVERIFIED**, `13` T33).
+(they run with repo secrets too: S1-F item 13 saw `probe_present=true` on the App's push; `13` T33).
 
 **soren-loop never calls merge (S2).** Once a human approves the App's latest commit, the App's
 own merge call succeeds (S1-F item 9b, 200). GitHub can't enforce "a human presses merge". The

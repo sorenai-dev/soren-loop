@@ -115,7 +115,7 @@ random UUID so CI could report only whether it was present.
 | 8 | Can the App write `main` directly? | **No** | contents PUT **409** "Changes must be made through a pull request." · `git push` rejected (GH013) |
 | 9 | Can the App merge without a human review of its latest commit? | **No** | self-approve **422** · merge before review **405** "New changes require approval from someone other than the last pusher." · after a human approval plus a late bot push, merge **405** (same message, twice, after 30 s and 45 s) |
 | 9b | Once a human approves the App's latest commit, can the App press merge? | **Yes** | merge **200** "Pull Request successfully merged" |
-| 10 | Can the App weaken or read the control? | Cannot weaken; **can read** | delete ruleset **403** · disable ruleset **403** · `GET /rules/branches/main` 200 · `GET /rulesets` 200 |
+| 10 | Can the App weaken or read the control? | Cannot weaken; can read the rules but **not the bypass list** (S9) | delete ruleset **403** · disable ruleset **403** · `GET /rules/branches/main` 200 · `GET /rulesets` 200 |
 | 11 | Can the App edit workflows? | **No** | contents PUT on `.github/workflows/*` **403** |
 | 12 | Does CI on the App's PR see repo secrets before review? | **Yes** (the risk) | run by `sl-sandbox-pr-abad[bot]`, `success`, `probe_present=true` |
 
@@ -138,9 +138,10 @@ bot push GitHub still reported `APPROVED` / `CLEAN`, while the merge was already
 reported `REVIEW_REQUIRED` / `BLOCKED` and the merge failed with the explicit rule message. The
 server must not use `reviewDecision` as a merge or state signal without waiting for it to settle.
 
-**S4. The start-up check can verify the ruleset with the App's own token.** Unlike P4, `GET
-/repos/{r}/rules/branches/main` and `GET /rulesets` return 200 for the App, so the backend check
-(`08` §1.4a) can confirm the required rules and an empty bypass list without the owner's credential.
+**S4. The start-up check can verify the ruleset's rules with the App's own token.** Unlike P4,
+`GET /repos/{r}/rules/branches/main` and `GET /rulesets` return 200 for the App, so the backend check
+(`08` §1.4a) can confirm the required rules without the owner's credential. An earlier draft said it
+could also confirm an empty bypass list; it can't (S9).
 
 **S5. Same-repo PR CI gets repo secrets before review (confirms S1 Q4 for App-authored PRs).**
 Agent-written code runs in CI with secrets before a human has looked at it. GitHub gives Dependabot's
@@ -173,13 +174,26 @@ token) can create and update any branch other than the protected default branch.
 `feature/*` 422 "Reference update failed", update an existing `feature/*` branch 409 "Cannot update
 this protected ref", `git push` to `release/*` rejected (GH013). The App still creates `soren-loop/*`
 branches (201), and the owner, an admin, still creates `feature/*` branches (201). The default branch
-is excluded, so merges keep going through the S1 ruleset alone. **Cost:** non-admin human collaborators
-can't create or update other branches either. Adding the built-in **write** role to the bypass list
-would likely keep them working while still blocking the App, which holds no repo role; that variant is
-**UNVERIFIED**.
+is excluded, so merges keep going through the S1 ruleset alone. **Cost:** with an admin-only bypass, non-admin human
+collaborators can't create or update other branches either. **Owner decision (2026-11-14): this
+ruleset is required, with the built-in write, maintain and admin roles as its bypass list.** Bypass is
+per role, not hierarchical, so maintain needs its own entry. The role IDs are undocumented and not
+sequential (write 4, maintain 2, admin 5; GitHub's rest-api-description issue 4406). With that bypass
+list the App is still confined: `feature/*` create 422, `soren-loop/*` create 201, owner create 201
+(item 16, `run-20261114T230245.json`). That a non-admin writer gets through rests on GitHub's
+documented bypass behaviour; the sandbox has no second human account to show it.
 
 **S8. `maintainer_can_modify` is a fork-PR setting.** On a same-repo PR GitHub reports `false`, and
 there is no fork for maintainers to push to. ST-49's narrowing to fork PRs (decision 37) is correct.
+
+**S9. The App's token cannot read ruleset bypass lists.** `GET /repos/{r}/rulesets/{id}` returns 200
+for the App (with `contents: write` or `contents: read`) but omits `bypass_actors`; the owner's
+credential sees them. The response does carry `current_user_can_bypass` for the caller: `"never"` for
+the App normally, and `"always"` after the App is added as an `Integration` bypass actor (both checked
+2026-11-14 on the public upstream). So the start-up check verifies the rules and that the App itself
+cannot bypass, and only `doctor` can verify the full bypass lists. A human bypass actor added later to
+the default-branch ruleset (which would let that person merge without review) is visible only to
+`doctor`.
 
 ## RFC Sections This Changes (for Arendt)
 
