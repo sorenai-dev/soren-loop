@@ -14,6 +14,12 @@ export type SchemaErrorReason =
   // Task 012: normalization
   | 'unassigned_code_point'
   | 'too_long'
+  // Task 013: request schema and content hashes
+  | 'missing_key'
+  | 'unknown_key'
+  | 'invalid_type'
+  | 'invalid_value'
+  | 'not_normalized'
 
 export class SchemaError extends Error {
   readonly reason: SchemaErrorReason

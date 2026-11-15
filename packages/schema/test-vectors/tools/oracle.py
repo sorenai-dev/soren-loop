@@ -100,11 +100,19 @@ add('H-06b', 'G1 hash of H-01 for class "standard" differs from H-06a',
 FB_BODY = 'Use a stream.'
 h_fb = add('H-12c', 'Plan feedback hash', {'requestId': REQ, 'kind': 'plan', 'body': FB_BODY},
            'sl:fb:v1', [REQ, 'plan', FB_BODY])
+add('H-12cn', 'A feedback body that is not normalized hashes as its N_hash form (CRLF and trailing space removed): same preimage as H-12c',
+    {'requestId': REQ, 'kind': 'plan', 'body': 'Use a stream. \r\n'}, 'sl:fb:v1', [REQ, 'plan', FB_BODY])
 ENV = '{"body_md":"Add an export button.","paths":["src/a.ts","src/b.ts"]}'
 SPEC = {'hReq': h01, 'bodyMd': 'Add an export button.'}
 h07 = add('H-07', 'Spec paths unsorted and duplicated (after P) give the sorted-unique H_spec; no h_fb',
           dict(SPEC, hFb=None, paths=['src/b.ts', './src/a.ts', 'src//a.ts']),
           'sl:spec:v1', [h01, '', ENV], equivalent_paths=['src/a.ts', 'src/b.ts'])
+add('H-07n', 'A spec body that is not normalized hashes as its N_hash form (trailing U+00A0 stripped): same preimage as H-07',
+    dict(SPEC, bodyMd='Add an export button.\u00a0', hFb=None, paths=['src/a.ts', 'src/b.ts']),
+    'sl:spec:v1', [h01, '', ENV])
+ENV_ASTRAL = '{"body_md":"Add an export button.","paths":["\ufb01.md","' + EMOJI + '.md"]}'
+add('H-07a', 'Spec paths sort by UTF-8 bytes: U+FB01 before U+1F600 (UTF-16 order would reverse them)',
+    dict(SPEC, hFb=None, paths=[EMOJI + '.md', '\ufb01.md']), 'sl:spec:v1', [h01, '', ENV_ASTRAL])
 add('H-08', 'The H-07 spec with h_fb set', dict(SPEC, hFb=h_fb, paths=['src/a.ts', 'src/b.ts']),
     'sl:spec:v1', [h01, h_fb, ENV])
 add('H-09', 'Rework hash over H-07 and H-12c', {'hSpec': h07, 'hFb': h_fb}, 'sl:rework:v1', [h07, h_fb])
@@ -118,6 +126,13 @@ L2_JCS = ('[{"blob_sha":"' + '4' * 40 + '","path":".claude/settings.json","statu
           '{"blob_sha":"' + '3' * 40 + '","path":"CLAUDE.md","status":"modified"}]')
 l2 = add('H-10d', 'L2 fingerprint: entries given out of path order, paths through P',
          {'trustedSha': TRUSTED, 'baseSha': BASE, 'entries': L2_ENTRIES}, 'sl:l2:v1', [TRUSTED, BASE, L2_JCS])
+L2_ASTRAL_JCS = ('[{"blob_sha":"' + '5' * 40 + '","path":"\ufb01.md","status":"added"},'
+                 '{"blob_sha":"' + '6' * 40 + '","path":"' + EMOJI + '.md","status":"added"}]')
+add('H-10e', 'L2 entries sort by UTF-8 bytes of the path: U+FB01 before U+1F600',
+    {'trustedSha': TRUSTED, 'baseSha': BASE, 'entries': [
+        {'path': EMOJI + '.md', 'status': 'added', 'blobSha': '6' * 40},
+        {'path': '\ufb01.md', 'status': 'added', 'blobSha': '5' * 40}]},
+    'sl:l2:v1', [TRUSTED, BASE, L2_ASTRAL_JCS])
 add('H-10c', 'L2 fingerprint with no instruction-file changes (empty list)',
     {'trustedSha': TRUSTED, 'baseSha': BASE, 'entries': []}, 'sl:l2:v1', [TRUSTED, BASE, '[]'])
 add('H-10a', 'Hold clear without L2', {'requestId': REQ, 'verdictId': 'ver_1', 'contentHash': h07, 'l2Fingerprint': None},

@@ -35,7 +35,7 @@ export function hashFields(prefix: Prefix, fields: readonly string[]): string {
  * UTF-8 byte order (Postel D-M1). UTF-8 preserves code point order, so this compares code
  * points; it never uses `<` on JS strings (UTF-16 order) or localeCompare.
  */
-function compareUtf8(a: string, b: string): number {
+export function compareUtf8(a: string, b: string): number {
   let i = 0
   while (i < a.length && i < b.length) {
     const ca = a.codePointAt(i) as number
