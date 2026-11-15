@@ -22,9 +22,9 @@ Nothing is published to npm until the release gate at the end of Phase 1c.
 
 ## Phase 0b: first red batch (hashing, normalization, test vectors, deterministic pre-check)
 
-- [ ] 011 Framing primitives: `LP`, `H`, JCS, UTF-8 byte-order sort, and `P(path)`
-- [ ] 012 `N_intake` / `N_hash` normalization with a generated Unicode 15.1 assigned-ranges table
-- [ ] 013 Closed `sl.request.v1` schema, the prefix registry, and vectors H-01 to H-12
+- [x] 011 Framing primitives: `LP`, `H`, JCS, UTF-8 byte-order sort, and `P(path)`
+- [x] 012 `N_intake` / `N_hash` normalization with a generated Unicode 15.1 assigned-ranges table
+- [x] 013 Closed `sl.request.v1` schema, the prefix registry, and vectors H-01 to H-12
 - [ ] 014 Step-up challenge derivation `sl:webauthn:v1`, the action enum, and vectors C-01 to C-03
 - [ ] 015 Offline receipt verifier and vectors R-01 to R-08 (ST-63)
 - [ ] 016 Vector conformance runner, JSON vector export, and `@sorenai/loop-schema` publish config

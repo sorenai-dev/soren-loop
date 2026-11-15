@@ -1,0 +1,545 @@
+[
+  {
+    "id": "H-13a",
+    "description": "LP framing: fields (\"ab\", \"c\")",
+    "input": {
+      "prefix": "sl:test:v1",
+      "fields": [
+        "ab",
+        "c"
+      ]
+    },
+    "expected_bytes_hex": "0000000a736c3a746573743a76310000000261620000000163",
+    "expected_hash": "4ae0c66dc5eb816fa59bce389d268d2c196d2970d6ffc622c1e1dd39f23d4092"
+  },
+  {
+    "id": "H-13b",
+    "description": "LP framing: fields (\"a\", \"bc\") hash differently from H-13a",
+    "input": {
+      "prefix": "sl:test:v1",
+      "fields": [
+        "a",
+        "bc"
+      ]
+    },
+    "expected_bytes_hex": "0000000a736c3a746573743a76310000000161000000026263",
+    "expected_hash": "0716a6bc20dc3261cdf70f4c895574d0a1563d3277fce8eb794807d8990ec9a8"
+  },
+  {
+    "id": "H-13c",
+    "description": "Zero fields: the preimage is LP(prefix) alone",
+    "input": {
+      "prefix": "sl:test:v1",
+      "fields": []
+    },
+    "expected_bytes_hex": "0000000a736c3a746573743a7631",
+    "expected_hash": "0c0e088e3afd4148fb6db5022fa18eccbb837b91fbab9ffebc1cc01ef3006e84"
+  },
+  {
+    "id": "H-14",
+    "description": "An astral-plane string among BMP strings sorts by UTF-8 bytes (code point order), not UTF-16 order; the sorted list is hashed as fields under a test prefix",
+    "input": {
+      "prefix": "sl:test:v1",
+      "unsorted": [
+        "\ufb01",
+        "\ud83d\ude00",
+        "a",
+        "\ue000"
+      ]
+    },
+    "expected_sorted": [
+      "a",
+      "\ue000",
+      "\ufb01",
+      "\ud83d\ude00"
+    ],
+    "expected_bytes_hex": "0000000a736c3a746573743a7631000000016100000003ee808000000003efac8100000004f09f9880",
+    "expected_hash": "0bd8308268debc438dea72275e700f2d67dba2ef19e347d378f74951be480861"
+  },
+  {
+    "id": "H-15",
+    "description": "P(path): ./src/a.ts, src/a.ts and src//a.ts give one result; ../x is rejected",
+    "input": {
+      "same": [
+        "./src/a.ts",
+        "src/a.ts",
+        "src//a.ts"
+      ],
+      "rejected": "../x"
+    },
+    "expected_normalized": "src/a.ts",
+    "expected_error": "path_traversal"
+  },
+  {
+    "id": "P-01",
+    "description": "P drops a \".\" segment in the middle",
+    "input": {
+      "path": "src/./a.ts"
+    },
+    "expected_normalized": "src/a.ts"
+  },
+  {
+    "id": "P-02",
+    "description": "P drops a trailing slash",
+    "input": {
+      "path": "src/"
+    },
+    "expected_normalized": "src"
+  },
+  {
+    "id": "P-03",
+    "description": "A colon is legal in a relative POSIX path",
+    "input": {
+      "path": "a:b.md"
+    },
+    "expected_normalized": "a:b.md"
+  },
+  {
+    "id": "JCS-01",
+    "description": "RFC 8785 sorts object keys by UTF-16 code units: U+1F600 (D83D DE00) before U+FB01",
+    "input": {
+      "value": {
+        "\ufb01": 1,
+        "\ud83d\ude00": 2
+      }
+    },
+    "expected_bytes_hex": "7b22f09f9880223a322c22efac81223a317d"
+  },
+  {
+    "id": "H-01",
+    "description": "Rev 1 request with area null",
+    "input": {
+      "siteId": "site_1",
+      "requestId": "req_1",
+      "rev": 1,
+      "kind": "requester",
+      "parentHReq": null,
+      "fields": {
+        "title": "Export CSV",
+        "problem": "I need my data.",
+        "acceptance_criteria": [
+          "A button exports CSV"
+        ],
+        "area": null,
+        "owner_context": null
+      }
+    },
+    "expected_bytes_hex": "00000009736c3a7265713a763100000006736974655f31000000057265715f3100000001310000000972657175657374657200000000000000827b22616363657074616e63655f6372697465726961223a5b224120627574746f6e206578706f72747320435356225d2c2261726561223a6e756c6c2c226f776e65725f636f6e74657874223a6e756c6c2c2270726f626c656d223a2249206e656564206d7920646174612e222c227469746c65223a224578706f727420435356227d",
+    "expected_hash": "a9a1a8bc5564997c855ee7dab2a32e6cc64ddeb6d7c892fba9e2192e3cb96ca9"
+  },
+  {
+    "id": "H-02",
+    "description": "The H-01 request with area set gives a different hash",
+    "input": {
+      "siteId": "site_1",
+      "requestId": "req_1",
+      "rev": 1,
+      "kind": "requester",
+      "parentHReq": null,
+      "fields": {
+        "title": "Export CSV",
+        "problem": "I need my data.",
+        "acceptance_criteria": [
+          "A button exports CSV"
+        ],
+        "area": "billing",
+        "owner_context": null
+      }
+    },
+    "expected_bytes_hex": "00000009736c3a7265713a763100000006736974655f31000000057265715f3100000001310000000972657175657374657200000000000000877b22616363657074616e63655f6372697465726961223a5b224120627574746f6e206578706f72747320435356225d2c2261726561223a2262696c6c696e67222c226f776e65725f636f6e74657874223a6e756c6c2c2270726f626c656d223a2249206e656564206d7920646174612e222c227469746c65223a224578706f727420435356227d",
+    "expected_hash": "27f49ec8f3779d2051a47232103933baf8e645547aad72055b90f89d3857c24d"
+  },
+  {
+    "id": "H-03",
+    "description": "H-01 with input keys in a different order: identical H_req (JCS)",
+    "input": {
+      "siteId": "site_1",
+      "requestId": "req_1",
+      "rev": 1,
+      "kind": "requester",
+      "parentHReq": null,
+      "fields": {
+        "owner_context": null,
+        "area": null,
+        "title": "Export CSV",
+        "acceptance_criteria": [
+          "A button exports CSV"
+        ],
+        "problem": "I need my data."
+      }
+    },
+    "expected_bytes_hex": "00000009736c3a7265713a763100000006736974655f31000000057265715f3100000001310000000972657175657374657200000000000000827b22616363657074616e63655f6372697465726961223a5b224120627574746f6e206578706f72747320435356225d2c2261726561223a6e756c6c2c226f776e65725f636f6e74657874223a6e756c6c2c2270726f626c656d223a2249206e656564206d7920646174612e222c227469746c65223a224578706f727420435356227d",
+    "expected_hash": "a9a1a8bc5564997c855ee7dab2a32e6cc64ddeb6d7c892fba9e2192e3cb96ca9"
+  },
+  {
+    "id": "H-04",
+    "description": "Rev 2 owner_context revision whose parent_h_req is H-01",
+    "input": {
+      "siteId": "site_1",
+      "requestId": "req_1",
+      "rev": 2,
+      "kind": "owner_context",
+      "parentHReq": "a9a1a8bc5564997c855ee7dab2a32e6cc64ddeb6d7c892fba9e2192e3cb96ca9",
+      "fields": {
+        "title": "Export CSV",
+        "problem": "I need my data.",
+        "acceptance_criteria": [
+          "A button exports CSV"
+        ],
+        "area": null,
+        "owner_context": "Use the existing export service."
+      }
+    },
+    "expected_bytes_hex": "00000009736c3a7265713a763100000006736974655f31000000057265715f3100000001320000000d6f776e65725f636f6e746578740000004061396131613862633535363439393763383535656537646162326133326536636336346464656236643763383932666261396532313932653363623936636139000000a07b22616363657074616e63655f6372697465726961223a5b224120627574746f6e206578706f72747320435356225d2c2261726561223a6e756c6c2c226f776e65725f636f6e74657874223a2255736520746865206578697374696e67206578706f727420736572766963652e222c2270726f626c656d223a2249206e656564206d7920646174612e222c227469746c65223a224578706f727420435356227d",
+    "expected_hash": "4f7fadac095283561491c182a88203c71f92d41de56dcbc2dd63b25d49bd1940"
+  },
+  {
+    "id": "H-05",
+    "description": "A missing key is a schema error and is never hashed",
+    "input": {
+      "siteId": "site_1",
+      "requestId": "req_1",
+      "rev": 1,
+      "kind": "requester",
+      "parentHReq": null,
+      "fields": {
+        "title": "Export CSV",
+        "problem": "I need my data.",
+        "acceptance_criteria": [
+          "A button exports CSV"
+        ],
+        "area": null
+      }
+    },
+    "expected_error": "missing_key"
+  },
+  {
+    "id": "H-06a",
+    "description": "G1 hash of H-01 for class \"small\"",
+    "input": {
+      "hReq": "a9a1a8bc5564997c855ee7dab2a32e6cc64ddeb6d7c892fba9e2192e3cb96ca9",
+      "eligibilityClass": "small"
+    },
+    "expected_bytes_hex": "00000008736c3a67313a7631000000406139613161386263353536343939376338353565653764616232613332653663633634646465623664376338393266626139653231393265336362393663613900000005736d616c6c",
+    "expected_hash": "8254ae0fda5fdff5577d9f6eb8832a70e9dfec2c758586591aa605cf47ea5e51"
+  },
+  {
+    "id": "H-06b",
+    "description": "G1 hash of H-01 for class \"standard\" differs from H-06a",
+    "input": {
+      "hReq": "a9a1a8bc5564997c855ee7dab2a32e6cc64ddeb6d7c892fba9e2192e3cb96ca9",
+      "eligibilityClass": "standard"
+    },
+    "expected_bytes_hex": "00000008736c3a67313a76310000004061396131613862633535363439393763383535656537646162326133326536636336346464656236643763383932666261396532313932653363623936636139000000087374616e64617264",
+    "expected_hash": "0e9993531db5ff620da72473c481c30dd650cb7a103c4d471bc8e290b3fb81fa"
+  },
+  {
+    "id": "H-12c",
+    "description": "Plan feedback hash",
+    "input": {
+      "requestId": "req_1",
+      "kind": "plan",
+      "body": "Use a stream."
+    },
+    "expected_bytes_hex": "00000008736c3a66623a7631000000057265715f3100000004706c616e0000000d55736520612073747265616d2e",
+    "expected_hash": "c1ed484c55629e20797a6cdfd4df91c6dfa0fc0df2a8d537e1912e6ae461d9e2"
+  },
+  {
+    "id": "H-12cn",
+    "description": "A feedback body that is not normalized hashes as its N_hash form (CRLF and trailing space removed): same preimage as H-12c",
+    "input": {
+      "requestId": "req_1",
+      "kind": "plan",
+      "body": "Use a stream. \r\n"
+    },
+    "expected_bytes_hex": "00000008736c3a66623a7631000000057265715f3100000004706c616e0000000d55736520612073747265616d2e",
+    "expected_hash": "c1ed484c55629e20797a6cdfd4df91c6dfa0fc0df2a8d537e1912e6ae461d9e2"
+  },
+  {
+    "id": "H-07",
+    "description": "Spec paths unsorted and duplicated (after P) give the sorted-unique H_spec; no h_fb",
+    "input": {
+      "hReq": "a9a1a8bc5564997c855ee7dab2a32e6cc64ddeb6d7c892fba9e2192e3cb96ca9",
+      "bodyMd": "Add an export button.",
+      "hFb": null,
+      "paths": [
+        "src/b.ts",
+        "./src/a.ts",
+        "src//a.ts"
+      ]
+    },
+    "equivalent_paths": [
+      "src/a.ts",
+      "src/b.ts"
+    ],
+    "expected_bytes_hex": "0000000a736c3a737065633a7631000000406139613161386263353536343939376338353565653764616232613332653663633634646465623664376338393266626139653231393265336362393663613900000000000000437b22626f64795f6d64223a2241646420616e206578706f727420627574746f6e2e222c227061746873223a5b227372632f612e7473222c227372632f622e7473225d7d",
+    "expected_hash": "f3e0a230c740550b4cbae2ca9440522a6e230e494dd823d66eef7edc6f0709b5"
+  },
+  {
+    "id": "H-07n",
+    "description": "A spec body that is not normalized hashes as its N_hash form (trailing U+00A0 stripped): same preimage as H-07",
+    "input": {
+      "hReq": "a9a1a8bc5564997c855ee7dab2a32e6cc64ddeb6d7c892fba9e2192e3cb96ca9",
+      "bodyMd": "Add an export button.\u00a0",
+      "hFb": null,
+      "paths": [
+        "src/a.ts",
+        "src/b.ts"
+      ]
+    },
+    "expected_bytes_hex": "0000000a736c3a737065633a7631000000406139613161386263353536343939376338353565653764616232613332653663633634646465623664376338393266626139653231393265336362393663613900000000000000437b22626f64795f6d64223a2241646420616e206578706f727420627574746f6e2e222c227061746873223a5b227372632f612e7473222c227372632f622e7473225d7d",
+    "expected_hash": "f3e0a230c740550b4cbae2ca9440522a6e230e494dd823d66eef7edc6f0709b5"
+  },
+  {
+    "id": "H-07a",
+    "description": "Spec paths sort by UTF-8 bytes: U+FB01 before U+1F600 (UTF-16 order would reverse them)",
+    "input": {
+      "hReq": "a9a1a8bc5564997c855ee7dab2a32e6cc64ddeb6d7c892fba9e2192e3cb96ca9",
+      "bodyMd": "Add an export button.",
+      "hFb": null,
+      "paths": [
+        "\ud83d\ude00.md",
+        "\ufb01.md"
+      ]
+    },
+    "expected_bytes_hex": "0000000a736c3a737065633a7631000000406139613161386263353536343939376338353565653764616232613332653663633634646465623664376338393266626139653231393265336362393663613900000000000000407b22626f64795f6d64223a2241646420616e206578706f727420627574746f6e2e222c227061746873223a5b22efac812e6d64222c22f09f98802e6d64225d7d",
+    "expected_hash": "367a396a2accbf05d0533e1f46dc3cd2020f9b2022d9f6ebee185ad2cf1e21f0"
+  },
+  {
+    "id": "H-08",
+    "description": "The H-07 spec with h_fb set",
+    "input": {
+      "hReq": "a9a1a8bc5564997c855ee7dab2a32e6cc64ddeb6d7c892fba9e2192e3cb96ca9",
+      "bodyMd": "Add an export button.",
+      "hFb": "c1ed484c55629e20797a6cdfd4df91c6dfa0fc0df2a8d537e1912e6ae461d9e2",
+      "paths": [
+        "src/a.ts",
+        "src/b.ts"
+      ]
+    },
+    "expected_bytes_hex": "0000000a736c3a737065633a763100000040613961316138626335353634393937633835356565376461623261333265366363363464646562366437633839326662613965323139326533636239366361390000004063316564343834633535363239653230373937613663646664346466393163366466613066633064663261386435333765313931326536616534363164396532000000437b22626f64795f6d64223a2241646420616e206578706f727420627574746f6e2e222c227061746873223a5b227372632f612e7473222c227372632f622e7473225d7d",
+    "expected_hash": "b83b98964c2fdba7ddfbee8f0cc6f6cb7b1bdf265f64e29756942953d01b266a"
+  },
+  {
+    "id": "H-09",
+    "description": "Rework hash over H-07 and H-12c",
+    "input": {
+      "hSpec": "f3e0a230c740550b4cbae2ca9440522a6e230e494dd823d66eef7edc6f0709b5",
+      "hFb": "c1ed484c55629e20797a6cdfd4df91c6dfa0fc0df2a8d537e1912e6ae461d9e2"
+    },
+    "expected_bytes_hex": "0000000c736c3a7265776f726b3a763100000040663365306132333063373430353530623463626165326361393434303532326136653233306534393464643832336436366565663765646336663037303962350000004063316564343834633535363239653230373937613663646664346466393163366466613066633064663261386435333765313931326536616534363164396532",
+    "expected_hash": "99ede45c16d616ba077d034daf2bffebfa4d08a8bae0aa3bfbcc81ffd6521d40"
+  },
+  {
+    "id": "H-10d",
+    "description": "L2 fingerprint: entries given out of path order, paths through P",
+    "input": {
+      "trustedSha": "1111111111111111111111111111111111111111",
+      "baseSha": "2222222222222222222222222222222222222222",
+      "entries": [
+        {
+          "path": "CLAUDE.md",
+          "status": "modified",
+          "blobSha": "3333333333333333333333333333333333333333"
+        },
+        {
+          "path": "./.claude/settings.json",
+          "status": "added",
+          "blobSha": "4444444444444444444444444444444444444444"
+        }
+      ]
+    },
+    "expected_bytes_hex": "00000008736c3a6c323a763100000028313131313131313131313131313131313131313131313131313131313131313131313131313131310000002832323232323232323232323232323232323232323232323232323232323232323232323232323232000000c85b7b22626c6f625f736861223a2234343434343434343434343434343434343434343434343434343434343434343434343434343434222c2270617468223a222e636c617564652f73657474696e67732e6a736f6e222c22737461747573223a226164646564227d2c7b22626c6f625f736861223a2233333333333333333333333333333333333333333333333333333333333333333333333333333333222c2270617468223a22434c415544452e6d64222c22737461747573223a226d6f646966696564227d5d",
+    "expected_hash": "7e55830853d4b17980e68f54274a75fe68e2599d319e49022deedb4f7f6649a6"
+  },
+  {
+    "id": "H-10e",
+    "description": "L2 entries sort by UTF-8 bytes of the path: U+FB01 before U+1F600",
+    "input": {
+      "trustedSha": "1111111111111111111111111111111111111111",
+      "baseSha": "2222222222222222222222222222222222222222",
+      "entries": [
+        {
+          "path": "\ud83d\ude00.md",
+          "status": "added",
+          "blobSha": "6666666666666666666666666666666666666666"
+        },
+        {
+          "path": "\ufb01.md",
+          "status": "added",
+          "blobSha": "5555555555555555555555555555555555555555"
+        }
+      ]
+    },
+    "expected_bytes_hex": "00000008736c3a6c323a763100000028313131313131313131313131313131313131313131313131313131313131313131313131313131310000002832323232323232323232323232323232323232323232323232323232323232323232323232323232000000b45b7b22626c6f625f736861223a2235353535353535353535353535353535353535353535353535353535353535353535353535353535222c2270617468223a22efac812e6d64222c22737461747573223a226164646564227d2c7b22626c6f625f736861223a2236363636363636363636363636363636363636363636363636363636363636363636363636363636222c2270617468223a22f09f98802e6d64222c22737461747573223a226164646564227d5d",
+    "expected_hash": "eb49557785293d05a058c57011918d1a4e29db2350242eea2dcfc7961dac6442"
+  },
+  {
+    "id": "H-10c",
+    "description": "L2 fingerprint with no instruction-file changes (empty list)",
+    "input": {
+      "trustedSha": "1111111111111111111111111111111111111111",
+      "baseSha": "2222222222222222222222222222222222222222",
+      "entries": []
+    },
+    "expected_bytes_hex": "00000008736c3a6c323a763100000028313131313131313131313131313131313131313131313131313131313131313131313131313131310000002832323232323232323232323232323232323232323232323232323232323232323232323232323232000000025b5d",
+    "expected_hash": "a3e7f30fcec34188c2cbbae2f783dbce43fd1a5bf47d0c7ad3a521404e36d603"
+  },
+  {
+    "id": "H-10a",
+    "description": "Hold clear without L2",
+    "input": {
+      "requestId": "req_1",
+      "verdictId": "ver_1",
+      "contentHash": "f3e0a230c740550b4cbae2ca9440522a6e230e494dd823d66eef7edc6f0709b5",
+      "l2Fingerprint": null
+    },
+    "expected_bytes_hex": "00000010736c3a686f6c645f636c6561723a7631000000057265715f31000000057665725f31000000406633653061323330633734303535306234636261653263613934343035323261366532333065343934646438323364363665656637656463366630373039623500000000",
+    "expected_hash": "9b7db5f5f2e92f461a06ef3272d7c990ab45e772c9ea342825917a6e61c052d9"
+  },
+  {
+    "id": "H-10b",
+    "description": "Hold clear with the H-10d L2 fingerprint",
+    "input": {
+      "requestId": "req_1",
+      "verdictId": "ver_1",
+      "contentHash": "f3e0a230c740550b4cbae2ca9440522a6e230e494dd823d66eef7edc6f0709b5",
+      "l2Fingerprint": "7e55830853d4b17980e68f54274a75fe68e2599d319e49022deedb4f7f6649a6"
+    },
+    "expected_bytes_hex": "00000010736c3a686f6c645f636c6561723a7631000000057265715f31000000057665725f3100000040663365306132333063373430353530623463626165326361393434303532326136653233306534393464643832336436366565663765646336663037303962350000004037653535383330383533643462313739383065363866353432373461373566653638653235393964333139653439303232646565646234663766363634396136",
+    "expected_hash": "0de55ce5ebc60047d13f84636d5880c0a84f4a55f882291d3e2eb5db1d8220e0"
+  },
+  {
+    "id": "H-11a",
+    "description": "Rollout targets: order and duplicates are irrelevant",
+    "input": {
+      "requestId": "req_1",
+      "mode": "targets",
+      "targets": [
+        "u2",
+        "u1",
+        "u2"
+      ],
+      "docVersion": 7
+    },
+    "equivalent_targets": [
+      "u1",
+      "u2"
+    ],
+    "expected_bytes_hex": "0000000d736c3a726f6c6c6f75743a7631000000057265715f3100000007746172676574730000000b5b227531222c227532225d0000000137",
+    "expected_hash": "c6f64c411b89bfef2b568f17755bee811cc927af7ce1c93f98f83e2ff052d21c"
+  },
+  {
+    "id": "H-11b",
+    "description": "Rollout by basis points",
+    "input": {
+      "requestId": "req_1",
+      "mode": "bp",
+      "bp": 2500,
+      "docVersion": 7
+    },
+    "expected_bytes_hex": "0000000d736c3a726f6c6c6f75743a7631000000057265715f3100000002627000000004323530300000000137",
+    "expected_hash": "0e73017b2dcb16901ca253c8d4c930ffa2955c58bfe30dcec60a0687f29f6ce4"
+  },
+  {
+    "id": "H-11c",
+    "description": "Rollout to all",
+    "input": {
+      "requestId": "req_1",
+      "mode": "all",
+      "docVersion": 7
+    },
+    "expected_bytes_hex": "0000000d736c3a726f6c6c6f75743a7631000000057265715f3100000003616c6c00000003616c6c0000000137",
+    "expected_hash": "889a3439655a2ba053ff750fd3aa3876eed93d663aaed4db10fef8c3b9bbc348"
+  },
+  {
+    "id": "H-11d",
+    "description": "Rollout to all at doc_version 8 differs from H-11c",
+    "input": {
+      "requestId": "req_1",
+      "mode": "all",
+      "docVersion": 8
+    },
+    "expected_bytes_hex": "0000000d736c3a726f6c6c6f75743a7631000000057265715f3100000003616c6c00000003616c6c0000000138",
+    "expected_hash": "76e80e37fffd681b274253dc2442641e03f07f2751e0601eb1c923b4c45a058a"
+  },
+  {
+    "id": "H-14b",
+    "description": "Rollout targets: an astral-plane sub among BMP subs sorts by UTF-8 bytes",
+    "input": {
+      "requestId": "req_1",
+      "mode": "targets",
+      "targets": [
+        "\ufb01",
+        "\ud83d\ude00",
+        "a"
+      ],
+      "docVersion": 1
+    },
+    "expected_bytes_hex": "0000000d736c3a726f6c6c6f75743a7631000000057265715f310000000774617267657473000000125b2261222c22efac81222c22f09f9880225d0000000131",
+    "expected_hash": "d35f6f871eb24fc69e574787a42fa289899b4366c8f56e65d910959ed10a8fd4"
+  },
+  {
+    "id": "H-12a",
+    "description": "Notification policy override with base_version 3",
+    "input": {
+      "siteId": "site_1",
+      "baseVersion": 3,
+      "override": {
+        "quiet_hours": {
+          "start": "22:00",
+          "end": "07:00"
+        },
+        "channels": [
+          "email"
+        ]
+      }
+    },
+    "expected_bytes_hex": "00000019736c3a6e6f74696669636174696f6e5f706f6c6963793a763100000006736974655f310000000133000000447b226368616e6e656c73223a5b22656d61696c225d2c2271756965745f686f757273223a7b22656e64223a2230373a3030222c227374617274223a2232323a3030227d7d",
+    "expected_hash": "8aa80ac017dfcaa56e3f62d7ea41f765f72441fe211d7cad9fc81fd7d4312486"
+  },
+  {
+    "id": "H-12e",
+    "description": "The H-12a override with base_version 4 differs",
+    "input": {
+      "siteId": "site_1",
+      "baseVersion": 4,
+      "override": {
+        "quiet_hours": {
+          "start": "22:00",
+          "end": "07:00"
+        },
+        "channels": [
+          "email"
+        ]
+      }
+    },
+    "expected_bytes_hex": "00000019736c3a6e6f74696669636174696f6e5f706f6c6963793a763100000006736974655f310000000134000000447b226368616e6e656c73223a5b22656d61696c225d2c2271756965745f686f757273223a7b22656e64223a2230373a3030222c227374617274223a2232323a3030227d7d",
+    "expected_hash": "5de1b83b24e7af5c5c8ef6012f5d1f0bea91143c395a7cee622d5599bfd6216c"
+  },
+  {
+    "id": "H-12b",
+    "description": "Site config change",
+    "input": {
+      "siteId": "site_1",
+      "setting": "contact",
+      "baseVersion": 2,
+      "value": {
+        "email": "owner@example.com"
+      }
+    },
+    "expected_bytes_hex": "00000011736c3a736974655f636f6e6669673a763100000006736974655f3100000007636f6e7461637400000001320000001d7b22656d61696c223a226f776e6572406578616d706c652e636f6d227d",
+    "expected_hash": "c0797efafafaff35bc06ad22748e139b1fb1d075fab534179f34158948f3b4e4"
+  },
+  {
+    "id": "H-12d",
+    "description": "Enablement confirmation",
+    "input": {
+      "requestId": "req_1",
+      "deploymentId": "dep_1",
+      "flagKey": "sl_abc"
+    },
+    "expected_bytes_hex": "00000014736c3a656e61626c655f636f6e6669726d3a7631000000057265715f31000000056465705f3100000006736c5f616263",
+    "expected_hash": "7b8d0c6dd45f9c0e3fd79c00298fe3f23fc1274eb8cf72efefd677843e969f67"
+  }
+]
