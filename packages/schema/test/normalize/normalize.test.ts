@@ -83,9 +83,9 @@ describe('nIntake (steps 1-6)', () => {
     check('N-15i')
   })
   test('[T012-15] idempotence: nHash(nHash(x)) === nHash(x) and nHash(nIntake(x).value) === nIntake(x).value', () => {
-    const marks = ['́', '̈', '̧']
-    const stripped = ['​', '‍', '⁠', '﻿', '‮', '⁦', '‎', '\u{e0041}']
-    const spacing = [' ', '\t', '\r\n', '\r', '\n', ' ', '　', ' ']
+    const marks = ['\u0301', '\u0308', '\u0327']
+    const stripped = ['\u200b', '\u200d', '\u2060', '\ufeff', '\u202e', '\u2066', '\u200e', '\u{e0041}']
+    const spacing = [' ', '\t', '\r\n', '\r', '\n', '\u00a0', '\u3000', '\u2028']
     const bases = ['e', 'a', 'c', 'x', 'A']
     const corpus: string[] = []
     // Deterministic corpus: every strip-set character placed between a base and each mark, with

@@ -33,3 +33,15 @@ test('[T011-15] every shared vector file is ASCII-only JSON', () => {
     expect(nonAscii, file).toBe(-1)
   }
 })
+
+test('[T012-17] TypeScript sources are ASCII apart from the section sign, so no invisible character hides in a test', () => {
+  const offenders: string[] = []
+  for (const dir of ['src', 'test', 'scripts']) {
+    for (const file of filesUnder(dir, '.ts')) {
+      const text = readFileSync(join(root, file), 'utf8')
+      const bad = [...text].filter((c) => c > '~' && c !== '§' && c !== '\n')
+      if (bad.length > 0) offenders.push(`${file}: ${bad.map((c) => `U+${c.codePointAt(0)?.toString(16)}`).join(' ')}`)
+    }
+  }
+  expect(offenders).toEqual([])
+})
