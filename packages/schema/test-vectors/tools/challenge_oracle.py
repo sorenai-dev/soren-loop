@@ -163,6 +163,10 @@ receipt('R-01h', 'R-01 re-signed with s replaced by n - s (the other of low-S/hi
 receipt('R-02', 'Wrong origin (ST-63)', assertion(KEY_A, c01, origin='https://evil.example.test'),
         fail('wrong_origin'))
 receipt('R-02x', 'crossOrigin true (ST-63)', assertion(KEY_A, c01, cross_origin='true'), fail('wrong_origin'))
+receipt('R-02p', 'An origin that only starts with the pinned origin (ST-63)',
+        assertion(KEY_A, c01, origin='https://loop.example.test.evil.example'), fail('wrong_origin'))
+receipt('R-10', 'Two defects (wrong origin and UV clear): the first failing step, origin, wins',
+        assertion(KEY_A, c01, origin='https://evil.example.test', flags=0x01), fail('wrong_origin'))
 receipt('R-03', 'rpIdHash of another RP ID (ST-63)', assertion(KEY_A, c01, rp_id='evil.example.test'),
         fail('wrong_rp_id_hash'))
 receipt('R-04', 'UV flag clear, UP set (ST-63)', assertion(KEY_A, c01, flags=0x01), fail('uv_not_set'))

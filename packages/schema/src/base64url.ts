@@ -14,7 +14,7 @@ export function isCanonicalBase64url(s: unknown): s is string {
 }
 
 /** Decodes canonical base64url; throws TypeError on anything else. */
-export function decodeBase64url(s: string): Uint8Array {
+export function decodeBase64url(s: string): Uint8Array<ArrayBuffer> {
   if (!isCanonicalBase64url(s)) throw new TypeError('not canonical base64url')
   const out = new Uint8Array(Math.floor((s.length * 6) / 8))
   let bits = 0
