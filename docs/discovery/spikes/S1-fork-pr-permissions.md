@@ -38,7 +38,7 @@ private forks, and org policies were not tested (see Open Items).
   (`contents: write` on upstream included). Least privilege comes only from how tokens are minted.
 - JWT: `jose` `SignJWT` (RS256) with a Node `KeyObject`, made from the PKCS#1 PEM. The key is kept outside
   the repo and iCloud at `~/.feature-loop-spikes/s1/` (0700 dir, 0600 files).
-- Raw evidence: `spikes/s1/results/*.json` (tokens redacted; a scan found no `ghs_` or PEM content).
+- Raw evidence: `spikes/s1/results/*.json`, kept in history at `7abb099` (tokens redacted; a scan found no `ghs_` or PEM content).
 
 ## Evidence
 
@@ -146,6 +146,8 @@ From the S1 row in `06-requirements-tests-spikes.md`: the "if no" branch does **
    bot PRs. This is out of S1's scope.
 
 ## Reproduce
+
+The scripts and raw evidence under `spikes/s1/` are no longer tracked. Restore them from history with `git checkout 7abb099 -- spikes/s1`.
 
 ```bash
 cd soren-loop/spikes/s1

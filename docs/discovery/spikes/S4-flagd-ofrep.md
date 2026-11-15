@@ -32,7 +32,7 @@ Three findings change the design beyond T25:
 | 3 | Can the stock OFREP web provider use single-flag only, or does it need bulk? | **Bulk only** | only `POST /ofrep/v1/evaluate/flags` observed; works through the allowlist-filtered handler (ST-68 shape passes) |
 | 4 | Does flagd persist any document to disk? | **No** | `docker diff` on the flagd container is empty after repeated syncs and after failed syncs |
 
-Raw evidence: `spikes/s4/results/run-20261114T215039.json` (31 rows, all matching the recorded
+Raw evidence: `spikes/s4/results/run-20261114T215039.json`, kept in history at `7abb099` (31 rows, all matching the recorded
 baseline; the per-run sync credential is redacted and was confirmed absent).
 
 ## Setup
@@ -203,6 +203,8 @@ targeting rule when `all` is set).
 | `06` SR-39(e) | Add the stale-sync canary alert as a locked kind (condition 7) |
 
 ## Reproduce
+
+The scripts and raw evidence under `spikes/s4/` are no longer tracked. Restore them from history with `git checkout 7abb099 -- spikes/s4`.
 
 ```bash
 cd soren-loop/spikes/s4        # Node 24, Docker; first run: npm install && npx playwright install chromium

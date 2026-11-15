@@ -29,7 +29,7 @@ App's **full** decision-26 permission set. Date: 2026-11-13. Run against GitHub.
 | 5 | ST-48: full PR App set, merge and push upstream | **PASS** on private and public | merge (merge, squash) 403 · `POST /merges` 403 · contents PUT 403 · ref create 403 · `git push` main and new branch rejected (exit 128) · `git clone` with `contents: read` works (exit 0) |
 | 6 | `update-branch`, self-approve, close/reopen bypass required review? | **PASS**: none bypass it | ruleset 201 · update-branch **403** · self-approve **422** · close 200 · reopen 200 · afterwards `REVIEW_REQUIRED` / `BLOCKED` · merge 403 |
 
-Raw evidence: `spikes/s1f/results/run-20261113T212143.json` (59 rows, all matching the recorded
+Raw evidence: `spikes/s1f/results/run-20261113T212143.json`, kept in history at `7abb099` (59 rows, all matching the recorded
 baseline; tokens redacted, scanned for `ghs_`, PEM and encoded `x-access-token` material).
 
 ## Setup
@@ -213,6 +213,8 @@ the default-branch ruleset (which would let that person merge without review) is
 | `06` ST-48 | Passes in the sandbox; the harness becomes the regression test (Tasks 057, 061) |
 
 ## Reproduce
+
+The scripts and raw evidence under `spikes/s1f/` are no longer tracked. Restore them from history with `git checkout 7abb099 -- spikes/s1f`.
 
 ```bash
 cd soren-loop/spikes/s1f        # Node 24; needs the two keys and `gh` with admin:org, repo, workflow

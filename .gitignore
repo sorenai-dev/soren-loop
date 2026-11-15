@@ -54,3 +54,6 @@ CLAUDE.local.md
 .claude-flow/swarm/swarm-state.json
 .swarm/
 ruvector.db
+
+# Spike scripts and raw results stay local; write-ups live in docs/discovery/spikes/.
+spikes/
