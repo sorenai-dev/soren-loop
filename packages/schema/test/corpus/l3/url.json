@@ -1,0 +1,717 @@
+[
+  {
+    "id": "URL-01",
+    "description": "A scheme URL without the trailing ).",
+    "raw": {
+      "title": "see https://x.test/a)."
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "url_or_host"
+      ],
+      "spans": [
+        {
+          "field": "title",
+          "start": 4,
+          "end": 20,
+          "category": "url_or_host"
+        }
+      ],
+      "stripped": [],
+      "requesterAttributable": true
+    }
+  },
+  {
+    "id": "URL-02",
+    "description": "A www. host, case-insensitive",
+    "raw": {
+      "title": "WWW.example.org"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "url_or_host"
+      ],
+      "spans": [
+        {
+          "field": "title",
+          "start": 0,
+          "end": 15,
+          "category": "url_or_host"
+        }
+      ],
+      "stripped": [],
+      "requesterAttributable": true
+    }
+  },
+  {
+    "id": "URL-03",
+    "description": "An IPv4 address",
+    "raw": {
+      "title": "10.0.0.1"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "url_or_host"
+      ],
+      "spans": [
+        {
+          "field": "title",
+          "start": 0,
+          "end": 8,
+          "category": "url_or_host"
+        }
+      ],
+      "stripped": [],
+      "requesterAttributable": true
+    }
+  },
+  {
+    "id": "URL-04",
+    "description": "A dotted host with a listed TLD",
+    "raw": {
+      "title": "go to evil.com now"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "url_or_host"
+      ],
+      "spans": [
+        {
+          "field": "title",
+          "start": 6,
+          "end": 14,
+          "category": "url_or_host"
+        }
+      ],
+      "stripped": [],
+      "requesterAttributable": true
+    }
+  },
+  {
+    "id": "URL-05",
+    "description": "A host at the end of a sentence",
+    "raw": {
+      "title": "Visit evil.com."
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "url_or_host"
+      ],
+      "spans": [
+        {
+          "field": "title",
+          "start": 6,
+          "end": 14,
+          "category": "url_or_host"
+        }
+      ],
+      "stripped": [],
+      "requesterAttributable": true
+    }
+  },
+  {
+    "id": "URL-06",
+    "description": "An IPv4 address at the end of a sentence",
+    "raw": {
+      "title": "ping 10.0.0.1."
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "url_or_host"
+      ],
+      "spans": [
+        {
+          "field": "title",
+          "start": 5,
+          "end": 13,
+          "category": "url_or_host"
+        }
+      ],
+      "stripped": [],
+      "requesterAttributable": true
+    }
+  },
+  {
+    "id": "URL-N1",
+    "description": "Not a host: 999.1.1.1",
+    "raw": {
+      "title": "999.1.1.1"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": false,
+      "categories": [],
+      "spans": [],
+      "stripped": [],
+      "requesterAttributable": false
+    }
+  },
+  {
+    "id": "URL-N2",
+    "description": "Not a host: src/a.ts",
+    "raw": {
+      "title": "src/a.ts"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": false,
+      "categories": [],
+      "spans": [],
+      "stripped": [],
+      "requesterAttributable": false
+    }
+  },
+  {
+    "id": "URL-N3",
+    "description": "Not a host: e.g. this",
+    "raw": {
+      "title": "e.g. this"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": false,
+      "categories": [],
+      "spans": [],
+      "stripped": [],
+      "requesterAttributable": false
+    }
+  },
+  {
+    "id": "URL-N4",
+    "description": "Not a host: CLAUDE.md",
+    "raw": {
+      "title": "CLAUDE.md"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": false,
+      "categories": [],
+      "spans": [],
+      "stripped": [],
+      "requesterAttributable": false
+    }
+  },
+  {
+    "id": "URL-N5",
+    "description": "Not a host: setup.py",
+    "raw": {
+      "title": "setup.py"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": false,
+      "categories": [],
+      "spans": [],
+      "stripped": [],
+      "requesterAttributable": false
+    }
+  },
+  {
+    "id": "URL-N6",
+    "description": "Not a host: install.sh",
+    "raw": {
+      "title": "install.sh"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": false,
+      "categories": [],
+      "spans": [],
+      "stripped": [],
+      "requesterAttributable": false
+    }
+  },
+  {
+    "id": "URL-N7",
+    "description": "Not a host: Slack.app",
+    "raw": {
+      "title": "Slack.app"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": false,
+      "categories": [],
+      "spans": [],
+      "stripped": [],
+      "requesterAttributable": false
+    }
+  },
+  {
+    "id": "URL-07",
+    "description": "An uppercase host and TLD",
+    "raw": {
+      "title": "EVIL.COM"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "url_or_host"
+      ],
+      "spans": [
+        {
+          "field": "title",
+          "start": 0,
+          "end": 8,
+          "category": "url_or_host"
+        }
+      ],
+      "stripped": [],
+      "requesterAttributable": true
+    }
+  },
+  {
+    "id": "URL-08",
+    "description": "A www. host whose TLD is not listed",
+    "raw": {
+      "title": "WWW.example.test"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "url_or_host"
+      ],
+      "spans": [
+        {
+          "field": "title",
+          "start": 0,
+          "end": 16,
+          "category": "url_or_host"
+        }
+      ],
+      "stripped": [],
+      "requesterAttributable": true
+    }
+  },
+  {
+    "id": "URL-09",
+    "description": "A www. host at the end of a sentence",
+    "raw": {
+      "title": "see www.example.test."
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "url_or_host"
+      ],
+      "spans": [
+        {
+          "field": "title",
+          "start": 4,
+          "end": 20,
+          "category": "url_or_host"
+        }
+      ],
+      "stripped": [],
+      "requesterAttributable": true
+    }
+  },
+  {
+    "id": "URL-10",
+    "description": "A scheme URL stops at >",
+    "raw": {
+      "title": "<https://x.test/a>"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "url_or_host"
+      ],
+      "spans": [
+        {
+          "field": "title",
+          "start": 1,
+          "end": 17,
+          "category": "url_or_host"
+        }
+      ],
+      "stripped": [],
+      "requesterAttributable": true
+    }
+  },
+  {
+    "id": "URL-11",
+    "description": "A URL and the host inside it merge into one span",
+    "raw": {
+      "title": "https://evil.com/x"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "url_or_host"
+      ],
+      "spans": [
+        {
+          "field": "title",
+          "start": 0,
+          "end": 18,
+          "category": "url_or_host"
+        }
+      ],
+      "stripped": [],
+      "requesterAttributable": true
+    }
+  },
+  {
+    "id": "URL-12",
+    "description": "The top IPv4 address",
+    "raw": {
+      "title": "255.255.255.255"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "url_or_host"
+      ],
+      "spans": [
+        {
+          "field": "title",
+          "start": 0,
+          "end": 15,
+          "category": "url_or_host"
+        }
+      ],
+      "stripped": [],
+      "requesterAttributable": true
+    }
+  },
+  {
+    "id": "URL-N8",
+    "description": "Not a host: next.config.js",
+    "raw": {
+      "title": "next.config.js"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": false,
+      "categories": [],
+      "spans": [],
+      "stripped": [],
+      "requesterAttributable": false
+    }
+  },
+  {
+    "id": "URL-N9",
+    "description": "Not a host: 1.2.3.4.5",
+    "raw": {
+      "title": "1.2.3.4.5"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": false,
+      "categories": [],
+      "spans": [],
+      "stripped": [],
+      "requesterAttributable": false
+    }
+  },
+  {
+    "id": "URL-N10",
+    "description": "Not a host: xwww.foo.test",
+    "raw": {
+      "title": "xwww.foo.test"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": false,
+      "categories": [],
+      "spans": [],
+      "stripped": [],
+      "requesterAttributable": false
+    }
+  },
+  {
+    "id": "URL-N11",
+    "description": "A host followed by . and a non-ASCII letter is not a listed host",
+    "raw": {
+      "title": "evil.com.\u043f\u0440\u0438\u043c\u0435\u0440"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": false,
+      "categories": [],
+      "spans": [],
+      "stripped": [],
+      "requesterAttributable": false
+    }
+  },
+  {
+    "id": "URL-13",
+    "description": "A scheme URL after dots (the scheme may follow . + or -)",
+    "raw": {
+      "title": "see ...https://evil.ai/x"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "url_or_host"
+      ],
+      "spans": [
+        {
+          "field": "title",
+          "start": 7,
+          "end": 24,
+          "category": "url_or_host"
+        }
+      ],
+      "stripped": [],
+      "requesterAttributable": true
+    }
+  },
+  {
+    "id": "URL-13b",
+    "description": "A scheme URL after a hyphen",
+    "raw": {
+      "title": "-https://evil.ai/x"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "url_or_host"
+      ],
+      "spans": [
+        {
+          "field": "title",
+          "start": 1,
+          "end": 18,
+          "category": "url_or_host"
+        }
+      ],
+      "stripped": [],
+      "requesterAttributable": true
+    }
+  },
+  {
+    "id": "URL-14",
+    "description": "A listed host followed by .- still flags the shorter host",
+    "raw": {
+      "title": "evil.com.-x"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "url_or_host"
+      ],
+      "spans": [
+        {
+          "field": "title",
+          "start": 0,
+          "end": 8,
+          "category": "url_or_host"
+        }
+      ],
+      "stripped": [],
+      "requesterAttributable": true
+    }
+  },
+  {
+    "id": "URL-15",
+    "description": "A scheme URL stops at U+0085 (Unicode White_Space)",
+    "raw": {
+      "title": "https://x.ai/a\u0085b"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "url_or_host"
+      ],
+      "spans": [
+        {
+          "field": "title",
+          "start": 0,
+          "end": 14,
+          "category": "url_or_host"
+        }
+      ],
+      "stripped": [],
+      "requesterAttributable": true
+    }
+  },
+  {
+    "id": "URL-N12",
+    "description": "www. followed only by dots is not a host",
+    "raw": {
+      "title": "www.."
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": false,
+      "categories": [],
+      "spans": [],
+      "stripped": [],
+      "requesterAttributable": false
+    }
+  },
+  {
+    "id": "URL-16",
+    "description": "A scheme-less :// does not hide a URL after it",
+    "raw": {
+      "title": "0://https://evil.ai/x"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "url_or_host"
+      ],
+      "spans": [
+        {
+          "field": "title",
+          "start": 4,
+          "end": 21,
+          "category": "url_or_host"
+        }
+      ],
+      "stripped": [],
+      "requesterAttributable": true
+    }
+  },
+  {
+    "id": "URL-16b",
+    "description": "The same after -://",
+    "raw": {
+      "title": "-://https://evil.ai/x"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "url_or_host"
+      ],
+      "spans": [
+        {
+          "field": "title",
+          "start": 4,
+          "end": 21,
+          "category": "url_or_host"
+        }
+      ],
+      "stripped": [],
+      "requesterAttributable": true
+    }
+  },
+  {
+    "id": "URL-17",
+    "description": "The longest qualifying label chain counts",
+    "raw": {
+      "title": "evil.com.-x.com"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "url_or_host"
+      ],
+      "spans": [
+        {
+          "field": "title",
+          "start": 0,
+          "end": 15,
+          "category": "url_or_host"
+        }
+      ],
+      "stripped": [],
+      "requesterAttributable": true
+    }
+  },
+  {
+    "id": "URL-N13",
+    "description": "TLDs match ASCII only: a long s (U+017F) is not s",
+    "raw": {
+      "title": "evil.\u017fite"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": false,
+      "categories": [],
+      "spans": [],
+      "stripped": [],
+      "requesterAttributable": false
+    }
+  }
+]

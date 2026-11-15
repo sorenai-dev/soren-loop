@@ -1,0 +1,105 @@
+[
+  {
+    "id": "CONF-01",
+    "description": "Latin with a Cyrillic a in one token",
+    "raw": {
+      "title": "p\u0430ypal login"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "confusable_mixed_script"
+      ],
+      "spans": [
+        {
+          "field": "title",
+          "start": 0,
+          "end": 6,
+          "category": "confusable_mixed_script"
+        }
+      ],
+      "stripped": [],
+      "requesterAttributable": true
+    }
+  },
+  {
+    "id": "CONF-02",
+    "description": "An all-Cyrillic sentence",
+    "raw": {
+      "title": "\u043f\u0440\u0438\u0432\u0435\u0442 \u043c\u0438\u0440"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": false,
+      "categories": [],
+      "spans": [],
+      "stripped": [],
+      "requesterAttributable": false
+    }
+  },
+  {
+    "id": "CONF-03",
+    "description": "An all-Greek word",
+    "raw": {
+      "title": "\u03ba\u03b1\u03bb\u03b7\u03bc\u03ad\u03c1\u03b1"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": false,
+      "categories": [],
+      "spans": [],
+      "stripped": [],
+      "requesterAttributable": false
+    }
+  },
+  {
+    "id": "CONF-04",
+    "description": "Latin with a Greek omicron",
+    "raw": {
+      "title": "G\u03bfogle"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "confusable_mixed_script"
+      ],
+      "spans": [
+        {
+          "field": "title",
+          "start": 0,
+          "end": 6,
+          "category": "confusable_mixed_script"
+        }
+      ],
+      "stripped": [],
+      "requesterAttributable": true
+    }
+  },
+  {
+    "id": "CONF-05",
+    "description": "A Roman numeral (a number, not a letter) next to Cyrillic is not mixed-script",
+    "raw": {
+      "title": "\u2163\u0430"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": false,
+      "categories": [],
+      "spans": [],
+      "stripped": [],
+      "requesterAttributable": false
+    }
+  }
+]

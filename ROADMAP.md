@@ -28,7 +28,7 @@ Nothing is published to npm until the release gate at the end of Phase 1c.
 - [x] 014 Step-up challenge derivation `sl:webauthn:v1`, the action enum, and vectors C-01 to C-03
 - [x] 015 Offline receipt verifier and vectors R-01 to R-08 (ST-63)
 - [ ] 016 Vector conformance runner, JSON vector export, and `@sorenai/loop-schema` publish config
-- [ ] 017 L3 deterministic pre-check rules and the shared corpus (ST-30)
+- [x] 017 L3 deterministic pre-check rules and the shared corpus (ST-30)
 
 ## Phase 1a: server core, platform, owner auth and routes
 

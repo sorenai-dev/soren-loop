@@ -34,6 +34,16 @@ test('[T011-15] every shared vector file is ASCII-only JSON', () => {
   }
 })
 
+test('[T017-17] every L3 corpus file is ASCII-only JSON', () => {
+  const files = filesUnder('test/corpus', '.json')
+  expect(files.length).toBeGreaterThan(0)
+  for (const file of files) {
+    const bytes = readFileSync(join(root, file))
+    const nonAscii = bytes.findIndex((b) => b > 0x7e || (b < 0x20 && b !== 0x0a))
+    expect(nonAscii, file).toBe(-1)
+  }
+})
+
 test('[T012-17] TypeScript sources are ASCII apart from the section sign, so no invisible character hides in a test', () => {
   const offenders: string[] = []
   for (const dir of ['src', 'test', 'scripts']) {

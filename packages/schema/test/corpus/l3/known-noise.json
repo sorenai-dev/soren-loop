@@ -1,0 +1,188 @@
+[
+  {
+    "id": "NOISE-01",
+    "description": "A ZWJ emoji sequence: the ZWJs are stripped and flag (RFC-mandated)",
+    "raw": {
+      "title": "\ud83d\udc68\u200d\ud83d\udc69\u200d\ud83d\udc67"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "invisible"
+      ],
+      "spans": [],
+      "stripped": [
+        {
+          "field": "title",
+          "codePoint": 8205,
+          "category": "invisible"
+        },
+        {
+          "field": "title",
+          "codePoint": 8205,
+          "category": "invisible"
+        }
+      ],
+      "requesterAttributable": false
+    },
+    "normalized": {
+      "title": "\ud83d\udc68\ud83d\udc69\ud83d\udc67"
+    }
+  },
+  {
+    "id": "NOISE-02",
+    "description": "A 40-char git SHA flags as hex",
+    "raw": {
+      "title": "commit ab12ab12ab12ab12ab12ab12ab12ab12ab12ab12"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "encoded_blob"
+      ],
+      "spans": [
+        {
+          "field": "title",
+          "start": 7,
+          "end": 47,
+          "category": "encoded_blob"
+        }
+      ],
+      "stripped": [],
+      "requesterAttributable": true
+    }
+  },
+  {
+    "id": "NOISE-03",
+    "description": "A long mixed-case path with a digit flags as base64",
+    "raw": {
+      "title": "src/Components2/VeryLongDirectoryName/AnotherSegment"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "encoded_blob"
+      ],
+      "spans": [
+        {
+          "field": "title",
+          "start": 0,
+          "end": 52,
+          "category": "encoded_blob"
+        }
+      ],
+      "stripped": [],
+      "requesterAttributable": true
+    }
+  },
+  {
+    "id": "NOISE-04",
+    "description": "A version string 1.2.3.4 flags as IPv4",
+    "raw": {
+      "title": "version 1.2.3.4"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "url_or_host"
+      ],
+      "spans": [
+        {
+          "field": "title",
+          "start": 8,
+          "end": 15,
+          "category": "url_or_host"
+        }
+      ],
+      "stripped": [],
+      "requesterAttributable": true
+    }
+  },
+  {
+    "id": "NOISE-05",
+    "description": "Markdown backticks flag as shell-like",
+    "raw": {
+      "title": "Call `foo()`"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "shell_like"
+      ],
+      "spans": [
+        {
+          "field": "title",
+          "start": 5,
+          "end": 6,
+          "category": "shell_like"
+        },
+        {
+          "field": "title",
+          "start": 11,
+          "end": 12,
+          "category": "shell_like"
+        }
+      ],
+      "stripped": [],
+      "requesterAttributable": true
+    }
+  },
+  {
+    "id": "NOISE-06",
+    "description": "A long path with - and _ segments, mixed case and a digit flags as base64",
+    "raw": {
+      "title": "src/my-Component_2/very-long_directory-name/file"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "encoded_blob"
+      ],
+      "spans": [
+        {
+          "field": "title",
+          "start": 0,
+          "end": 48,
+          "category": "encoded_blob"
+        }
+      ],
+      "stripped": [],
+      "requesterAttributable": true
+    }
+  },
+  {
+    "id": "NOISE-07",
+    "description": "A host under an unlisted ccTLD (bbc.co.uk) is not flagged (a recorded false negative)",
+    "raw": {
+      "title": "bbc.co.uk"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": false,
+      "categories": [],
+      "spans": [],
+      "stripped": [],
+      "requesterAttributable": false
+    }
+  }
+]

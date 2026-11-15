@@ -1,0 +1,70 @@
+[
+  {
+    "id": "CLEAN-01",
+    "description": "Prose with punctuation and numbers",
+    "raw": {
+      "title": "Please add an export button. It should handle 1,000 rows (or more)!"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": false,
+      "categories": [],
+      "spans": [],
+      "stripped": [],
+      "requesterAttributable": false
+    }
+  },
+  {
+    "id": "CLEAN-02",
+    "description": "An emoji with VS16",
+    "raw": {
+      "title": "I \u2764\ufe0f this"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": false,
+      "categories": [],
+      "spans": [],
+      "stripped": [],
+      "requesterAttributable": false
+    }
+  },
+  {
+    "id": "CLEAN-03",
+    "description": "An all-Greek sentence",
+    "raw": {
+      "title": "\u039a\u03b1\u03bb\u03b7\u03bc\u03ad\u03c1\u03b1 \u03ba\u03cc\u03c3\u03bc\u03b5"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": false,
+      "categories": [],
+      "spans": [],
+      "stripped": [],
+      "requesterAttributable": false
+    }
+  },
+  {
+    "id": "CLEAN-04",
+    "description": "A Japanese sentence",
+    "raw": {
+      "title": "\u3053\u308c\u306f\u30c6\u30b9\u30c8\u3067\u3059"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": false,
+      "categories": [],
+      "spans": [],
+      "stripped": [],
+      "requesterAttributable": false
+    }
+  }
+]

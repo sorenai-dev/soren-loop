@@ -1,0 +1,380 @@
+[
+  {
+    "id": "ENC-01",
+    "description": "A 40-char base64 run with upper, lower and digit",
+    "raw": {
+      "title": "token Ab1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx end"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "encoded_blob"
+      ],
+      "spans": [
+        {
+          "field": "title",
+          "start": 6,
+          "end": 46,
+          "category": "encoded_blob"
+        }
+      ],
+      "stripped": [],
+      "requesterAttributable": true
+    }
+  },
+  {
+    "id": "ENC-02",
+    "description": "The same at 39 chars",
+    "raw": {
+      "title": "token Ab1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx end"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": false,
+      "categories": [],
+      "spans": [],
+      "stripped": [],
+      "requesterAttributable": false
+    }
+  },
+  {
+    "id": "ENC-03",
+    "description": "A 32-char hex run",
+    "raw": {
+      "title": "sha a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "encoded_blob"
+      ],
+      "spans": [
+        {
+          "field": "title",
+          "start": 4,
+          "end": 36,
+          "category": "encoded_blob"
+        }
+      ],
+      "stripped": [],
+      "requesterAttributable": true
+    }
+  },
+  {
+    "id": "ENC-04",
+    "description": "A 31-char hex run",
+    "raw": {
+      "title": "sha a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": false,
+      "categories": [],
+      "spans": [],
+      "stripped": [],
+      "requesterAttributable": false
+    }
+  },
+  {
+    "id": "ENC-05",
+    "description": "0x plus 32 hex digits; the span includes the 0x",
+    "raw": {
+      "title": "key 0xf0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "encoded_blob"
+      ],
+      "spans": [
+        {
+          "field": "title",
+          "start": 4,
+          "end": 38,
+          "category": "encoded_blob"
+        }
+      ],
+      "stripped": [],
+      "requesterAttributable": true
+    }
+  },
+  {
+    "id": "ENC-06",
+    "description": "A 32-hex run inside a longer identifier",
+    "raw": {
+      "title": "my_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1_x"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": false,
+      "categories": [],
+      "spans": [],
+      "stripped": [],
+      "requesterAttributable": false
+    }
+  },
+  {
+    "id": "ENC-07",
+    "description": "A base64url run with - and _ (a JWT-like segment)",
+    "raw": {
+      "title": "jwt eyJabc123XYZabc123XYZabc123XYZabc123XYZ-_"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "encoded_blob"
+      ],
+      "spans": [
+        {
+          "field": "title",
+          "start": 4,
+          "end": 45,
+          "category": "encoded_blob"
+        }
+      ],
+      "stripped": [],
+      "requesterAttributable": true
+    }
+  },
+  {
+    "id": "ENC-08",
+    "description": "A long lowercase word with non-hex letters",
+    "raw": {
+      "title": "pneumonoultramicroscopicsilicovolcanoconiosis"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": false,
+      "categories": [],
+      "spans": [],
+      "stripped": [],
+      "requesterAttributable": false
+    }
+  },
+  {
+    "id": "ENC-09",
+    "description": "32 hex with a letter right before it",
+    "raw": {
+      "title": "ga1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 x"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": false,
+      "categories": [],
+      "spans": [],
+      "stripped": [],
+      "requesterAttributable": false
+    }
+  },
+  {
+    "id": "ENC-10",
+    "description": "32 hex with a letter right after it",
+    "raw": {
+      "title": "x a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1g"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": false,
+      "categories": [],
+      "spans": [],
+      "stripped": [],
+      "requesterAttributable": false
+    }
+  },
+  {
+    "id": "ENC-11",
+    "description": "Uppercase hex",
+    "raw": {
+      "title": "DEADBEEFDEADBEEFDEADBEEFDEADBEEF"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "encoded_blob"
+      ],
+      "spans": [
+        {
+          "field": "title",
+          "start": 0,
+          "end": 32,
+          "category": "encoded_blob"
+        }
+      ],
+      "stripped": [],
+      "requesterAttributable": true
+    }
+  },
+  {
+    "id": "ENC-12",
+    "description": "0x plus 31 hex digits (the 0x is not counted)",
+    "raw": {
+      "title": "0xf0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": false,
+      "categories": [],
+      "spans": [],
+      "stripped": [],
+      "requesterAttributable": false
+    }
+  },
+  {
+    "id": "ENC-13",
+    "description": "Base64 with == padding: the span includes the padding",
+    "raw": {
+      "title": "token Ab1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=="
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "encoded_blob"
+      ],
+      "spans": [
+        {
+          "field": "title",
+          "start": 6,
+          "end": 48,
+          "category": "encoded_blob"
+        }
+      ],
+      "stripped": [],
+      "requesterAttributable": true
+    }
+  },
+  {
+    "id": "ENC-14",
+    "description": "A 40+ char run with no digit",
+    "raw": {
+      "title": "ThisIsAVeryLongCamelCaseIdentifierWithNoDigits"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": false,
+      "categories": [],
+      "spans": [],
+      "stripped": [],
+      "requesterAttributable": false
+    }
+  },
+  {
+    "id": "ENC-15",
+    "description": "A 40+ char run with no uppercase letter",
+    "raw": {
+      "title": "zz9zz9zz9zz9zz9zz9zz9zz9zz9zz9zz9zz9zz9zz9"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": false,
+      "categories": [],
+      "spans": [],
+      "stripped": [],
+      "requesterAttributable": false
+    }
+  },
+  {
+    "id": "ENC-16",
+    "description": "A 40+ char run with no lowercase letter",
+    "raw": {
+      "title": "ZZ9ZZ9ZZ9ZZ9ZZ9ZZ9ZZ9ZZ9ZZ9ZZ9ZZ9ZZ9ZZ9ZZ9"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": false,
+      "categories": [],
+      "spans": [],
+      "stripped": [],
+      "requesterAttributable": false
+    }
+  },
+  {
+    "id": "ENC-17",
+    "description": "An uppercase 0X prefix is part of the span",
+    "raw": {
+      "title": "key 0XF0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "encoded_blob"
+      ],
+      "spans": [
+        {
+          "field": "title",
+          "start": 4,
+          "end": 38,
+          "category": "encoded_blob"
+        }
+      ],
+      "stripped": [],
+      "requesterAttributable": true
+    }
+  },
+  {
+    "id": "ENC-18",
+    "description": "At most two = belong to the span",
+    "raw": {
+      "title": "token Ab1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=== end"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "encoded_blob"
+      ],
+      "spans": [
+        {
+          "field": "title",
+          "start": 6,
+          "end": 48,
+          "category": "encoded_blob"
+        }
+      ],
+      "stripped": [],
+      "requesterAttributable": true
+    }
+  }
+]
