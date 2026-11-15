@@ -224,8 +224,15 @@ describe('check:vectors CLI (spec 016 batch B)', () => {
 
   test('[T016-6] a base manifest at the git ref that does not parse exits 1, even unfrozen and outside CI', () => {
     // Unreferenced git objects: a commit whose manifest is not JSON, touching no ref or work tree.
-    const git = (args: string[], input?: string): string =>
-      spawnSync('git', args, { cwd: PKG, encoding: 'utf8', ...(input === undefined ? {} : { input }) }).stdout.trim()
+    // A fixed identity: CI runners have no git user configured, and commit-tree needs one.
+    const identity = { GIT_AUTHOR_NAME: 'probe', GIT_AUTHOR_EMAIL: 'probe@example.test', GIT_COMMITTER_NAME: 'probe', GIT_COMMITTER_EMAIL: 'probe@example.test' }
+    const git = (args: string[], input?: string): string => {
+      const r = spawnSync('git', args, {
+        cwd: PKG, encoding: 'utf8', env: { ...process.env, ...identity }, ...(input === undefined ? {} : { input }),
+      })
+      if (r.status !== 0) throw new Error(`git ${args[0]} failed: ${r.stderr}`)
+      return r.stdout.trim()
+    }
     let tree = git(['mktree'], `100644 blob ${git(['hash-object', '-w', '--stdin'], '{not json')}\tMANIFEST.json\n`)
     for (const name of ['test-vectors', 'schema', 'packages']) tree = git(['mktree'], `040000 tree ${tree}\t${name}\n`)
     const commit = git(['commit-tree', tree, '-m', 'probe'])
