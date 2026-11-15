@@ -13,5 +13,9 @@ export { PREFIXES } from './hash/prefixes.ts'
 export type { RegisteredPrefix } from './hash/prefixes.ts'
 export {
   hEnableConfirm, hFb, hG1, hHoldClear, hNotificationPolicy, hReq, hRework, hRollout, hSiteConfig,
-  hSpec, l2Fingerprint,
+  hSpec, l2Fingerprint, hAuthenticator, hBulkReject,
 } from './hash/content.ts'
+export {
+  STEPUP_ACTIONS, TARGET_TYPES, contentHashPrefixFor, deriveChallenge, targetShapeFor, webauthnChallenge,
+} from './stepup.ts'
+export type { ChallengeInput, StepupAction, Target, TargetShape, TargetType } from './stepup.ts'

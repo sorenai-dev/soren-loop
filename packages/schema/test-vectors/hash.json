@@ -541,5 +541,82 @@
     },
     "expected_bytes_hex": "00000014736c3a656e61626c655f636f6e6669726d3a7631000000057265715f31000000056465705f3100000006736c5f616263",
     "expected_hash": "7b8d0c6dd45f9c0e3fd79c00298fe3f23fc1274eb8cf72efefd677843e969f67"
+  },
+  {
+    "id": "H-16a",
+    "description": "Authenticator add",
+    "input": {
+      "ownerId": "owner_1",
+      "credentialId": "Y3JlZGVudGlhbC0x",
+      "publicKeyCose": "Y29zZS1rZXktMQ",
+      "op": "add"
+    },
+    "expected_bytes_hex": "00000013736c3a61757468656e74696361746f723a7631000000076f776e65725f31000000036164640000001059334a6c5a47567564476c68624330780000000e5932397a5a5331725a586b744d51",
+    "expected_hash": "be290ef93af2d33ab43a829d00e4407e44161c62d3564bef37ff436da32fd36f"
+  },
+  {
+    "id": "H-16b",
+    "description": "Authenticator remove of the H-16a key differs",
+    "input": {
+      "ownerId": "owner_1",
+      "credentialId": "Y3JlZGVudGlhbC0x",
+      "publicKeyCose": "Y29zZS1rZXktMQ",
+      "op": "remove"
+    },
+    "expected_bytes_hex": "00000013736c3a61757468656e74696361746f723a7631000000076f776e65725f310000000672656d6f76650000001059334a6c5a47567564476c68624330780000000e5932397a5a5331725a586b744d51",
+    "expected_hash": "636e6eb38244302618aed1a00cc6c6baedff807f651efe5ed2f03c98afde262c"
+  },
+  {
+    "id": "H-17a",
+    "description": "Bulk reject request ids, unsorted input",
+    "input": {
+      "siteId": "site_1",
+      "requestIds": [
+        "req_3",
+        "req_1",
+        "req_2"
+      ]
+    },
+    "expected_bytes_hex": "00000011736c3a62756c6b5f72656a6563743a763100000006736974655f31000000195b227265715f31222c227265715f32222c227265715f33225d",
+    "expected_hash": "de35fbbc3c2d25851703cc50cc9c46fc24ed7179623f00aa894642e1d3f28d27"
+  },
+  {
+    "id": "H-17b",
+    "description": "The H-17a ids in another order: the same hash",
+    "input": {
+      "siteId": "site_1",
+      "requestIds": [
+        "req_2",
+        "req_3",
+        "req_1"
+      ]
+    },
+    "expected_bytes_hex": "00000011736c3a62756c6b5f72656a6563743a763100000006736974655f31000000195b227265715f31222c227265715f32222c227265715f33225d",
+    "expected_hash": "de35fbbc3c2d25851703cc50cc9c46fc24ed7179623f00aa894642e1d3f28d27"
+  },
+  {
+    "id": "H-16c",
+    "description": "Authenticator add whose credential id uses the - and _ characters (bytes fb ff)",
+    "input": {
+      "ownerId": "owner_1",
+      "credentialId": "-_8",
+      "publicKeyCose": "Y29zZS1rZXktMQ",
+      "op": "add"
+    },
+    "expected_bytes_hex": "00000013736c3a61757468656e74696361746f723a7631000000076f776e65725f3100000003616464000000032d5f380000000e5932397a5a5331725a586b744d51",
+    "expected_hash": "ddcceec5946fc9fcc65c74173a6c67d457888e0853f2634533d0c96fe193951b"
+  },
+  {
+    "id": "H-17c",
+    "description": "Bulk reject ids sort by UTF-8 bytes: req_U+FB01 before req_U+1F600 (UTF-16 order is the reverse)",
+    "input": {
+      "siteId": "site_1",
+      "requestIds": [
+        "req_\ud83d\ude00",
+        "req_\ufb01"
+      ]
+    },
+    "expected_bytes_hex": "00000011736c3a62756c6b5f72656a6563743a763100000006736974655f31000000165b227265715fefac81222c227265715ff09f9880225d",
+    "expected_hash": "ceb85111ca318d71e458079436c2eb659fc1c247cff4b984e24739f51827d29e"
   }
 ]

@@ -3,11 +3,12 @@
 // vector tests.
 import { sha256 } from '@noble/hashes/sha2.js'
 import { bytesToHex } from '@noble/hashes/utils.js'
+import { isCanonicalBase64url } from '../base64url.ts'
 import { SchemaError } from '../errors.ts'
 import { nHash } from '../normalize/normalize.ts'
 import { parseRequestV1 } from '../request.ts'
 import type { RequestV1 } from '../request.ts'
-import { P, compareUtf8, frame, sortedUnique } from './framing.ts'
+import { P, byteSort, compareUtf8, frame, sortedUnique } from './framing.ts'
 import { jcs } from './jcs.ts'
 import { PREFIXES } from './prefixes.ts'
 import { hash, id, int, invalid, oneOf, optionalHash } from './validate.ts'
@@ -32,7 +33,7 @@ export function hashRecord(prefix: RegisteredPrefix, record: Readonly<Record<str
   return bytesToHex(sha256(frameRecord(prefix, record)))
 }
 
-function contentHash<A extends unknown[]>(
+export function contentHash<A extends unknown[]>(
   prefix: RegisteredPrefix,
   toRecord: (...args: A) => Record<string, string>,
 ): ContentHash<A> {
@@ -135,6 +136,8 @@ export type RolloutInput = { requestId: string; docVersion: number } & (
 )
 
 const MAX_TARGETS = 500 // flags.targets (RFC 04 §2)
+/** Shared by hBulkReject and the bulk-reject challenge shape (spec 014 DD7), so they can't drift. */
+export const BULK_REJECT_MAX = 500
 
 function rolloutValue(r: RolloutInput): string {
   switch (r.mode) {
@@ -186,3 +189,28 @@ export const hSiteConfig = contentHash(
     value: jcs(c.value),
   }),
 )
+
+// Spec 014: content hashes for step-up actions the RFC table has no prefix for.
+function canonicalB64(name: string, value: string): string {
+  if (value === '' || !isCanonicalBase64url(value)) throw invalid(`${name} must be canonical unpadded base64url`)
+  return value
+}
+
+export const hAuthenticator = contentHash(
+  'sl:authenticator:v1',
+  (a: { ownerId: string; op: 'add' | 'remove'; credentialId: string; publicKeyCose: string }) => ({
+    owner_id: id('ownerId', a.ownerId),
+    op: oneOf('op', a.op, ['add', 'remove']),
+    credential_id: canonicalB64('credentialId', a.credentialId),
+    public_key_cose: canonicalB64('publicKeyCose', a.publicKeyCose),
+  }),
+)
+
+export const hBulkReject = contentHash('sl:bulk_reject:v1', (b: { siteId: string; requestIds: readonly string[] }) => {
+  const n = Array.isArray(b.requestIds) ? b.requestIds.length : 0
+  if (n < 1 || n > BULK_REJECT_MAX) throw invalid(`requestIds must be an array of 1..${BULK_REJECT_MAX} ids`)
+  const ids = byteSort(b.requestIds.map((r) => id('requestId', r)))
+  // A bulk reject authorizes an enumerated set (SR-35), so a duplicate is a caller error.
+  if (ids.some((r, i) => i > 0 && r === ids[i - 1])) throw invalid('duplicate request id')
+  return { site_id: id('siteId', b.siteId), request_ids: jcs(ids) }
+})
