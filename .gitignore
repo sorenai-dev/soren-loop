@@ -8,8 +8,16 @@ coverage/
 .cache/
 *.tsbuildinfo
 .eslintcache
+
 playwright-report/
 test-results/
+
+# Python (test-vector oracles)
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
 
 # Secrets
 .env
