@@ -1,0 +1,287 @@
+// A literal transcription of spec 020 Appendix A, the contract for migration 0001_core.
+// Columns: `table.column type[ not null][ default <pg default text>]`.
+// Constraints: `table <p|u|f|c> <pg_get_constraintdef>`. Both lists are compared sorted.
+
+export const CORE_TABLES = [
+  'sites', 'site_owners', 'repo_bindings', 'trusted_commits', 'owners', 'authenticators', 'recovery_codes',
+  'owner_sessions', 'cli_tokens', 'requesters', 'requests', 'request_revisions', 'specs', 'feedback',
+  'questions', 'request_transitions', 'requester_events',
+] as const
+
+const TS = 'timestamp with time zone'
+const NOW = `${TS} not null default now()`
+
+export const CORE_COLUMNS = [
+  'sites.id text not null',
+  'sites.name text not null',
+  "sites.widget_origins ARRAY not null default '{}'::text[]",
+  'sites.jwks_url text',
+  'sites.jwks_cache jsonb',
+  "sites.intake_mode text not null default 'form'::text",
+  'sites.intake_key_enc bytea',
+  'sites.path_policy jsonb',
+  'sites.path_policy_confirmed_approval_id text',
+  'sites.prod_environment text',
+  'sites.issue_projection boolean not null default false',
+  "sites.enablement_mode text not null default 'auto'::text",
+  'sites.requester_email_enabled boolean not null default false',
+  "sites.caps jsonb not null default '{}'::jsonb",
+  'sites.flag_throttle integer',
+  'sites.intake_paused boolean not null default false',
+  'sites.config_version integer not null default 0',
+  `sites.created_at ${NOW}`,
+
+  'site_owners.site_id text not null',
+  'site_owners.owner_id text not null',
+  "site_owners.role text not null default 'owner'::text",
+
+  'repo_bindings.site_id text not null',
+  'repo_bindings.pr_app_id bigint not null',
+  'repo_bindings.pr_app_installation_id bigint not null',
+  'repo_bindings.push_app_id bigint',
+  'repo_bindings.push_app_installation_id bigint',
+  'repo_bindings.bot_owner_login text',
+  'repo_bindings.upstream_full_name text not null',
+  'repo_bindings.fork_full_name text',
+  'repo_bindings.default_branch text not null',
+  'repo_bindings.owner_github_login text not null',
+  'repo_bindings.same_repo_mode boolean not null',
+
+  'trusted_commits.seq bigint not null identity ALWAYS',
+  'trusted_commits.site_id text not null',
+  'trusted_commits.sha text not null',
+  'trusted_commits.set_by_approval_id text not null',
+  `trusted_commits.created_at ${NOW}`,
+
+  'owners.id text not null',
+  'owners.email text not null',
+  'owners.display_name text',
+  'owners.contact_version integer not null default 0',
+  `owners.created_at ${NOW}`,
+
+  'authenticators.credential_id text not null',
+  'authenticators.owner_id text not null',
+  'authenticators.public_key_cose bytea not null',
+  'authenticators.sign_count bigint not null default 0',
+  "authenticators.transports ARRAY not null default '{}'::text[]",
+  'authenticators.backup_eligible boolean not null',
+  `authenticators.created_at ${NOW}`,
+  `authenticators.revoked_at ${TS}`,
+
+  'recovery_codes.owner_id text not null',
+  'recovery_codes.code_hmac bytea not null',
+  `recovery_codes.used_at ${TS}`,
+
+  'owner_sessions.id_hmac bytea not null',
+  'owner_sessions.owner_id text not null',
+  `owner_sessions.created_at ${NOW}`,
+  `owner_sessions.expires_at ${TS} not null`,
+
+  'cli_tokens.id text not null',
+  'cli_tokens.owner_id text not null',
+  'cli_tokens.site_id text not null',
+  'cli_tokens.family_id text not null',
+  'cli_tokens.access_hmac bytea not null',
+  'cli_tokens.refresh_hmac bytea not null',
+  'cli_tokens.device_label text',
+  'cli_tokens.last_ip inet',
+  `cli_tokens.created_at ${NOW}`,
+  `cli_tokens.expires_at ${TS} not null`,
+  `cli_tokens.revoked_at ${TS}`,
+
+  'requesters.id text not null',
+  'requesters.site_id text not null',
+  'requesters.sub text not null',
+  'requesters.display_name text',
+  'requesters.email_enc bytea',
+  `requesters.paused_until ${TS}`,
+  'requesters.blocked boolean not null default false',
+  `requesters.created_at ${NOW}`,
+
+  'requests.id text not null',
+  'requests.public_ref text not null',
+  'requests.site_id text not null',
+  'requests.requester_id text not null',
+  'requests.state text not null',
+  'requests.state_ctx jsonb not null',
+  'requests.version integer not null default 0',
+  'requests.current_rev integer not null',
+  'requests.h_req_current text not null',
+  'requests.h_spec_current text',
+  'requests.eligibility_class text',
+  'requests.throttled boolean not null default false',
+  'requests.requester_opted_out boolean not null default false',
+  'requests.duplicate_of text',
+  'requests.flag_id text',
+  'requests.pr_number integer',
+  'requests.merge_sha text',
+  `requests.created_at ${NOW}`,
+  `requests.closed_at ${TS}`,
+  `requests.purge_after ${TS}`,
+  `requests.text_purge_after ${TS}`,
+
+  'request_revisions.id text not null',
+  'request_revisions.site_id text not null',
+  'request_revisions.request_id text not null',
+  'request_revisions.rev integer not null',
+  'request_revisions.kind text not null',
+  'request_revisions.fields jsonb not null',
+  "request_revisions.stripped jsonb not null default '[]'::jsonb",
+  'request_revisions.h_req text not null',
+  'request_revisions.parent_h_req text',
+  `request_revisions.created_at ${NOW}`,
+
+  'specs.id text not null',
+  'specs.site_id text not null',
+  'specs.request_id text not null',
+  'specs.version integer not null',
+  'specs.envelope jsonb not null',
+  'specs.h_spec text not null',
+  'specs.parent_h_req text not null',
+  'specs.h_fb text',
+  'specs.base_sha text not null',
+  'specs.uploaded_by_run text not null',
+  'specs.review_aids jsonb',
+  `specs.created_at ${NOW}`,
+
+  'feedback.id text not null',
+  'feedback.site_id text not null',
+  'feedback.request_id text not null',
+  'feedback.kind text not null',
+  'feedback.body text not null',
+  'feedback.h_fb text not null',
+  'feedback.author text not null',
+  'feedback.approval_id text',
+  `feedback.created_at ${NOW}`,
+
+  'questions.id text not null',
+  'questions.site_id text not null',
+  'questions.request_id text not null',
+  'questions.body text not null',
+  'questions.asked_by text not null',
+  'questions.answered_rev integer',
+  `questions.created_at ${NOW}`,
+
+  'request_transitions.seq bigint not null identity ALWAYS',
+  'request_transitions.site_id text not null',
+  'request_transitions.request_id text not null',
+  'request_transitions.from_state text',
+  'request_transitions.to_state text',
+  'request_transitions.event text not null',
+  'request_transitions.actor_type text not null',
+  'request_transitions.actor_id text',
+  'request_transitions.cli_token_id text',
+  'request_transitions.approval_id text',
+  'request_transitions.idempotency_key text',
+  'request_transitions.payload_digest text',
+  `request_transitions.at ${NOW}`,
+
+  'requester_events.seq bigint not null identity ALWAYS',
+  'requester_events.site_id text not null',
+  'requester_events.request_id text not null',
+  'requester_events.stage text not null',
+  `requester_events.stage_since ${TS} not null`,
+  'requester_events.transition_seq bigint not null',
+  `requester_events.at ${NOW}`,
+]
+
+const inList = (col: string, values: readonly string[]) =>
+  `CHECK ((${col} = ANY (ARRAY[${values.map((v) => `'${v}'::text`).join(', ')}])))`
+const siteFk = (t: string) => `${t} f FOREIGN KEY (site_id) REFERENCES sites(id)`
+const reqFk = (t: string) => `${t} f FOREIGN KEY (site_id, request_id) REFERENCES requests(site_id, id)`
+
+export const STATE_LIST = [
+  'intake', 'submitted', 'security_hold', 'owner_approved', 'planning', 'plan_review', 'plan_feedback',
+  'needs_info', 'plan_approved', 'building', 'paused_rate_limited', 'stalled', 'in_review',
+  'changes_requested', 'merged', 'deployed', 'enabled_for_requester', 'rollout_targeted',
+  'rollout_percentage', 'rollout_all', 'flag_off', 'matched_existing', 'rejected', 'closed',
+]
+
+export const CORE_CONSTRAINTS = [
+  'sites p PRIMARY KEY (id)',
+  `sites c ${inList('intake_mode', ['form', 'llm'])}`,
+  `sites c ${inList('enablement_mode', ['auto', 'merger_must_be_owner_login', 'dashboard_confirm'])}`,
+
+  'site_owners p PRIMARY KEY (site_id, owner_id)',
+  siteFk('site_owners'),
+  'site_owners f FOREIGN KEY (owner_id) REFERENCES owners(id)',
+  // Postgres renders a one-value `in (...)` as `=`.
+  "site_owners c CHECK ((role = 'owner'::text))",
+
+  'repo_bindings p PRIMARY KEY (site_id)',
+  siteFk('repo_bindings'),
+  'repo_bindings c CHECK ((same_repo_mode = ((push_app_id IS NULL) AND (push_app_installation_id IS NULL) AND (bot_owner_login IS NULL) AND (fork_full_name IS NULL))))',
+
+  'trusted_commits p PRIMARY KEY (seq)',
+  siteFk('trusted_commits'),
+
+  'owners p PRIMARY KEY (id)',
+  'owners u UNIQUE (email)',
+
+  'authenticators p PRIMARY KEY (credential_id)',
+  'authenticators f FOREIGN KEY (owner_id) REFERENCES owners(id)',
+
+  'recovery_codes p PRIMARY KEY (owner_id, code_hmac)',
+  'recovery_codes f FOREIGN KEY (owner_id) REFERENCES owners(id)',
+
+  'owner_sessions p PRIMARY KEY (id_hmac)',
+  'owner_sessions f FOREIGN KEY (owner_id) REFERENCES owners(id)',
+
+  'cli_tokens p PRIMARY KEY (id)',
+  siteFk('cli_tokens'),
+  'cli_tokens f FOREIGN KEY (owner_id) REFERENCES owners(id)',
+  'cli_tokens u UNIQUE (access_hmac)',
+  'cli_tokens u UNIQUE (refresh_hmac)',
+  'cli_tokens u UNIQUE (site_id, id)',
+
+  'requesters p PRIMARY KEY (id)',
+  siteFk('requesters'),
+  'requesters u UNIQUE (site_id, sub)',
+  'requesters u UNIQUE (site_id, id)',
+
+  'requests p PRIMARY KEY (id)',
+  siteFk('requests'),
+  'requests u UNIQUE (public_ref)',
+  'requests u UNIQUE (site_id, id)',
+  'requests f FOREIGN KEY (site_id, requester_id) REFERENCES requesters(site_id, id)',
+  'requests f FOREIGN KEY (site_id, duplicate_of) REFERENCES requests(site_id, id)',
+  `requests c ${inList('state', STATE_LIST)}`,
+  'requests c CHECK ((current_rev >= 1))',
+
+  'request_revisions p PRIMARY KEY (id)',
+  siteFk('request_revisions'),
+  reqFk('request_revisions'),
+  'request_revisions u UNIQUE (request_id, rev)',
+  'request_revisions c CHECK ((rev >= 1))',
+  `request_revisions c ${inList('kind', ['requester', 'owner_context'])}`,
+
+  'specs p PRIMARY KEY (id)',
+  siteFk('specs'),
+  reqFk('specs'),
+  'specs u UNIQUE (request_id, version)',
+  'specs c CHECK ((version >= 1))',
+
+  'feedback p PRIMARY KEY (id)',
+  siteFk('feedback'),
+  reqFk('feedback'),
+  `feedback c ${inList('kind', ['plan', 'rework'])}`,
+  `feedback c ${inList('author', ['owner', 'owner_github_review'])}`,
+
+  'questions p PRIMARY KEY (id)',
+  siteFk('questions'),
+  reqFk('questions'),
+  'questions f FOREIGN KEY (site_id, asked_by) REFERENCES site_owners(site_id, owner_id)',
+
+  'request_transitions p PRIMARY KEY (seq)',
+  siteFk('request_transitions'),
+  reqFk('request_transitions'),
+  'request_transitions f FOREIGN KEY (site_id, cli_token_id) REFERENCES cli_tokens(site_id, id)',
+  'request_transitions u UNIQUE (site_id, request_id, seq)',
+  `request_transitions c ${inList('actor_type', ['requester', 'owner', 'cli_for_owner', 'github', 'system'])}`,
+
+  'requester_events p PRIMARY KEY (seq)',
+  siteFk('requester_events'),
+  reqFk('requester_events'),
+  'requester_events f FOREIGN KEY (site_id, request_id, transition_seq) REFERENCES request_transitions(site_id, request_id, seq)',
+  `requester_events c ${inList('stage', ['received', 'needs_your_input', 'planning', 'building', 'shipping', 'available', 'closed'])}`,
+]
