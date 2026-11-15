@@ -1,7 +1,10 @@
 [
   {
     "id": "C-01",
-    "fn": "deriveChallenge",
+    "fn": [
+      "deriveChallenge",
+      "webauthnChallenge"
+    ],
     "description": "request.approve over one request target",
     "input": {
       "action": "request.approve",
@@ -20,7 +23,10 @@
   },
   {
     "id": "C-02a",
-    "fn": "deriveChallenge",
+    "fn": [
+      "deriveChallenge",
+      "webauthnChallenge"
+    ],
     "description": "requests.bulk_reject over three request targets given out of order",
     "input": {
       "action": "requests.bulk_reject",
@@ -47,7 +53,10 @@
   },
   {
     "id": "C-02b",
-    "fn": "deriveChallenge",
+    "fn": [
+      "deriveChallenge",
+      "webauthnChallenge"
+    ],
     "description": "The C-02a targets in another order: the same challenge",
     "input": {
       "action": "requests.bulk_reject",
@@ -74,7 +83,10 @@
   },
   {
     "id": "C-02c",
-    "fn": "deriveChallenge",
+    "fn": [
+      "deriveChallenge",
+      "webauthnChallenge"
+    ],
     "description": "Bulk reject of req_1 and req_2 only: a different challenge from C-02a (ST-50)",
     "input": {
       "action": "requests.bulk_reject",
@@ -97,7 +109,10 @@
   },
   {
     "id": "C-03",
-    "fn": "deriveChallenge",
+    "fn": [
+      "deriveChallenge",
+      "webauthnChallenge"
+    ],
     "description": "site_config.update over one site target",
     "input": {
       "action": "site_config.update",
@@ -116,7 +131,10 @@
   },
   {
     "id": "C-04",
-    "fn": "deriveChallenge",
+    "fn": [
+      "deriveChallenge",
+      "webauthnChallenge"
+    ],
     "description": "Bulk reject ids sort by UTF-8 bytes: U+FB01 before U+1F600, the reverse of UTF-16 order",
     "input": {
       "action": "requests.bulk_reject",
@@ -139,7 +157,10 @@
   },
   {
     "id": "C-06",
-    "fn": "deriveChallenge",
+    "fn": [
+      "deriveChallenge",
+      "webauthnChallenge"
+    ],
     "description": "hold.clear targets sort by type first: request req_1, then verdict pv_1, although pv_1 sorts before req_1 by id",
     "input": {
       "action": "hold.clear",
@@ -162,7 +183,10 @@
   },
   {
     "id": "C-05a",
-    "fn": "deriveChallenge",
+    "fn": [
+      "deriveChallenge",
+      "webauthnChallenge"
+    ],
     "description": "C-01 with only the action changed",
     "input": {
       "action": "spec.approve",
@@ -181,7 +205,10 @@
   },
   {
     "id": "C-05b",
-    "fn": "deriveChallenge",
+    "fn": [
+      "deriveChallenge",
+      "webauthnChallenge"
+    ],
     "description": "C-01 with only the nonce changed",
     "input": {
       "action": "request.approve",
@@ -200,7 +227,10 @@
   },
   {
     "id": "C-05c",
-    "fn": "deriveChallenge",
+    "fn": [
+      "deriveChallenge",
+      "webauthnChallenge"
+    ],
     "description": "C-01 with only the content hash changed",
     "input": {
       "action": "request.approve",

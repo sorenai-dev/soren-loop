@@ -12,7 +12,7 @@
     "test": "vitest run",
     "test:unit": "env -u DATABASE_URL vitest run",
     "test:db": "pnpm --filter @sorenai/loop-server test:db",
-    "ci": "pnpm lint && pnpm typecheck && pnpm test"
+    "ci": "pnpm lint && pnpm typecheck && pnpm --filter @sorenai/loop-schema run check:vectors && pnpm test"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

@@ -186,4 +186,24 @@ add('H-16c', 'Authenticator add whose credential id uses the - and _ characters 
 add('H-17c', 'Bulk reject ids sort by UTF-8 bytes: req_U+FB01 before req_U+1F600 (UTF-16 order is the reverse)',
     {'siteId': SITE, 'requestIds': ['req_\U0001F600', 'req_\ufb01']},
     'sl:bulk_reject:v1', [SITE, '["req_\ufb01","req_\U0001F600"]'])
+
+# ---- Task 016: the function(s) each vector exercises, for the conformance runner -----------
+def fn_for(vid):
+    table = [
+        ('H-13', ['frame', 'hashFields']), ('H-14b', 'hRollout'), ('H-14', ['byteSort', 'frame', 'hashFields']),
+        ('H-15', 'P'), ('P-', 'P'), ('JCS-', 'jcs'), ('H-09', 'hRework'), ('H-0', None), ('H-12c', 'hFb'),
+        ('H-10a', 'hHoldClear'), ('H-10b', 'hHoldClear'), ('H-10', 'l2Fingerprint'), ('H-11', 'hRollout'),
+        ('H-12a', 'hNotificationPolicy'), ('H-12e', 'hNotificationPolicy'), ('H-12b', 'hSiteConfig'),
+        ('H-12d', 'hEnableConfirm'), ('H-16', 'hAuthenticator'), ('H-17', 'hBulkReject'),
+    ]
+    for prefix, fn in table:
+        if vid.startswith(prefix):
+            if fn is not None:
+                return fn
+            n = int(vid[2:4])
+            return 'hReq' if n <= 5 else 'hG1' if n == 6 else 'hSpec'
+    raise KeyError(vid)
+
+
+VECTORS = [{'id': v['id'], 'fn': fn_for(v['id']), **{k: x for k, x in v.items() if k != 'id'}} for v in VECTORS]
 print(json.dumps(VECTORS, indent=2, ensure_ascii=True))

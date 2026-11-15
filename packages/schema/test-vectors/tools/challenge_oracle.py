@@ -64,7 +64,7 @@ def challenge(vid, description, input_, targets_jcs):
     pre = frame(W, input_['action'], targets_jcs, input_['contentHash'], input_['nonce'])
     digest = sha(pre)
     CHALLENGES.append({
-        'id': vid, 'fn': 'deriveChallenge', 'description': description, 'input': input_,
+        'id': vid, 'fn': ['deriveChallenge', 'webauthnChallenge'], 'description': description, 'input': input_,
         'expected_bytes_hex': pre.hex(), 'expected_hash': digest.hex(),
         'expected_webauthn_challenge': b64url(digest),
     })
