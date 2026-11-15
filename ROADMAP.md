@@ -34,7 +34,7 @@ Nothing is published to npm until the release gate at the end of Phase 1c.
 
 - [ ] 018 L1 classifier prompt, strict verdict schema, and golden corpus (ST-27)
 - [ ] 019 TS port of the tdd-pair outcome validator with the kit's cross-field rules
-- [ ] 020 Migrations for configuration, identity, and the request aggregate; typed IDs; site-scoped repositories
+- [x] 020 Migrations for configuration, identity, and the request aggregate; typed IDs; site-scoped repositories
 - [ ] 021 Migrations for flags, GitHub, deployments, outbox, timers, notifications, idempotency
 - [ ] 022 Envelope encryption, peppered HMAC token storage, and the log redaction allowlist
 - [ ] 023 Transition engine: one function, one transaction, versioned writes, `invalid_transition`
