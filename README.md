@@ -1,7 +1,7 @@
 # soren-loop
 
 Feature requests from your users, built with Claude Code under your approval, rolled out behind a
-feature flag. Part of the [sorenai.dev](https://sorenai.dev) suite.
+feature flag.
 
 > **Status:** pre-release. Nothing is published yet; see the [roadmap](ROADMAP.md).
 

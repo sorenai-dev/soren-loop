@@ -50,7 +50,7 @@ by hand.
 | AS11 | Unreleased roadmap: request titles, specs, flag keys | Internal/Confidential | DB, issues, client bundles, OFREP | Competitive intelligence |
 | AS12 | Owner attention, subscription quota, API spend | Operational | — | DoS that costs no infrastructure |
 | AS13 | Trust in what we distribute: CLI, plugin, personas, SDKs, server image, widget loader | Restricted | npm, plugin marketplace repo, container registry, control-plane origin | One compromise reaches every owner (and every host page) |
-| AS14 | **The sorenai.dev brand and its shared accounts.** soren-loop ships under the owner's security-audit brand (Soren Score), using the `sorenai-dev` GitHub account, the `@sorenai` npm scope, and the `sorenai.dev` domain. | Restricted | GitHub, npm, DNS registrar | A soren-loop compromise or a public vuln damages the audit business out of proportion. A security brand is a trophy target. Shared accounts couple the blast radius across the suite. |
+
 
 ---
 

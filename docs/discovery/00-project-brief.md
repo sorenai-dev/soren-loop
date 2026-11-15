@@ -91,7 +91,6 @@ questions resolved:
 | 28 | SU-2 (one step-up authorizes one action), FL-1 (host-proxied single-flag OFREP for browsers) and AU-1 (hash-chained audit tables, chain head exported somewhere the DB writer can't reach) accepted |
 | 29 | RFC Q1–Q15: all recommendations in `rfc/13-open-questions.md` §1 accepted. The seven requester stages and hour-rounded `stage_since` (Q6) are approved |
 | 30 | Per-stage notification policy (seam, MVP). Every stage carries a policy that decides which notifications are emitted, to whom, on which channel, including none. Requester entries are keyed by the seven requester stages only, never internal states, so a hold can't be revealed (A23-5). Owner security alerts (`security_hold`, `precheck_unavailable`, App permission-check failure, outbox `dead`) are locked on. Suppressed notifications are recorded, not dropped, so the defaults can be tuned. Site overrides are schema-validated, audit-logged and need step-up |
-| 31 | Rename: the project becomes **soren-loop**, part of the sorenai.dev suite, published under the `sorenai-dev` GitHub account. Repos: `sorenai-dev/soren-loop` (control plane monorepo) and `sorenai-dev/soren-loop-cli` (CLI + Claude Code plugin). npm scope `@sorenai` (`@sorenai/loop-react`, `-node`, `-schema`; to be reserved, SC4). Flag key prefix `sl_`, env prefix `SL_`, plugin namespace `/soren-loop:*`, error-type URIs under `https://loop.sorenai.dev/errors/` |
 
 ## Ratified Decisions — Round 6 (2026-10-31, notification tensions and hosting)
 

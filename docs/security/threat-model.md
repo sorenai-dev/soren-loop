@@ -50,12 +50,11 @@ soren-loop ships under sorenai.dev, the owner's security-audit brand (Soren Scor
 
 1. **Impact is amplified.** A compromise of soren-loop, or even a public, preventable vulnerability, is a credibility event for a business that sells security judgment. Treat SC1, SC3, SC5, and every top-5 threat below as reputationally critical, in addition to their technical rating.
 2. **Likelihood rises.** A security vendor's own tool is a trophy target, so expect more, and more skilled, attention than an anonymous OSS project gets.
-3. **Blast radius couples across the suite.** The `sorenai-dev` GitHub account, the `@sorenai` npm scope, and the `sorenai.dev` domain are shared with the other products (AS14, SC4). A takeover of any of them affects all of them.
 
 Controls this adds:
 
 - Separate credentials and publish rights per product. `sorenai-dev` becomes an organization before the first public release (decision 33, SC4), with a team per product.
-- GitHub private vulnerability reporting and a published `security.txt` and disclosure policy at `sorenai.dev`.
+- GitHub private vulnerability reporting and a published `security.txt`.
 - A documented advisory process: GitHub Security Advisories, CVE requests, and an embargo window.
 - Publish this threat model with the repo. Showing the work is the brand-consistent posture.
 - Hosted mode sends email from a domain separate from the audit brand's own mail.

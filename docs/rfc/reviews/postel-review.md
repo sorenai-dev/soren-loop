@@ -31,7 +31,6 @@ Keep these as the pattern for everything else: typed-prefix IDs with 128-bit ran
 
 **Ref:** `05` §2, brief decision 31.
 **Problems:**
-- Decision 31 fixes error-type URIs under `https://loop.sorenai.dev/errors/`. `05` §2 instead ships a bespoke `{error:{…, docs}}` wrapper, so every client would parse a one-off shape.
 - `suggested_action` is prose ("Run `soren-loop build req_8Hk2...` again…"). An agent can't branch on prose, and it will paste the truncated ID it sees.
 - The body's `request_id` holds the *domain* request (`req_…`), while `X-Request-Id` is the *trace* ID. One name for two concepts violates rule 5. An agent that greps logs for the body
   `request_id` won't find the trace.
