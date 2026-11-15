@@ -1,0 +1,110 @@
+[
+  {
+    "id": "BIDI-01",
+    "description": "U+202E stripped from a form title still flags (ST-39), but is not requester-attributable (no span)",
+    "raw": {
+      "title": "abc\u202edef"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "bidi"
+      ],
+      "spans": [],
+      "stripped": [
+        {
+          "field": "title",
+          "codePoint": 8238,
+          "category": "bidi"
+        }
+      ],
+      "requesterAttributable": false
+    },
+    "normalized": {
+      "title": "abcdef"
+    }
+  },
+  {
+    "id": "BIDI-02",
+    "description": "U+061C (not in the strip set) stays in the text and flags with its span",
+    "raw": {
+      "problem": "x\u061cy"
+    },
+    "requesterFields": [
+      "title",
+      "problem"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "bidi"
+      ],
+      "spans": [
+        {
+          "field": "problem",
+          "start": 1,
+          "end": 2,
+          "category": "bidi"
+        }
+      ],
+      "stripped": [],
+      "requesterAttributable": true
+    }
+  },
+  {
+    "id": "BIDI-03",
+    "description": "Every stripped bidi control is classified bidi, in field then record order",
+    "raw": {
+      "title": "a\u200eb\u200fc\u2066d\u2067e\u2068f\u2069g"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "bidi"
+      ],
+      "spans": [],
+      "stripped": [
+        {
+          "field": "title",
+          "codePoint": 8206,
+          "category": "bidi"
+        },
+        {
+          "field": "title",
+          "codePoint": 8207,
+          "category": "bidi"
+        },
+        {
+          "field": "title",
+          "codePoint": 8294,
+          "category": "bidi"
+        },
+        {
+          "field": "title",
+          "codePoint": 8295,
+          "category": "bidi"
+        },
+        {
+          "field": "title",
+          "codePoint": 8296,
+          "category": "bidi"
+        },
+        {
+          "field": "title",
+          "codePoint": 8297,
+          "category": "bidi"
+        }
+      ],
+      "requesterAttributable": false
+    },
+    "normalized": {
+      "title": "abcdefg"
+    }
+  }
+]

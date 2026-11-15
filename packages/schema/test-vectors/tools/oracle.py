@@ -9,6 +9,7 @@ output of a serializer. Run it to regenerate the file:
 
 The output is ASCII-only JSON (non-ASCII characters are escaped).
 """
+import base64
 import hashlib
 import json
 import struct
@@ -168,4 +169,41 @@ add('H-12b', 'Site config change', {'siteId': SITE, 'setting': 'contact', 'baseV
 add('H-12d', 'Enablement confirmation', {'requestId': REQ, 'deploymentId': 'dep_1', 'flagKey': 'sl_abc'},
     'sl:enable_confirm:v1', [REQ, 'dep_1', 'sl_abc'])
 
+# ---- Task 014: step-up content hashes ----------------------------------------------------
+CRED = base64.urlsafe_b64encode(b'credential-1').rstrip(b'=').decode('ascii')
+COSE = base64.urlsafe_b64encode(b'cose-key-1').rstrip(b'=').decode('ascii')
+AUTH = {'ownerId': 'owner_1', 'credentialId': CRED, 'publicKeyCose': COSE}
+add('H-16a', 'Authenticator add', dict(AUTH, op='add'), 'sl:authenticator:v1', ['owner_1', 'add', CRED, COSE])
+add('H-16b', 'Authenticator remove of the H-16a key differs', dict(AUTH, op='remove'),
+    'sl:authenticator:v1', ['owner_1', 'remove', CRED, COSE])
+add('H-17a', 'Bulk reject request ids, unsorted input', {'siteId': SITE, 'requestIds': ['req_3', 'req_1', 'req_2']},
+    'sl:bulk_reject:v1', [SITE, '["req_1","req_2","req_3"]'])
+add('H-17b', 'The H-17a ids in another order: the same hash', {'siteId': SITE, 'requestIds': ['req_2', 'req_3', 'req_1']},
+    'sl:bulk_reject:v1', [SITE, '["req_1","req_2","req_3"]'])
+
+add('H-16c', 'Authenticator add whose credential id uses the - and _ characters (bytes fb ff)',
+    dict(AUTH, op='add', credentialId='-_8'), 'sl:authenticator:v1', ['owner_1', 'add', '-_8', COSE])
+add('H-17c', 'Bulk reject ids sort by UTF-8 bytes: req_U+FB01 before req_U+1F600 (UTF-16 order is the reverse)',
+    {'siteId': SITE, 'requestIds': ['req_\U0001F600', 'req_\ufb01']},
+    'sl:bulk_reject:v1', [SITE, '["req_\ufb01","req_\U0001F600"]'])
+
+# ---- Task 016: the function(s) each vector exercises, for the conformance runner -----------
+def fn_for(vid):
+    table = [
+        ('H-13', ['frame', 'hashFields']), ('H-14b', 'hRollout'), ('H-14', ['byteSort', 'frame', 'hashFields']),
+        ('H-15', 'P'), ('P-', 'P'), ('JCS-', 'jcs'), ('H-09', 'hRework'), ('H-0', None), ('H-12c', 'hFb'),
+        ('H-10a', 'hHoldClear'), ('H-10b', 'hHoldClear'), ('H-10', 'l2Fingerprint'), ('H-11', 'hRollout'),
+        ('H-12a', 'hNotificationPolicy'), ('H-12e', 'hNotificationPolicy'), ('H-12b', 'hSiteConfig'),
+        ('H-12d', 'hEnableConfirm'), ('H-16', 'hAuthenticator'), ('H-17', 'hBulkReject'),
+    ]
+    for prefix, fn in table:
+        if vid.startswith(prefix):
+            if fn is not None:
+                return fn
+            n = int(vid[2:4])
+            return 'hReq' if n <= 5 else 'hG1' if n == 6 else 'hSpec'
+    raise KeyError(vid)
+
+
+VECTORS = [{'id': v['id'], 'fn': fn_for(v['id']), **{k: x for k, x in v.items() if k != 'id'}} for v in VECTORS]
 print(json.dumps(VECTORS, indent=2, ensure_ascii=True))

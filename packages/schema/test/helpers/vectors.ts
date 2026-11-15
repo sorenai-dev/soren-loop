@@ -23,12 +23,14 @@ export interface Vector<I = Record<string, unknown>> {
   [extra: string]: unknown
 }
 
-export function loadVectors(file: 'hash.json' | 'normalize.json'): Vector[] {
+export type VectorFile = 'hash.json' | 'normalize.json' | 'challenge.json' | 'receipt.json'
+
+export function loadVectors(file: VectorFile): Vector[] {
   const url = new URL(`../../test-vectors/${file}`, import.meta.url)
   return JSON.parse(readFileSync(url, 'utf8')) as Vector[]
 }
 
-export function vector<I = Record<string, unknown>>(file: 'hash.json' | 'normalize.json', id: string): Vector<I> {
+export function vector<I = Record<string, unknown>>(file: VectorFile, id: string): Vector<I> {
   const found = loadVectors(file).find((v) => v.id === id)
   if (!found) throw new Error(`vector ${id} not found in ${file}`)
   return found as Vector<I>

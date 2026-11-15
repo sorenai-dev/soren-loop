@@ -9,14 +9,24 @@
     "directory": "packages/schema"
   },
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./receipt": "./src/receipt.ts",
+    "./vectors": "./src/vectors/run.ts",
+    "./testing/virtual-authenticator": "./test/fixtures/virtual-authenticator.ts",
+    "./test-vectors/*.json": "./test-vectors/*.json",
+    "./corpus/l3/*.json": "./test/corpus/l3/*.json"
   },
   "scripts": {
     "test": "vitest run",
-    "gen:unicode": "node scripts/gen-unicode-table.ts"
+    "gen:unicode": "node scripts/gen-unicode-table.ts",
+    "check:vectors": "node scripts/check-vectors.ts"
   },
   "dependencies": {
     "@noble/hashes": "2.4.0",
+    "@simplewebauthn/server": "14.0.3",
     "zod": "4.6.7"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

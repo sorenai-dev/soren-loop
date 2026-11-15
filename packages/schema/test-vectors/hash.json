@@ -1,6 +1,10 @@
 [
   {
     "id": "H-13a",
+    "fn": [
+      "frame",
+      "hashFields"
+    ],
     "description": "LP framing: fields (\"ab\", \"c\")",
     "input": {
       "prefix": "sl:test:v1",
@@ -14,6 +18,10 @@
   },
   {
     "id": "H-13b",
+    "fn": [
+      "frame",
+      "hashFields"
+    ],
     "description": "LP framing: fields (\"a\", \"bc\") hash differently from H-13a",
     "input": {
       "prefix": "sl:test:v1",
@@ -27,6 +35,10 @@
   },
   {
     "id": "H-13c",
+    "fn": [
+      "frame",
+      "hashFields"
+    ],
     "description": "Zero fields: the preimage is LP(prefix) alone",
     "input": {
       "prefix": "sl:test:v1",
@@ -37,6 +49,11 @@
   },
   {
     "id": "H-14",
+    "fn": [
+      "byteSort",
+      "frame",
+      "hashFields"
+    ],
     "description": "An astral-plane string among BMP strings sorts by UTF-8 bytes (code point order), not UTF-16 order; the sorted list is hashed as fields under a test prefix",
     "input": {
       "prefix": "sl:test:v1",
@@ -58,6 +75,7 @@
   },
   {
     "id": "H-15",
+    "fn": "P",
     "description": "P(path): ./src/a.ts, src/a.ts and src//a.ts give one result; ../x is rejected",
     "input": {
       "same": [
@@ -72,6 +90,7 @@
   },
   {
     "id": "P-01",
+    "fn": "P",
     "description": "P drops a \".\" segment in the middle",
     "input": {
       "path": "src/./a.ts"
@@ -80,6 +99,7 @@
   },
   {
     "id": "P-02",
+    "fn": "P",
     "description": "P drops a trailing slash",
     "input": {
       "path": "src/"
@@ -88,6 +108,7 @@
   },
   {
     "id": "P-03",
+    "fn": "P",
     "description": "A colon is legal in a relative POSIX path",
     "input": {
       "path": "a:b.md"
@@ -96,6 +117,7 @@
   },
   {
     "id": "JCS-01",
+    "fn": "jcs",
     "description": "RFC 8785 sorts object keys by UTF-16 code units: U+1F600 (D83D DE00) before U+FB01",
     "input": {
       "value": {
@@ -107,6 +129,7 @@
   },
   {
     "id": "H-01",
+    "fn": "hReq",
     "description": "Rev 1 request with area null",
     "input": {
       "siteId": "site_1",
@@ -129,6 +152,7 @@
   },
   {
     "id": "H-02",
+    "fn": "hReq",
     "description": "The H-01 request with area set gives a different hash",
     "input": {
       "siteId": "site_1",
@@ -151,6 +175,7 @@
   },
   {
     "id": "H-03",
+    "fn": "hReq",
     "description": "H-01 with input keys in a different order: identical H_req (JCS)",
     "input": {
       "siteId": "site_1",
@@ -173,6 +198,7 @@
   },
   {
     "id": "H-04",
+    "fn": "hReq",
     "description": "Rev 2 owner_context revision whose parent_h_req is H-01",
     "input": {
       "siteId": "site_1",
@@ -195,6 +221,7 @@
   },
   {
     "id": "H-05",
+    "fn": "hReq",
     "description": "A missing key is a schema error and is never hashed",
     "input": {
       "siteId": "site_1",
@@ -215,6 +242,7 @@
   },
   {
     "id": "H-06a",
+    "fn": "hG1",
     "description": "G1 hash of H-01 for class \"small\"",
     "input": {
       "hReq": "a9a1a8bc5564997c855ee7dab2a32e6cc64ddeb6d7c892fba9e2192e3cb96ca9",
@@ -225,6 +253,7 @@
   },
   {
     "id": "H-06b",
+    "fn": "hG1",
     "description": "G1 hash of H-01 for class \"standard\" differs from H-06a",
     "input": {
       "hReq": "a9a1a8bc5564997c855ee7dab2a32e6cc64ddeb6d7c892fba9e2192e3cb96ca9",
@@ -235,6 +264,7 @@
   },
   {
     "id": "H-12c",
+    "fn": "hFb",
     "description": "Plan feedback hash",
     "input": {
       "requestId": "req_1",
@@ -246,6 +276,7 @@
   },
   {
     "id": "H-12cn",
+    "fn": "hFb",
     "description": "A feedback body that is not normalized hashes as its N_hash form (CRLF and trailing space removed): same preimage as H-12c",
     "input": {
       "requestId": "req_1",
@@ -257,6 +288,7 @@
   },
   {
     "id": "H-07",
+    "fn": "hSpec",
     "description": "Spec paths unsorted and duplicated (after P) give the sorted-unique H_spec; no h_fb",
     "input": {
       "hReq": "a9a1a8bc5564997c855ee7dab2a32e6cc64ddeb6d7c892fba9e2192e3cb96ca9",
@@ -277,6 +309,7 @@
   },
   {
     "id": "H-07n",
+    "fn": "hSpec",
     "description": "A spec body that is not normalized hashes as its N_hash form (trailing U+00A0 stripped): same preimage as H-07",
     "input": {
       "hReq": "a9a1a8bc5564997c855ee7dab2a32e6cc64ddeb6d7c892fba9e2192e3cb96ca9",
@@ -292,6 +325,7 @@
   },
   {
     "id": "H-07a",
+    "fn": "hSpec",
     "description": "Spec paths sort by UTF-8 bytes: U+FB01 before U+1F600 (UTF-16 order would reverse them)",
     "input": {
       "hReq": "a9a1a8bc5564997c855ee7dab2a32e6cc64ddeb6d7c892fba9e2192e3cb96ca9",
@@ -307,6 +341,7 @@
   },
   {
     "id": "H-08",
+    "fn": "hSpec",
     "description": "The H-07 spec with h_fb set",
     "input": {
       "hReq": "a9a1a8bc5564997c855ee7dab2a32e6cc64ddeb6d7c892fba9e2192e3cb96ca9",
@@ -322,6 +357,7 @@
   },
   {
     "id": "H-09",
+    "fn": "hRework",
     "description": "Rework hash over H-07 and H-12c",
     "input": {
       "hSpec": "f3e0a230c740550b4cbae2ca9440522a6e230e494dd823d66eef7edc6f0709b5",
@@ -332,6 +368,7 @@
   },
   {
     "id": "H-10d",
+    "fn": "l2Fingerprint",
     "description": "L2 fingerprint: entries given out of path order, paths through P",
     "input": {
       "trustedSha": "1111111111111111111111111111111111111111",
@@ -354,6 +391,7 @@
   },
   {
     "id": "H-10e",
+    "fn": "l2Fingerprint",
     "description": "L2 entries sort by UTF-8 bytes of the path: U+FB01 before U+1F600",
     "input": {
       "trustedSha": "1111111111111111111111111111111111111111",
@@ -376,6 +414,7 @@
   },
   {
     "id": "H-10c",
+    "fn": "l2Fingerprint",
     "description": "L2 fingerprint with no instruction-file changes (empty list)",
     "input": {
       "trustedSha": "1111111111111111111111111111111111111111",
@@ -387,6 +426,7 @@
   },
   {
     "id": "H-10a",
+    "fn": "hHoldClear",
     "description": "Hold clear without L2",
     "input": {
       "requestId": "req_1",
@@ -399,6 +439,7 @@
   },
   {
     "id": "H-10b",
+    "fn": "hHoldClear",
     "description": "Hold clear with the H-10d L2 fingerprint",
     "input": {
       "requestId": "req_1",
@@ -411,6 +452,7 @@
   },
   {
     "id": "H-11a",
+    "fn": "hRollout",
     "description": "Rollout targets: order and duplicates are irrelevant",
     "input": {
       "requestId": "req_1",
@@ -431,6 +473,7 @@
   },
   {
     "id": "H-11b",
+    "fn": "hRollout",
     "description": "Rollout by basis points",
     "input": {
       "requestId": "req_1",
@@ -443,6 +486,7 @@
   },
   {
     "id": "H-11c",
+    "fn": "hRollout",
     "description": "Rollout to all",
     "input": {
       "requestId": "req_1",
@@ -454,6 +498,7 @@
   },
   {
     "id": "H-11d",
+    "fn": "hRollout",
     "description": "Rollout to all at doc_version 8 differs from H-11c",
     "input": {
       "requestId": "req_1",
@@ -465,6 +510,7 @@
   },
   {
     "id": "H-14b",
+    "fn": "hRollout",
     "description": "Rollout targets: an astral-plane sub among BMP subs sorts by UTF-8 bytes",
     "input": {
       "requestId": "req_1",
@@ -481,6 +527,7 @@
   },
   {
     "id": "H-12a",
+    "fn": "hNotificationPolicy",
     "description": "Notification policy override with base_version 3",
     "input": {
       "siteId": "site_1",
@@ -500,6 +547,7 @@
   },
   {
     "id": "H-12e",
+    "fn": "hNotificationPolicy",
     "description": "The H-12a override with base_version 4 differs",
     "input": {
       "siteId": "site_1",
@@ -519,6 +567,7 @@
   },
   {
     "id": "H-12b",
+    "fn": "hSiteConfig",
     "description": "Site config change",
     "input": {
       "siteId": "site_1",
@@ -533,6 +582,7 @@
   },
   {
     "id": "H-12d",
+    "fn": "hEnableConfirm",
     "description": "Enablement confirmation",
     "input": {
       "requestId": "req_1",
@@ -541,5 +591,88 @@
     },
     "expected_bytes_hex": "00000014736c3a656e61626c655f636f6e6669726d3a7631000000057265715f31000000056465705f3100000006736c5f616263",
     "expected_hash": "7b8d0c6dd45f9c0e3fd79c00298fe3f23fc1274eb8cf72efefd677843e969f67"
+  },
+  {
+    "id": "H-16a",
+    "fn": "hAuthenticator",
+    "description": "Authenticator add",
+    "input": {
+      "ownerId": "owner_1",
+      "credentialId": "Y3JlZGVudGlhbC0x",
+      "publicKeyCose": "Y29zZS1rZXktMQ",
+      "op": "add"
+    },
+    "expected_bytes_hex": "00000013736c3a61757468656e74696361746f723a7631000000076f776e65725f31000000036164640000001059334a6c5a47567564476c68624330780000000e5932397a5a5331725a586b744d51",
+    "expected_hash": "be290ef93af2d33ab43a829d00e4407e44161c62d3564bef37ff436da32fd36f"
+  },
+  {
+    "id": "H-16b",
+    "fn": "hAuthenticator",
+    "description": "Authenticator remove of the H-16a key differs",
+    "input": {
+      "ownerId": "owner_1",
+      "credentialId": "Y3JlZGVudGlhbC0x",
+      "publicKeyCose": "Y29zZS1rZXktMQ",
+      "op": "remove"
+    },
+    "expected_bytes_hex": "00000013736c3a61757468656e74696361746f723a7631000000076f776e65725f310000000672656d6f76650000001059334a6c5a47567564476c68624330780000000e5932397a5a5331725a586b744d51",
+    "expected_hash": "636e6eb38244302618aed1a00cc6c6baedff807f651efe5ed2f03c98afde262c"
+  },
+  {
+    "id": "H-17a",
+    "fn": "hBulkReject",
+    "description": "Bulk reject request ids, unsorted input",
+    "input": {
+      "siteId": "site_1",
+      "requestIds": [
+        "req_3",
+        "req_1",
+        "req_2"
+      ]
+    },
+    "expected_bytes_hex": "00000011736c3a62756c6b5f72656a6563743a763100000006736974655f31000000195b227265715f31222c227265715f32222c227265715f33225d",
+    "expected_hash": "de35fbbc3c2d25851703cc50cc9c46fc24ed7179623f00aa894642e1d3f28d27"
+  },
+  {
+    "id": "H-17b",
+    "fn": "hBulkReject",
+    "description": "The H-17a ids in another order: the same hash",
+    "input": {
+      "siteId": "site_1",
+      "requestIds": [
+        "req_2",
+        "req_3",
+        "req_1"
+      ]
+    },
+    "expected_bytes_hex": "00000011736c3a62756c6b5f72656a6563743a763100000006736974655f31000000195b227265715f31222c227265715f32222c227265715f33225d",
+    "expected_hash": "de35fbbc3c2d25851703cc50cc9c46fc24ed7179623f00aa894642e1d3f28d27"
+  },
+  {
+    "id": "H-16c",
+    "fn": "hAuthenticator",
+    "description": "Authenticator add whose credential id uses the - and _ characters (bytes fb ff)",
+    "input": {
+      "ownerId": "owner_1",
+      "credentialId": "-_8",
+      "publicKeyCose": "Y29zZS1rZXktMQ",
+      "op": "add"
+    },
+    "expected_bytes_hex": "00000013736c3a61757468656e74696361746f723a7631000000076f776e65725f3100000003616464000000032d5f380000000e5932397a5a5331725a586b744d51",
+    "expected_hash": "ddcceec5946fc9fcc65c74173a6c67d457888e0853f2634533d0c96fe193951b"
+  },
+  {
+    "id": "H-17c",
+    "fn": "hBulkReject",
+    "description": "Bulk reject ids sort by UTF-8 bytes: req_U+FB01 before req_U+1F600 (UTF-16 order is the reverse)",
+    "input": {
+      "siteId": "site_1",
+      "requestIds": [
+        "req_\ud83d\ude00",
+        "req_\ufb01"
+      ]
+    },
+    "expected_bytes_hex": "00000011736c3a62756c6b5f72656a6563743a763100000006736974655f31000000165b227265715fefac81222c227265715ff09f9880225d",
+    "expected_hash": "ceb85111ca318d71e458079436c2eb659fc1c247cff4b984e24739f51827d29e"
   }
 ]

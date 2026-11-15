@@ -7,8 +7,8 @@ interface NormInput {
   text?: string
   text_hex?: string
   cap?: number
-  fn: 'intake' | 'hash' | 'both'
 }
+type NormFn = 'nIntake' | 'nHash'
 
 const INTAKE_CAP = 10_000
 
@@ -19,10 +19,10 @@ function field(input: NormInput): string | Uint8Array {
 /** Runs a normalize.json vector through every function its `fn` names. */
 function check(id: string): void {
   const v = vector<NormInput>('normalize.json', id)
-  const fns = v.input.fn === 'both' ? (['intake', 'hash'] as const) : [v.input.fn]
+  const fns = (Array.isArray(v.fn) ? v.fn : [v.fn]) as NormFn[]
   for (const fn of fns) {
     const run = (): string =>
-      fn === 'intake' ? nIntake(field(v.input), v.input.cap ?? INTAKE_CAP).value : nHash(field(v.input), v.input.cap)
+      fn === 'nIntake' ? nIntake(field(v.input), v.input.cap ?? INTAKE_CAP).value : nHash(field(v.input), v.input.cap)
     if (v.expected_error !== undefined) {
       expect(reasonOf(run), `${id} ${fn}`).toBe(v.expected_error)
     } else {

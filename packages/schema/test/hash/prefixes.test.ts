@@ -19,6 +19,9 @@ const FROZEN: Record<string, string[]> = {
   'sl:notification_policy:v1': ['site_id', 'base_version', 'override'],
   'sl:site_config:v1': ['site_id', 'setting', 'base_version', 'value'],
   'sl:webauthn:v1': ['action', 'targets', 'content_hash', 'nonce'],
+  // Added by spec 014 (new prefixes; the entries above are unchanged).
+  'sl:authenticator:v1': ['owner_id', 'op', 'credential_id', 'public_key_cose'],
+  'sl:bulk_reject:v1': ['site_id', 'request_ids'],
 }
 
 describe('PREFIXES registry', () => {

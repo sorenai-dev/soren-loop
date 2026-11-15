@@ -1,0 +1,144 @@
+[
+  {
+    "id": "INV-01",
+    "description": "Soft hyphen inside a word",
+    "raw": {
+      "title": "pass\u00adword"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "invisible"
+      ],
+      "spans": [
+        {
+          "field": "title",
+          "start": 4,
+          "end": 5,
+          "category": "invisible"
+        }
+      ],
+      "stripped": [],
+      "requesterAttributable": true
+    }
+  },
+  {
+    "id": "INV-02",
+    "description": "Hangul filler",
+    "raw": {
+      "title": "a\u3164b"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "invisible"
+      ],
+      "spans": [
+        {
+          "field": "title",
+          "start": 1,
+          "end": 2,
+          "category": "invisible"
+        }
+      ],
+      "stripped": [],
+      "requesterAttributable": true
+    }
+  },
+  {
+    "id": "INV-03",
+    "description": "U+2061 function application",
+    "raw": {
+      "title": "f\u2061x"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "invisible"
+      ],
+      "spans": [
+        {
+          "field": "title",
+          "start": 1,
+          "end": 2,
+          "category": "invisible"
+        }
+      ],
+      "stripped": [],
+      "requesterAttributable": true
+    }
+  },
+  {
+    "id": "INV-04",
+    "description": "Three adjacent soft hyphens are one span",
+    "raw": {
+      "title": "a\u00ad\u00ad\u00adb"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "invisible"
+      ],
+      "spans": [
+        {
+          "field": "title",
+          "start": 1,
+          "end": 4,
+          "category": "invisible"
+        }
+      ],
+      "stripped": [],
+      "requesterAttributable": true
+    }
+  },
+  {
+    "id": "INV-05",
+    "description": "ZWSP, BOM and a Tag character are stripped by N_intake and reported as stripped hits, not spans",
+    "raw": {
+      "title": "a\u200bb\ufeffc\udb40\udc41d"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "invisible"
+      ],
+      "spans": [],
+      "stripped": [
+        {
+          "field": "title",
+          "codePoint": 8203,
+          "category": "invisible"
+        },
+        {
+          "field": "title",
+          "codePoint": 65279,
+          "category": "invisible"
+        },
+        {
+          "field": "title",
+          "codePoint": 917569,
+          "category": "invisible"
+        }
+      ],
+      "requesterAttributable": false
+    },
+    "normalized": {
+      "title": "abcd"
+    }
+  }
+]

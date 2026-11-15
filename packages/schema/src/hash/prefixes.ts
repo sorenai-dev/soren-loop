@@ -15,6 +15,9 @@ export const PREFIXES = Object.freeze({
   'sl:notification_policy:v1': fields('site_id', 'base_version', 'override'),
   'sl:site_config:v1': fields('site_id', 'setting', 'base_version', 'value'),
   'sl:webauthn:v1': fields('action', 'targets', 'content_hash', 'nonce'),
+  // Added by spec 014 for step-up actions the RFC table has no prefix for (owner, 2026-11-14).
+  'sl:authenticator:v1': fields('owner_id', 'op', 'credential_id', 'public_key_cose'),
+  'sl:bulk_reject:v1': fields('site_id', 'request_ids'),
 })
 
 export type RegisteredPrefix = keyof typeof PREFIXES

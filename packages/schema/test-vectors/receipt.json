@@ -1,0 +1,674 @@
+[
+  {
+    "id": "R-01",
+    "fn": "verifyReceipt",
+    "description": "A valid receipt from pinned key A verifies offline",
+    "input": {
+      "receipt": {
+        "credentialId": "YNFMKYaO--85UG9rE2jT0A",
+        "nonce": "9e3f156324d42f0ea4b6f4fce81d56fb",
+        "authenticatorData": "jsq97ECPvOfrrw8WrVmi4YR3Np6cLyYb91ghRrssi-MFAAAAAQ",
+        "clientDataJSON": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiT0tCRVFHUHJFMXlVX3ZHQXN0dkxEUlprZHcxSzdsbFFneGZ4X2ZOUkwtbyIsIm9yaWdpbiI6Imh0dHBzOi8vbG9vcC5leGFtcGxlLnRlc3QiLCJjcm9zc09yaWdpbiI6ZmFsc2V9",
+        "signature": "MEUCIHv6Lk9gOUySfp-HnpthC3ot8sVQtXkk3NdHSKnZ3_4VAiEAux57_-zacAEAZ7tAv0v_GIs_nGFYCSpT3Hi8ce0oVqg"
+      },
+      "expectedContentHash": "1ef0ae7bbe4ce6c99ab744fe8c27582178d69c660538ef6a4b201cf5a944e17a",
+      "action": "request.approve",
+      "targets": [
+        {
+          "type": "request",
+          "id": "req_1"
+        }
+      ],
+      "pin": {
+        "ownerId": "owner_1",
+        "keys": [
+          {
+            "credentialId": "YNFMKYaO--85UG9rE2jT0A",
+            "publicKeyCose": "pQECAyYgASFYIHlze2ZLm9_OGbmRFlNgqh2mDn1RuwvoYGKHLpJdWG3AIlggTMqEGG4qB7Ayi_vWHDwItrnJOU1S6Na0CLBofbZUcog"
+          }
+        ],
+        "origin": "https://loop.example.test",
+        "rpId": "loop.example.test"
+      }
+    },
+    "expected_result": {
+      "ok": true
+    }
+  },
+  {
+    "id": "R-01h",
+    "fn": "verifyReceipt",
+    "description": "R-01 re-signed with s replaced by n - s (the other of low-S/high-S) also verifies",
+    "input": {
+      "receipt": {
+        "credentialId": "YNFMKYaO--85UG9rE2jT0A",
+        "nonce": "9e3f156324d42f0ea4b6f4fce81d56fb",
+        "authenticatorData": "jsq97ECPvOfrrw8WrVmi4YR3Np6cLyYb91ghRrssi-MFAAAAAQ",
+        "clientDataJSON": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiT0tCRVFHUHJFMXlVX3ZHQXN0dkxEUlprZHcxSzdsbFFneGZ4X2ZOUkwtbyIsIm9yaWdpbiI6Imh0dHBzOi8vbG9vcC5leGFtcGxlLnRlc3QiLCJjcm9zc09yaWdpbiI6ZmFsc2V9",
+        "signature": "MEQCIHv6Lk9gOUySfp-HnpthC3ot8sVQtXkk3NdHSKnZ3_4VAiBE4YP_EyWP__-YRL9AtADnMadeTE8OdDEXQQ5RDzrOqQ"
+      },
+      "expectedContentHash": "1ef0ae7bbe4ce6c99ab744fe8c27582178d69c660538ef6a4b201cf5a944e17a",
+      "action": "request.approve",
+      "targets": [
+        {
+          "type": "request",
+          "id": "req_1"
+        }
+      ],
+      "pin": {
+        "ownerId": "owner_1",
+        "keys": [
+          {
+            "credentialId": "YNFMKYaO--85UG9rE2jT0A",
+            "publicKeyCose": "pQECAyYgASFYIHlze2ZLm9_OGbmRFlNgqh2mDn1RuwvoYGKHLpJdWG3AIlggTMqEGG4qB7Ayi_vWHDwItrnJOU1S6Na0CLBofbZUcog"
+          }
+        ],
+        "origin": "https://loop.example.test",
+        "rpId": "loop.example.test"
+      }
+    },
+    "expected_result": {
+      "ok": true
+    }
+  },
+  {
+    "id": "R-02",
+    "fn": "verifyReceipt",
+    "description": "Wrong origin (ST-63)",
+    "input": {
+      "receipt": {
+        "credentialId": "YNFMKYaO--85UG9rE2jT0A",
+        "nonce": "9e3f156324d42f0ea4b6f4fce81d56fb",
+        "authenticatorData": "jsq97ECPvOfrrw8WrVmi4YR3Np6cLyYb91ghRrssi-MFAAAAAQ",
+        "clientDataJSON": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiT0tCRVFHUHJFMXlVX3ZHQXN0dkxEUlprZHcxSzdsbFFneGZ4X2ZOUkwtbyIsIm9yaWdpbiI6Imh0dHBzOi8vZXZpbC5leGFtcGxlLnRlc3QiLCJjcm9zc09yaWdpbiI6ZmFsc2V9",
+        "signature": "MEQCIGvOTK1dpNIB8cSXmBZ7s-HIaZDny3S-DZajyZydHeKWAiAd0ai7m7futmxKODf0T9QqUV5_z_u3EcsIxBEXh2lwuA"
+      },
+      "expectedContentHash": "1ef0ae7bbe4ce6c99ab744fe8c27582178d69c660538ef6a4b201cf5a944e17a",
+      "action": "request.approve",
+      "targets": [
+        {
+          "type": "request",
+          "id": "req_1"
+        }
+      ],
+      "pin": {
+        "ownerId": "owner_1",
+        "keys": [
+          {
+            "credentialId": "YNFMKYaO--85UG9rE2jT0A",
+            "publicKeyCose": "pQECAyYgASFYIHlze2ZLm9_OGbmRFlNgqh2mDn1RuwvoYGKHLpJdWG3AIlggTMqEGG4qB7Ayi_vWHDwItrnJOU1S6Na0CLBofbZUcog"
+          }
+        ],
+        "origin": "https://loop.example.test",
+        "rpId": "loop.example.test"
+      }
+    },
+    "expected_result": {
+      "ok": false,
+      "reason": "wrong_origin"
+    }
+  },
+  {
+    "id": "R-02x",
+    "fn": "verifyReceipt",
+    "description": "crossOrigin true (ST-63)",
+    "input": {
+      "receipt": {
+        "credentialId": "YNFMKYaO--85UG9rE2jT0A",
+        "nonce": "9e3f156324d42f0ea4b6f4fce81d56fb",
+        "authenticatorData": "jsq97ECPvOfrrw8WrVmi4YR3Np6cLyYb91ghRrssi-MFAAAAAQ",
+        "clientDataJSON": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiT0tCRVFHUHJFMXlVX3ZHQXN0dkxEUlprZHcxSzdsbFFneGZ4X2ZOUkwtbyIsIm9yaWdpbiI6Imh0dHBzOi8vbG9vcC5leGFtcGxlLnRlc3QiLCJjcm9zc09yaWdpbiI6dHJ1ZX0",
+        "signature": "MEUCIQD7_Qota5ZMiKCf_8IszGJX_R2aYFFlKIBi1LSpOT9VuAIgPJUa3r8C-_NmBCQec1H9ek50NgWeas0JIMl2YzeLXe8"
+      },
+      "expectedContentHash": "1ef0ae7bbe4ce6c99ab744fe8c27582178d69c660538ef6a4b201cf5a944e17a",
+      "action": "request.approve",
+      "targets": [
+        {
+          "type": "request",
+          "id": "req_1"
+        }
+      ],
+      "pin": {
+        "ownerId": "owner_1",
+        "keys": [
+          {
+            "credentialId": "YNFMKYaO--85UG9rE2jT0A",
+            "publicKeyCose": "pQECAyYgASFYIHlze2ZLm9_OGbmRFlNgqh2mDn1RuwvoYGKHLpJdWG3AIlggTMqEGG4qB7Ayi_vWHDwItrnJOU1S6Na0CLBofbZUcog"
+          }
+        ],
+        "origin": "https://loop.example.test",
+        "rpId": "loop.example.test"
+      }
+    },
+    "expected_result": {
+      "ok": false,
+      "reason": "wrong_origin"
+    }
+  },
+  {
+    "id": "R-02p",
+    "fn": "verifyReceipt",
+    "description": "An origin that only starts with the pinned origin (ST-63)",
+    "input": {
+      "receipt": {
+        "credentialId": "YNFMKYaO--85UG9rE2jT0A",
+        "nonce": "9e3f156324d42f0ea4b6f4fce81d56fb",
+        "authenticatorData": "jsq97ECPvOfrrw8WrVmi4YR3Np6cLyYb91ghRrssi-MFAAAAAQ",
+        "clientDataJSON": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiT0tCRVFHUHJFMXlVX3ZHQXN0dkxEUlprZHcxSzdsbFFneGZ4X2ZOUkwtbyIsIm9yaWdpbiI6Imh0dHBzOi8vbG9vcC5leGFtcGxlLnRlc3QuZXZpbC5leGFtcGxlIiwiY3Jvc3NPcmlnaW4iOmZhbHNlfQ",
+        "signature": "MEQCICL-FdCwPgjtz818ov_MoE5Y_HuzZHDPz5XcPAg1ze88AiB3QKvWwtLl8N3YnSewl311V8efJ2hl5yMXIUmo1wFjbQ"
+      },
+      "expectedContentHash": "1ef0ae7bbe4ce6c99ab744fe8c27582178d69c660538ef6a4b201cf5a944e17a",
+      "action": "request.approve",
+      "targets": [
+        {
+          "type": "request",
+          "id": "req_1"
+        }
+      ],
+      "pin": {
+        "ownerId": "owner_1",
+        "keys": [
+          {
+            "credentialId": "YNFMKYaO--85UG9rE2jT0A",
+            "publicKeyCose": "pQECAyYgASFYIHlze2ZLm9_OGbmRFlNgqh2mDn1RuwvoYGKHLpJdWG3AIlggTMqEGG4qB7Ayi_vWHDwItrnJOU1S6Na0CLBofbZUcog"
+          }
+        ],
+        "origin": "https://loop.example.test",
+        "rpId": "loop.example.test"
+      }
+    },
+    "expected_result": {
+      "ok": false,
+      "reason": "wrong_origin"
+    }
+  },
+  {
+    "id": "R-10",
+    "fn": "verifyReceipt",
+    "description": "Two defects (wrong origin and UV clear): the first failing step, origin, wins",
+    "input": {
+      "receipt": {
+        "credentialId": "YNFMKYaO--85UG9rE2jT0A",
+        "nonce": "9e3f156324d42f0ea4b6f4fce81d56fb",
+        "authenticatorData": "jsq97ECPvOfrrw8WrVmi4YR3Np6cLyYb91ghRrssi-MBAAAAAQ",
+        "clientDataJSON": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiT0tCRVFHUHJFMXlVX3ZHQXN0dkxEUlprZHcxSzdsbFFneGZ4X2ZOUkwtbyIsIm9yaWdpbiI6Imh0dHBzOi8vZXZpbC5leGFtcGxlLnRlc3QiLCJjcm9zc09yaWdpbiI6ZmFsc2V9",
+        "signature": "MEUCIBMTS41Iq3hWXnKFrjlTEdPdX8GkYIir2j57x45l7kHWAiEAqPRvRoPjAsIHt3EQ4Qh47kzvswFePRn10gi-CukmljA"
+      },
+      "expectedContentHash": "1ef0ae7bbe4ce6c99ab744fe8c27582178d69c660538ef6a4b201cf5a944e17a",
+      "action": "request.approve",
+      "targets": [
+        {
+          "type": "request",
+          "id": "req_1"
+        }
+      ],
+      "pin": {
+        "ownerId": "owner_1",
+        "keys": [
+          {
+            "credentialId": "YNFMKYaO--85UG9rE2jT0A",
+            "publicKeyCose": "pQECAyYgASFYIHlze2ZLm9_OGbmRFlNgqh2mDn1RuwvoYGKHLpJdWG3AIlggTMqEGG4qB7Ayi_vWHDwItrnJOU1S6Na0CLBofbZUcog"
+          }
+        ],
+        "origin": "https://loop.example.test",
+        "rpId": "loop.example.test"
+      }
+    },
+    "expected_result": {
+      "ok": false,
+      "reason": "wrong_origin"
+    }
+  },
+  {
+    "id": "R-03",
+    "fn": "verifyReceipt",
+    "description": "rpIdHash of another RP ID (ST-63)",
+    "input": {
+      "receipt": {
+        "credentialId": "YNFMKYaO--85UG9rE2jT0A",
+        "nonce": "9e3f156324d42f0ea4b6f4fce81d56fb",
+        "authenticatorData": "7BLEjRZWRNZnjgG2IWorOh4Rkf8dKV1cTqMUOko_COgFAAAAAQ",
+        "clientDataJSON": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiT0tCRVFHUHJFMXlVX3ZHQXN0dkxEUlprZHcxSzdsbFFneGZ4X2ZOUkwtbyIsIm9yaWdpbiI6Imh0dHBzOi8vbG9vcC5leGFtcGxlLnRlc3QiLCJjcm9zc09yaWdpbiI6ZmFsc2V9",
+        "signature": "MEYCIQC5UZNWqjmYdK85Ua5b2c5ycC4AA5SLn9ENeC_ojzjYwAIhAMhV9nA24SOaW0-Fz5n6vpMEZrkFeBCE_-ZumPjx1zZu"
+      },
+      "expectedContentHash": "1ef0ae7bbe4ce6c99ab744fe8c27582178d69c660538ef6a4b201cf5a944e17a",
+      "action": "request.approve",
+      "targets": [
+        {
+          "type": "request",
+          "id": "req_1"
+        }
+      ],
+      "pin": {
+        "ownerId": "owner_1",
+        "keys": [
+          {
+            "credentialId": "YNFMKYaO--85UG9rE2jT0A",
+            "publicKeyCose": "pQECAyYgASFYIHlze2ZLm9_OGbmRFlNgqh2mDn1RuwvoYGKHLpJdWG3AIlggTMqEGG4qB7Ayi_vWHDwItrnJOU1S6Na0CLBofbZUcog"
+          }
+        ],
+        "origin": "https://loop.example.test",
+        "rpId": "loop.example.test"
+      }
+    },
+    "expected_result": {
+      "ok": false,
+      "reason": "wrong_rp_id_hash"
+    }
+  },
+  {
+    "id": "R-04",
+    "fn": "verifyReceipt",
+    "description": "UV flag clear, UP set (ST-63)",
+    "input": {
+      "receipt": {
+        "credentialId": "YNFMKYaO--85UG9rE2jT0A",
+        "nonce": "9e3f156324d42f0ea4b6f4fce81d56fb",
+        "authenticatorData": "jsq97ECPvOfrrw8WrVmi4YR3Np6cLyYb91ghRrssi-MBAAAAAQ",
+        "clientDataJSON": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiT0tCRVFHUHJFMXlVX3ZHQXN0dkxEUlprZHcxSzdsbFFneGZ4X2ZOUkwtbyIsIm9yaWdpbiI6Imh0dHBzOi8vbG9vcC5leGFtcGxlLnRlc3QiLCJjcm9zc09yaWdpbiI6ZmFsc2V9",
+        "signature": "MEYCIQC9GHZnDBoDBTrasrterXRVy-jzR44nFKs5dKiopKqeXwIhAI_ojC7_5vvypy-eEANQPbBESxGQ5QHtEOZdtlOtMPAu"
+      },
+      "expectedContentHash": "1ef0ae7bbe4ce6c99ab744fe8c27582178d69c660538ef6a4b201cf5a944e17a",
+      "action": "request.approve",
+      "targets": [
+        {
+          "type": "request",
+          "id": "req_1"
+        }
+      ],
+      "pin": {
+        "ownerId": "owner_1",
+        "keys": [
+          {
+            "credentialId": "YNFMKYaO--85UG9rE2jT0A",
+            "publicKeyCose": "pQECAyYgASFYIHlze2ZLm9_OGbmRFlNgqh2mDn1RuwvoYGKHLpJdWG3AIlggTMqEGG4qB7Ayi_vWHDwItrnJOU1S6Na0CLBofbZUcog"
+          }
+        ],
+        "origin": "https://loop.example.test",
+        "rpId": "loop.example.test"
+      }
+    },
+    "expected_result": {
+      "ok": false,
+      "reason": "uv_not_set"
+    }
+  },
+  {
+    "id": "R-05",
+    "fn": "verifyReceipt",
+    "description": "Signed by key B, which is not pinned (ST-63)",
+    "input": {
+      "receipt": {
+        "credentialId": "d4gmPTjSXQ5JWT0XUKGW-A",
+        "nonce": "9e3f156324d42f0ea4b6f4fce81d56fb",
+        "authenticatorData": "jsq97ECPvOfrrw8WrVmi4YR3Np6cLyYb91ghRrssi-MFAAAAAQ",
+        "clientDataJSON": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiT0tCRVFHUHJFMXlVX3ZHQXN0dkxEUlprZHcxSzdsbFFneGZ4X2ZOUkwtbyIsIm9yaWdpbiI6Imh0dHBzOi8vbG9vcC5leGFtcGxlLnRlc3QiLCJjcm9zc09yaWdpbiI6ZmFsc2V9",
+        "signature": "MEYCIQCl2xxJre0jhF_8TvWlDgfcw-5zFe76fz_5N1eJk5V5MwIhAIsqM6veDs4pyNt-RSsI_1U4uR1xG-lRa6-aDa9HyHTb"
+      },
+      "expectedContentHash": "1ef0ae7bbe4ce6c99ab744fe8c27582178d69c660538ef6a4b201cf5a944e17a",
+      "action": "request.approve",
+      "targets": [
+        {
+          "type": "request",
+          "id": "req_1"
+        }
+      ],
+      "pin": {
+        "ownerId": "owner_1",
+        "keys": [
+          {
+            "credentialId": "YNFMKYaO--85UG9rE2jT0A",
+            "publicKeyCose": "pQECAyYgASFYIHlze2ZLm9_OGbmRFlNgqh2mDn1RuwvoYGKHLpJdWG3AIlggTMqEGG4qB7Ayi_vWHDwItrnJOU1S6Na0CLBofbZUcog"
+          }
+        ],
+        "origin": "https://loop.example.test",
+        "rpId": "loop.example.test"
+      }
+    },
+    "expected_result": {
+      "ok": false,
+      "reason": "unpinned_key"
+    }
+  },
+  {
+    "id": "R-07a",
+    "fn": "verifyReceipt",
+    "description": "R-01 checked against a different content hash (ST-63)",
+    "input": {
+      "receipt": {
+        "credentialId": "YNFMKYaO--85UG9rE2jT0A",
+        "nonce": "9e3f156324d42f0ea4b6f4fce81d56fb",
+        "authenticatorData": "jsq97ECPvOfrrw8WrVmi4YR3Np6cLyYb91ghRrssi-MFAAAAAQ",
+        "clientDataJSON": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiT0tCRVFHUHJFMXlVX3ZHQXN0dkxEUlprZHcxSzdsbFFneGZ4X2ZOUkwtbyIsIm9yaWdpbiI6Imh0dHBzOi8vbG9vcC5leGFtcGxlLnRlc3QiLCJjcm9zc09yaWdpbiI6ZmFsc2V9",
+        "signature": "MEUCIHv6Lk9gOUySfp-HnpthC3ot8sVQtXkk3NdHSKnZ3_4VAiEAux57_-zacAEAZ7tAv0v_GIs_nGFYCSpT3Hi8ce0oVqg"
+      },
+      "expectedContentHash": "3460ebae1c45bfd069074b365281354cfdf41b82ffb05c7eedd6775446fcd3a4",
+      "action": "request.approve",
+      "targets": [
+        {
+          "type": "request",
+          "id": "req_1"
+        }
+      ],
+      "pin": {
+        "ownerId": "owner_1",
+        "keys": [
+          {
+            "credentialId": "YNFMKYaO--85UG9rE2jT0A",
+            "publicKeyCose": "pQECAyYgASFYIHlze2ZLm9_OGbmRFlNgqh2mDn1RuwvoYGKHLpJdWG3AIlggTMqEGG4qB7Ayi_vWHDwItrnJOU1S6Na0CLBofbZUcog"
+          }
+        ],
+        "origin": "https://loop.example.test",
+        "rpId": "loop.example.test"
+      }
+    },
+    "expected_result": {
+      "ok": false,
+      "reason": "challenge_mismatch"
+    }
+  },
+  {
+    "id": "R-07b",
+    "fn": "verifyReceipt",
+    "description": "R-01 checked against a different target (ST-50, ST-63)",
+    "input": {
+      "receipt": {
+        "credentialId": "YNFMKYaO--85UG9rE2jT0A",
+        "nonce": "9e3f156324d42f0ea4b6f4fce81d56fb",
+        "authenticatorData": "jsq97ECPvOfrrw8WrVmi4YR3Np6cLyYb91ghRrssi-MFAAAAAQ",
+        "clientDataJSON": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiT0tCRVFHUHJFMXlVX3ZHQXN0dkxEUlprZHcxSzdsbFFneGZ4X2ZOUkwtbyIsIm9yaWdpbiI6Imh0dHBzOi8vbG9vcC5leGFtcGxlLnRlc3QiLCJjcm9zc09yaWdpbiI6ZmFsc2V9",
+        "signature": "MEUCIHv6Lk9gOUySfp-HnpthC3ot8sVQtXkk3NdHSKnZ3_4VAiEAux57_-zacAEAZ7tAv0v_GIs_nGFYCSpT3Hi8ce0oVqg"
+      },
+      "expectedContentHash": "1ef0ae7bbe4ce6c99ab744fe8c27582178d69c660538ef6a4b201cf5a944e17a",
+      "action": "request.approve",
+      "targets": [
+        {
+          "type": "request",
+          "id": "req_2"
+        }
+      ],
+      "pin": {
+        "ownerId": "owner_1",
+        "keys": [
+          {
+            "credentialId": "YNFMKYaO--85UG9rE2jT0A",
+            "publicKeyCose": "pQECAyYgASFYIHlze2ZLm9_OGbmRFlNgqh2mDn1RuwvoYGKHLpJdWG3AIlggTMqEGG4qB7Ayi_vWHDwItrnJOU1S6Na0CLBofbZUcog"
+          }
+        ],
+        "origin": "https://loop.example.test",
+        "rpId": "loop.example.test"
+      }
+    },
+    "expected_result": {
+      "ok": false,
+      "reason": "challenge_mismatch"
+    }
+  },
+  {
+    "id": "R-07c",
+    "fn": "verifyReceipt",
+    "description": "R-01 checked as a different action (ST-50, ST-63)",
+    "input": {
+      "receipt": {
+        "credentialId": "YNFMKYaO--85UG9rE2jT0A",
+        "nonce": "9e3f156324d42f0ea4b6f4fce81d56fb",
+        "authenticatorData": "jsq97ECPvOfrrw8WrVmi4YR3Np6cLyYb91ghRrssi-MFAAAAAQ",
+        "clientDataJSON": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiT0tCRVFHUHJFMXlVX3ZHQXN0dkxEUlprZHcxSzdsbFFneGZ4X2ZOUkwtbyIsIm9yaWdpbiI6Imh0dHBzOi8vbG9vcC5leGFtcGxlLnRlc3QiLCJjcm9zc09yaWdpbiI6ZmFsc2V9",
+        "signature": "MEUCIHv6Lk9gOUySfp-HnpthC3ot8sVQtXkk3NdHSKnZ3_4VAiEAux57_-zacAEAZ7tAv0v_GIs_nGFYCSpT3Hi8ce0oVqg"
+      },
+      "expectedContentHash": "1ef0ae7bbe4ce6c99ab744fe8c27582178d69c660538ef6a4b201cf5a944e17a",
+      "action": "spec.approve",
+      "targets": [
+        {
+          "type": "request",
+          "id": "req_1"
+        }
+      ],
+      "pin": {
+        "ownerId": "owner_1",
+        "keys": [
+          {
+            "credentialId": "YNFMKYaO--85UG9rE2jT0A",
+            "publicKeyCose": "pQECAyYgASFYIHlze2ZLm9_OGbmRFlNgqh2mDn1RuwvoYGKHLpJdWG3AIlggTMqEGG4qB7Ayi_vWHDwItrnJOU1S6Na0CLBofbZUcog"
+          }
+        ],
+        "origin": "https://loop.example.test",
+        "rpId": "loop.example.test"
+      }
+    },
+    "expected_result": {
+      "ok": false,
+      "reason": "challenge_mismatch"
+    }
+  },
+  {
+    "id": "R-08",
+    "fn": "verifyReceipt",
+    "description": "One byte of the signature flipped (ST-63)",
+    "input": {
+      "receipt": {
+        "credentialId": "YNFMKYaO--85UG9rE2jT0A",
+        "nonce": "9e3f156324d42f0ea4b6f4fce81d56fb",
+        "authenticatorData": "jsq97ECPvOfrrw8WrVmi4YR3Np6cLyYb91ghRrssi-MFAAAAAQ",
+        "clientDataJSON": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiT0tCRVFHUHJFMXlVX3ZHQXN0dkxEUlprZHcxSzdsbFFneGZ4X2ZOUkwtbyIsIm9yaWdpbiI6Imh0dHBzOi8vbG9vcC5leGFtcGxlLnRlc3QiLCJjcm9zc09yaWdpbiI6ZmFsc2V9",
+        "signature": "MEUCIHv6Lk9gOU2Sfp-HnpthC3ot8sVQtXkk3NdHSKnZ3_4VAiEAux57_-zacAEAZ7tAv0v_GIs_nGFYCSpT3Hi8ce0oVqg"
+      },
+      "expectedContentHash": "1ef0ae7bbe4ce6c99ab744fe8c27582178d69c660538ef6a4b201cf5a944e17a",
+      "action": "request.approve",
+      "targets": [
+        {
+          "type": "request",
+          "id": "req_1"
+        }
+      ],
+      "pin": {
+        "ownerId": "owner_1",
+        "keys": [
+          {
+            "credentialId": "YNFMKYaO--85UG9rE2jT0A",
+            "publicKeyCose": "pQECAyYgASFYIHlze2ZLm9_OGbmRFlNgqh2mDn1RuwvoYGKHLpJdWG3AIlggTMqEGG4qB7Ayi_vWHDwItrnJOU1S6Na0CLBofbZUcog"
+          }
+        ],
+        "origin": "https://loop.example.test",
+        "rpId": "loop.example.test"
+      }
+    },
+    "expected_result": {
+      "ok": false,
+      "reason": "bad_signature"
+    }
+  },
+  {
+    "id": "R-09",
+    "fn": "verifyReceipt",
+    "description": "clientDataJSON type webauthn.create",
+    "input": {
+      "receipt": {
+        "credentialId": "YNFMKYaO--85UG9rE2jT0A",
+        "nonce": "9e3f156324d42f0ea4b6f4fce81d56fb",
+        "authenticatorData": "jsq97ECPvOfrrw8WrVmi4YR3Np6cLyYb91ghRrssi-MFAAAAAQ",
+        "clientDataJSON": "eyJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIiwiY2hhbGxlbmdlIjoiT0tCRVFHUHJFMXlVX3ZHQXN0dkxEUlprZHcxSzdsbFFneGZ4X2ZOUkwtbyIsIm9yaWdpbiI6Imh0dHBzOi8vbG9vcC5leGFtcGxlLnRlc3QiLCJjcm9zc09yaWdpbiI6ZmFsc2V9",
+        "signature": "MEYCIQCn5MnrZNLd7bJeZHcE_dlUWoY_FDWicWA6X0lDGYA_dwIhAIkM5EyXMESmD2rq5o6asVExP1AyPuxnOFElQGp3AzUn"
+      },
+      "expectedContentHash": "1ef0ae7bbe4ce6c99ab744fe8c27582178d69c660538ef6a4b201cf5a944e17a",
+      "action": "request.approve",
+      "targets": [
+        {
+          "type": "request",
+          "id": "req_1"
+        }
+      ],
+      "pin": {
+        "ownerId": "owner_1",
+        "keys": [
+          {
+            "credentialId": "YNFMKYaO--85UG9rE2jT0A",
+            "publicKeyCose": "pQECAyYgASFYIHlze2ZLm9_OGbmRFlNgqh2mDn1RuwvoYGKHLpJdWG3AIlggTMqEGG4qB7Ayi_vWHDwItrnJOU1S6Na0CLBofbZUcog"
+          }
+        ],
+        "origin": "https://loop.example.test",
+        "rpId": "loop.example.test"
+      }
+    },
+    "expected_result": {
+      "ok": false,
+      "reason": "wrong_type"
+    }
+  },
+  {
+    "id": "R-06a",
+    "fn": "growPinSet",
+    "description": "Key B added with an add receipt signed by B itself (ST-63)",
+    "input": {
+      "pin": {
+        "ownerId": "owner_1",
+        "keys": [
+          {
+            "credentialId": "YNFMKYaO--85UG9rE2jT0A",
+            "publicKeyCose": "pQECAyYgASFYIHlze2ZLm9_OGbmRFlNgqh2mDn1RuwvoYGKHLpJdWG3AIlggTMqEGG4qB7Ayi_vWHDwItrnJOU1S6Na0CLBofbZUcog"
+          }
+        ],
+        "origin": "https://loop.example.test",
+        "rpId": "loop.example.test"
+      },
+      "add": {
+        "key": {
+          "credentialId": "d4gmPTjSXQ5JWT0XUKGW-A",
+          "publicKeyCose": "pQECAyYgASFYINii1U-k1oLFuD1Ul9WDOSEGS2FK6gpgwPep7vRYsSGhIlggcJrKJ4qkoo2pYuf1VpEsq5-BiMuJbZIq-HnmPNFx4eE"
+        },
+        "receipt": {
+          "credentialId": "d4gmPTjSXQ5JWT0XUKGW-A",
+          "nonce": "7474c1e7ed929af580fe66e460b06039",
+          "authenticatorData": "jsq97ECPvOfrrw8WrVmi4YR3Np6cLyYb91ghRrssi-MFAAAAAQ",
+          "clientDataJSON": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiMXdVbDdwWlF2LXQ5YTFrWmxUYXBQeFNuVUNJT01OMFpDVU5qNC15aTF2SSIsIm9yaWdpbiI6Imh0dHBzOi8vbG9vcC5leGFtcGxlLnRlc3QiLCJjcm9zc09yaWdpbiI6ZmFsc2V9",
+          "signature": "MEUCIQC6X7bLNqzg5gp0jUWGjDEUMpOd2vPhupBDMe2mH78bugIgHJ-8y9bo4cJvi7z5Gz-BmK7oQuMuMJh98Vzp3kbz9go"
+        }
+      }
+    },
+    "expected_result": {
+      "ok": false,
+      "reason": "key_added_without_receipt",
+      "cause": "unpinned_key"
+    },
+    "expected_add_hash": "edd5cd64ffcb6837a1d06283c85f851fcfc74cadcd3708c8f42ca923f18279b5"
+  },
+  {
+    "id": "R-06b",
+    "fn": "growPinSet",
+    "description": "Key B added with no receipt (ST-63)",
+    "input": {
+      "pin": {
+        "ownerId": "owner_1",
+        "keys": [
+          {
+            "credentialId": "YNFMKYaO--85UG9rE2jT0A",
+            "publicKeyCose": "pQECAyYgASFYIHlze2ZLm9_OGbmRFlNgqh2mDn1RuwvoYGKHLpJdWG3AIlggTMqEGG4qB7Ayi_vWHDwItrnJOU1S6Na0CLBofbZUcog"
+          }
+        ],
+        "origin": "https://loop.example.test",
+        "rpId": "loop.example.test"
+      },
+      "add": {
+        "key": {
+          "credentialId": "d4gmPTjSXQ5JWT0XUKGW-A",
+          "publicKeyCose": "pQECAyYgASFYINii1U-k1oLFuD1Ul9WDOSEGS2FK6gpgwPep7vRYsSGhIlggcJrKJ4qkoo2pYuf1VpEsq5-BiMuJbZIq-HnmPNFx4eE"
+        }
+      }
+    },
+    "expected_result": {
+      "ok": false,
+      "reason": "key_added_without_receipt"
+    },
+    "expected_add_hash": "edd5cd64ffcb6837a1d06283c85f851fcfc74cadcd3708c8f42ca923f18279b5"
+  },
+  {
+    "id": "R-06c",
+    "fn": "growPinSet",
+    "description": "Key B added with an add receipt signed by pinned key A",
+    "input": {
+      "pin": {
+        "ownerId": "owner_1",
+        "keys": [
+          {
+            "credentialId": "YNFMKYaO--85UG9rE2jT0A",
+            "publicKeyCose": "pQECAyYgASFYIHlze2ZLm9_OGbmRFlNgqh2mDn1RuwvoYGKHLpJdWG3AIlggTMqEGG4qB7Ayi_vWHDwItrnJOU1S6Na0CLBofbZUcog"
+          }
+        ],
+        "origin": "https://loop.example.test",
+        "rpId": "loop.example.test"
+      },
+      "add": {
+        "key": {
+          "credentialId": "d4gmPTjSXQ5JWT0XUKGW-A",
+          "publicKeyCose": "pQECAyYgASFYINii1U-k1oLFuD1Ul9WDOSEGS2FK6gpgwPep7vRYsSGhIlggcJrKJ4qkoo2pYuf1VpEsq5-BiMuJbZIq-HnmPNFx4eE"
+        },
+        "receipt": {
+          "credentialId": "YNFMKYaO--85UG9rE2jT0A",
+          "nonce": "7474c1e7ed929af580fe66e460b06039",
+          "authenticatorData": "jsq97ECPvOfrrw8WrVmi4YR3Np6cLyYb91ghRrssi-MFAAAAAQ",
+          "clientDataJSON": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiMXdVbDdwWlF2LXQ5YTFrWmxUYXBQeFNuVUNJT01OMFpDVU5qNC15aTF2SSIsIm9yaWdpbiI6Imh0dHBzOi8vbG9vcC5leGFtcGxlLnRlc3QiLCJjcm9zc09yaWdpbiI6ZmFsc2V9",
+          "signature": "MEUCIQD5wMIk6G8_g6RUEdzfsltSSEi20GkyonKVzj21T3okAwIgDDlxgd9b1JUnfiDktPqHXbdmn2nWHVwiO2ZRGgXYivU"
+        }
+      }
+    },
+    "expected_result": {
+      "ok": true,
+      "pin": {
+        "ownerId": "owner_1",
+        "keys": [
+          {
+            "credentialId": "YNFMKYaO--85UG9rE2jT0A",
+            "publicKeyCose": "pQECAyYgASFYIHlze2ZLm9_OGbmRFlNgqh2mDn1RuwvoYGKHLpJdWG3AIlggTMqEGG4qB7Ayi_vWHDwItrnJOU1S6Na0CLBofbZUcog"
+          },
+          {
+            "credentialId": "d4gmPTjSXQ5JWT0XUKGW-A",
+            "publicKeyCose": "pQECAyYgASFYINii1U-k1oLFuD1Ul9WDOSEGS2FK6gpgwPep7vRYsSGhIlggcJrKJ4qkoo2pYuf1VpEsq5-BiMuJbZIq-HnmPNFx4eE"
+          }
+        ],
+        "origin": "https://loop.example.test",
+        "rpId": "loop.example.test"
+      }
+    },
+    "expected_add_hash": "edd5cd64ffcb6837a1d06283c85f851fcfc74cadcd3708c8f42ca923f18279b5"
+  },
+  {
+    "id": "R-06d",
+    "fn": "verifyReceipt",
+    "description": "After R-06c, a receipt signed by B verifies against the grown pin set",
+    "input": {
+      "receipt": {
+        "credentialId": "d4gmPTjSXQ5JWT0XUKGW-A",
+        "nonce": "9e3f156324d42f0ea4b6f4fce81d56fb",
+        "authenticatorData": "jsq97ECPvOfrrw8WrVmi4YR3Np6cLyYb91ghRrssi-MFAAAAAQ",
+        "clientDataJSON": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiT0tCRVFHUHJFMXlVX3ZHQXN0dkxEUlprZHcxSzdsbFFneGZ4X2ZOUkwtbyIsIm9yaWdpbiI6Imh0dHBzOi8vbG9vcC5leGFtcGxlLnRlc3QiLCJjcm9zc09yaWdpbiI6ZmFsc2V9",
+        "signature": "MEYCIQCl2xxJre0jhF_8TvWlDgfcw-5zFe76fz_5N1eJk5V5MwIhAIsqM6veDs4pyNt-RSsI_1U4uR1xG-lRa6-aDa9HyHTb"
+      },
+      "expectedContentHash": "1ef0ae7bbe4ce6c99ab744fe8c27582178d69c660538ef6a4b201cf5a944e17a",
+      "action": "request.approve",
+      "targets": [
+        {
+          "type": "request",
+          "id": "req_1"
+        }
+      ],
+      "pin": {
+        "ownerId": "owner_1",
+        "keys": [
+          {
+            "credentialId": "YNFMKYaO--85UG9rE2jT0A",
+            "publicKeyCose": "pQECAyYgASFYIHlze2ZLm9_OGbmRFlNgqh2mDn1RuwvoYGKHLpJdWG3AIlggTMqEGG4qB7Ayi_vWHDwItrnJOU1S6Na0CLBofbZUcog"
+          },
+          {
+            "credentialId": "d4gmPTjSXQ5JWT0XUKGW-A",
+            "publicKeyCose": "pQECAyYgASFYINii1U-k1oLFuD1Ul9WDOSEGS2FK6gpgwPep7vRYsSGhIlggcJrKJ4qkoo2pYuf1VpEsq5-BiMuJbZIq-HnmPNFx4eE"
+          }
+        ],
+        "origin": "https://loop.example.test",
+        "rpId": "loop.example.test"
+      }
+    },
+    "expected_result": {
+      "ok": true
+    }
+  }
+]

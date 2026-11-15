@@ -1,21 +1,21 @@
 [
   {
     "id": "N-01",
+    "fn": [
+      "nIntake",
+      "nHash"
+    ],
     "description": "NFC composition: e + U+0301 becomes U+00E9",
+    "expected_normalized": "\u00e9",
     "input": {
       "text": "e\u0301",
-      "fn": "both"
-    },
-    "expected_normalized": "\u00e9"
+      "cap": 10000
+    }
   },
   {
     "id": "N-02",
+    "fn": "nIntake",
     "description": "Tag, zero-width and BOM characters are stripped and recorded (raw-input code-point offsets)",
-    "input": {
-      "text": "a\udb40\udc41\u200bb\ufeffc",
-      "fn": "intake",
-      "cap": 100
-    },
     "expected_normalized": "abc",
     "expected_stripped": [
       {
@@ -30,25 +30,25 @@
         "codePoint": 65279,
         "index": 4
       }
-    ]
+    ],
+    "input": {
+      "text": "a\udb40\udc41\u200bb\ufeffc",
+      "cap": 100
+    }
   },
   {
     "id": "N-02h",
+    "fn": "nHash",
     "description": "N-02 through nHash: the same characters are stripped",
+    "expected_normalized": "abc",
     "input": {
-      "text": "a\udb40\udc41\u200bb\ufeffc",
-      "fn": "hash"
-    },
-    "expected_normalized": "abc"
+      "text": "a\udb40\udc41\u200bb\ufeffc"
+    }
   },
   {
     "id": "N-03",
+    "fn": "nIntake",
     "description": "Bidi controls are stripped and recorded",
-    "input": {
-      "text": "x\u202ey\u2066\u200f",
-      "fn": "intake",
-      "cap": 100
-    },
     "expected_normalized": "xy",
     "expected_stripped": [
       {
@@ -63,171 +63,214 @@
         "codePoint": 8207,
         "index": 4
       }
-    ]
+    ],
+    "input": {
+      "text": "x\u202ey\u2066\u200f",
+      "cap": 100
+    }
   },
   {
     "id": "N-04a",
+    "fn": [
+      "nIntake",
+      "nHash"
+    ],
     "description": "CRLF and CR become LF; trailing whitespace per line is stripped; the field is trimmed",
+    "expected_normalized": "a\nb\nc",
+    "expected_stripped": [],
     "input": {
       "text": "a \r\nb\t\rc  \n",
-      "fn": "both"
-    },
-    "expected_normalized": "a\nb\nc",
-    "expected_stripped": []
+      "cap": 10000
+    }
   },
   {
     "id": "N-04b",
+    "fn": [
+      "nIntake",
+      "nHash"
+    ],
     "description": "Leading blank lines are trimmed; U+00A0 and U+3000 at a line end are stripped; leading spaces inside the field stay",
+    "expected_normalized": "a\n b",
     "input": {
       "text": "\n\n  a\u00a0\n b\u3000\n\n",
-      "fn": "both"
-    },
-    "expected_normalized": "a\n b"
+      "cap": 10000
+    }
   },
   {
     "id": "N-05",
+    "fn": [
+      "nIntake",
+      "nHash"
+    ],
     "description": "Internal whitespace runs and blank lines between paragraphs are preserved",
+    "expected_normalized": "a   b\t\tc\n\nd",
     "input": {
       "text": "a   b\t\tc\n\nd",
-      "fn": "both"
-    },
-    "expected_normalized": "a   b\t\tc\n\nd"
+      "cap": 10000
+    }
   },
   {
     "id": "N-06a",
+    "fn": [
+      "nIntake",
+      "nHash"
+    ],
     "description": "A value of exactly cap code points passes",
+    "expected_normalized": "abc",
     "input": {
       "text": "abc",
-      "fn": "both",
       "cap": 3
-    },
-    "expected_normalized": "abc"
+    }
   },
   {
     "id": "N-06b",
+    "fn": [
+      "nIntake",
+      "nHash"
+    ],
     "description": "A value of cap + 1 code points fails",
+    "expected_error": "too_long",
     "input": {
       "text": "abcd",
-      "fn": "both",
       "cap": 3
-    },
-    "expected_error": "too_long"
+    }
   },
   {
     "id": "N-06c",
+    "fn": [
+      "nIntake",
+      "nHash"
+    ],
     "description": "The cap counts after normalization",
+    "expected_normalized": "abc",
     "input": {
       "text": "abc\u200b",
-      "fn": "both",
       "cap": 3
-    },
-    "expected_normalized": "abc"
+    }
   },
   {
     "id": "N-06d",
+    "fn": [
+      "nIntake",
+      "nHash"
+    ],
     "description": "The cap counts an astral character as one code point",
+    "expected_normalized": "\ud83d\ude00ab",
     "input": {
       "text": "\ud83d\ude00ab",
-      "fn": "both",
       "cap": 3
-    },
-    "expected_normalized": "\ud83d\ude00ab"
+    }
   },
   {
     "id": "N-07",
+    "fn": [
+      "nIntake",
+      "nHash"
+    ],
     "description": "Invalid UTF-8 bytes are rejected",
+    "expected_error": "invalid_utf8",
     "input": {
       "text_hex": "c328",
-      "fn": "both"
-    },
-    "expected_error": "invalid_utf8"
+      "cap": 10000
+    }
   },
   {
     "id": "N-08",
+    "fn": "nIntake",
     "description": "An unassigned code point (U+0378) is rejected by N_intake",
+    "expected_error": "unassigned_code_point",
     "input": {
       "text": "a\u0378",
-      "fn": "intake",
       "cap": 100
-    },
-    "expected_error": "unassigned_code_point"
+    }
   },
   {
     "id": "N-09",
+    "fn": [
+      "nIntake",
+      "nHash"
+    ],
     "description": "A Cyrillic confusable survives normalization unchanged",
+    "expected_normalized": "p\u0430ypal",
     "input": {
       "text": "p\u0430ypal",
-      "fn": "both"
-    },
-    "expected_normalized": "p\u0430ypal"
+      "cap": 10000
+    }
   },
   {
     "id": "N-10h",
+    "fn": "nHash",
     "description": "U+1C89 (assigned in Unicode 16.0) passes N_hash unchanged",
+    "expected_normalized": "\u1c89",
     "input": {
-      "text": "\u1c89",
-      "fn": "hash"
-    },
-    "expected_normalized": "\u1c89"
+      "text": "\u1c89"
+    }
   },
   {
     "id": "N-10i",
+    "fn": "nIntake",
     "description": "U+1C89 (assigned in Unicode 16.0) is rejected by N_intake at 15.1",
+    "expected_error": "unassigned_code_point",
     "input": {
       "text": "\u1c89",
-      "fn": "intake",
       "cap": 100
-    },
-    "expected_error": "unassigned_code_point"
+    }
   },
   {
     "id": "N-11",
+    "fn": [
+      "nIntake",
+      "nHash"
+    ],
     "description": "A stripped character that blocked composition: NFC runs again after stripping",
+    "expected_normalized": "\u00e9",
     "input": {
       "text": "e\u200b\u0301",
-      "fn": "both"
-    },
-    "expected_normalized": "\u00e9"
+      "cap": 10000
+    }
   },
   {
     "id": "N-12",
+    "fn": "nIntake",
     "description": "The stripped index is a raw-input offset, before NFC",
-    "input": {
-      "text": "e\u0301\u200bx",
-      "fn": "intake",
-      "cap": 100
-    },
     "expected_normalized": "\u00e9x",
     "expected_stripped": [
       {
         "codePoint": 8203,
         "index": 2
       }
-    ]
+    ],
+    "input": {
+      "text": "e\u0301\u200bx",
+      "cap": 100
+    }
   },
   {
     "id": "N-13",
+    "fn": [
+      "nIntake",
+      "nHash"
+    ],
     "description": "A leading UTF-8 BOM in byte input is kept by decoding, then recorded and stripped",
-    "input": {
-      "text_hex": "efbbbf6869",
-      "fn": "both",
-      "cap": 100
-    },
     "expected_normalized": "hi",
     "expected_stripped": [
       {
         "codePoint": 65279,
         "index": 0
       }
-    ]
+    ],
+    "input": {
+      "text_hex": "efbbbf6869",
+      "cap": 100
+    }
   },
   {
     "id": "N-14",
+    "fn": [
+      "nIntake",
+      "nHash"
+    ],
     "description": "Every strip-set member is removed and recorded; assigned neighbours (U+200A, U+2010, U+2061, U+206A, U+202F, U+E0100) survive",
-    "input": {
-      "text": "[\u200b\u200c\u200d\u2060\ufeff\u202a\u202b\u202c\u202d\u202e\u2066\u2067\u2068\u2069\u200e\u200f\udb40\udc01\udb40\udc7f]\u200a\u2010\u2061\u206a\u202fx\udb40\udd00]",
-      "fn": "both"
-    },
     "expected_normalized": "[]\u200a\u2010\u2061\u206a\u202fx\udb40\udd00]",
     "expected_stripped": [
       {
@@ -302,53 +345,68 @@
         "codePoint": 917631,
         "index": 18
       }
-    ]
+    ],
+    "input": {
+      "text": "[\u200b\u200c\u200d\u2060\ufeff\u202a\u202b\u202c\u202d\u202e\u2066\u2067\u2068\u2069\u200e\u200f\udb40\udc01\udb40\udc7f]\u200a\u2010\u2061\u206a\u202fx\udb40\udd00]",
+      "cap": 10000
+    }
   },
   {
     "id": "N-15h",
+    "fn": "nHash",
     "description": "U+E0000 is in the strip set: nHash strips it",
+    "expected_normalized": "ab",
     "input": {
-      "text": "a\udb40\udc00b",
-      "fn": "hash"
-    },
-    "expected_normalized": "ab"
+      "text": "a\udb40\udc00b"
+    }
   },
   {
     "id": "N-15i",
+    "fn": "nIntake",
     "description": "U+E0000 is also Cn in 15.1 and step 2 runs before step 4: nIntake rejects it",
+    "expected_error": "unassigned_code_point",
     "input": {
       "text": "a\udb40\udc00b",
-      "fn": "intake"
-    },
-    "expected_error": "unassigned_code_point"
+      "cap": 10000
+    }
   },
   {
     "id": "N-16",
+    "fn": [
+      "nIntake",
+      "nHash"
+    ],
     "description": "Whitespace is Unicode White_Space (U+0085 at a line end is stripped); lines split on LF only, so U+2028 stays",
+    "expected_normalized": "a\nb \u2028c",
     "input": {
       "text": "a\u0085\nb \u2028c",
-      "fn": "both"
-    },
-    "expected_normalized": "a\nb \u2028c"
+      "cap": 10000
+    }
   },
   {
     "id": "N-17a",
+    "fn": [
+      "nIntake",
+      "nHash"
+    ],
     "description": "Cap 0: an empty value passes",
+    "expected_normalized": "",
     "input": {
       "text": "",
-      "fn": "both",
       "cap": 0
-    },
-    "expected_normalized": ""
+    }
   },
   {
     "id": "N-17b",
+    "fn": [
+      "nIntake",
+      "nHash"
+    ],
     "description": "Cap 0: one code point fails",
+    "expected_error": "too_long",
     "input": {
       "text": "a",
-      "fn": "both",
       "cap": 0
-    },
-    "expected_error": "too_long"
+    }
   }
 ]

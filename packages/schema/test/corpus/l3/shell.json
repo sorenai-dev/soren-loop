@@ -1,0 +1,215 @@
+[
+  {
+    "id": "SH-01",
+    "description": "$(",
+    "raw": {
+      "title": "run $(whoami)"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "shell_like"
+      ],
+      "spans": [
+        {
+          "field": "title",
+          "start": 4,
+          "end": 6,
+          "category": "shell_like"
+        }
+      ],
+      "stripped": [],
+      "requesterAttributable": true
+    }
+  },
+  {
+    "id": "SH-02",
+    "description": "A backtick pair is two occurrences",
+    "raw": {
+      "title": "use `ls` here"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "shell_like"
+      ],
+      "spans": [
+        {
+          "field": "title",
+          "start": 4,
+          "end": 5,
+          "category": "shell_like"
+        },
+        {
+          "field": "title",
+          "start": 7,
+          "end": 8,
+          "category": "shell_like"
+        }
+      ],
+      "stripped": [],
+      "requesterAttributable": true
+    }
+  },
+  {
+    "id": "SH-03",
+    "description": "| sh",
+    "raw": {
+      "title": "echo x | sh"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "shell_like"
+      ],
+      "spans": [
+        {
+          "field": "title",
+          "start": 7,
+          "end": 11,
+          "category": "shell_like"
+        }
+      ],
+      "stripped": [],
+      "requesterAttributable": true
+    }
+  },
+  {
+    "id": "SH-04",
+    "description": "curl followed by a space",
+    "raw": {
+      "title": "curl foo"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "shell_like"
+      ],
+      "spans": [
+        {
+          "field": "title",
+          "start": 0,
+          "end": 5,
+          "category": "shell_like"
+        }
+      ],
+      "stripped": [],
+      "requesterAttributable": true
+    }
+  },
+  {
+    "id": "SH-05",
+    "description": "&&",
+    "raw": {
+      "title": "a && b"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "shell_like"
+      ],
+      "spans": [
+        {
+          "field": "title",
+          "start": 2,
+          "end": 4,
+          "category": "shell_like"
+        }
+      ],
+      "stripped": [],
+      "requesterAttributable": true
+    }
+  },
+  {
+    "id": "SH-N1",
+    "description": "curl at the end of a field",
+    "raw": {
+      "title": "use curl"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": false,
+      "categories": [],
+      "spans": [],
+      "stripped": [],
+      "requesterAttributable": false
+    }
+  },
+  {
+    "id": "SH-N2",
+    "description": "|sh without a space",
+    "raw": {
+      "title": "a |sh"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": false,
+      "categories": [],
+      "spans": [],
+      "stripped": [],
+      "requesterAttributable": false
+    }
+  },
+  {
+    "id": "SH-06",
+    "description": "Overlapping && occurrences merge into one span",
+    "raw": {
+      "title": "a &&& b"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": true,
+      "categories": [
+        "shell_like"
+      ],
+      "spans": [
+        {
+          "field": "title",
+          "start": 2,
+          "end": 5,
+          "category": "shell_like"
+        }
+      ],
+      "stripped": [],
+      "requesterAttributable": true
+    }
+  },
+  {
+    "id": "SH-N3",
+    "description": "Patterns are case-sensitive",
+    "raw": {
+      "title": "CURL foo"
+    },
+    "requesterFields": [
+      "title"
+    ],
+    "expected": {
+      "flagged": false,
+      "categories": [],
+      "spans": [],
+      "stripped": [],
+      "requesterAttributable": false
+    }
+  }
+]

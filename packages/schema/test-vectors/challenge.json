@@ -1,0 +1,250 @@
+[
+  {
+    "id": "C-01",
+    "fn": [
+      "deriveChallenge",
+      "webauthnChallenge"
+    ],
+    "description": "request.approve over one request target",
+    "input": {
+      "action": "request.approve",
+      "targets": [
+        {
+          "type": "request",
+          "id": "req_1"
+        }
+      ],
+      "contentHash": "1ef0ae7bbe4ce6c99ab744fe8c27582178d69c660538ef6a4b201cf5a944e17a",
+      "nonce": "9e3f156324d42f0ea4b6f4fce81d56fb"
+    },
+    "expected_bytes_hex": "0000000e736c3a776562617574686e3a76310000000f726571756573742e617070726f7665000000215b7b226964223a227265715f31222c2274797065223a2272657175657374227d5d0000004031656630616537626265346365366339396162373434666538633237353832313738643639633636303533386566366134623230316366356139343465313761000000203965336631353633323464343266306561346236663466636538316435366662",
+    "expected_hash": "38a0444063eb135c94fef180b2dbcb0d1664770d4aee59508317f1fdf3512fea",
+    "expected_webauthn_challenge": "OKBEQGPrE1yU_vGAstvLDRZkdw1K7llQgxfx_fNRL-o"
+  },
+  {
+    "id": "C-02a",
+    "fn": [
+      "deriveChallenge",
+      "webauthnChallenge"
+    ],
+    "description": "requests.bulk_reject over three request targets given out of order",
+    "input": {
+      "action": "requests.bulk_reject",
+      "targets": [
+        {
+          "type": "request",
+          "id": "req_3"
+        },
+        {
+          "type": "request",
+          "id": "req_1"
+        },
+        {
+          "type": "request",
+          "id": "req_2"
+        }
+      ],
+      "contentHash": "1ef0ae7bbe4ce6c99ab744fe8c27582178d69c660538ef6a4b201cf5a944e17a",
+      "nonce": "9e3f156324d42f0ea4b6f4fce81d56fb"
+    },
+    "expected_bytes_hex": "0000000e736c3a776562617574686e3a76310000001472657175657374732e62756c6b5f72656a656374000000615b7b226964223a227265715f31222c2274797065223a2272657175657374227d2c7b226964223a227265715f32222c2274797065223a2272657175657374227d2c7b226964223a227265715f33222c2274797065223a2272657175657374227d5d0000004031656630616537626265346365366339396162373434666538633237353832313738643639633636303533386566366134623230316366356139343465313761000000203965336631353633323464343266306561346236663466636538316435366662",
+    "expected_hash": "60f6e8dca2bd14a8ddcb3947c6c8605546ccc18480910ce4647100fed59ccd99",
+    "expected_webauthn_challenge": "YPbo3KK9FKjdyzlHxshgVUbMwYSAkQzkZHEA_tWczZk"
+  },
+  {
+    "id": "C-02b",
+    "fn": [
+      "deriveChallenge",
+      "webauthnChallenge"
+    ],
+    "description": "The C-02a targets in another order: the same challenge",
+    "input": {
+      "action": "requests.bulk_reject",
+      "targets": [
+        {
+          "type": "request",
+          "id": "req_2"
+        },
+        {
+          "type": "request",
+          "id": "req_1"
+        },
+        {
+          "type": "request",
+          "id": "req_3"
+        }
+      ],
+      "contentHash": "1ef0ae7bbe4ce6c99ab744fe8c27582178d69c660538ef6a4b201cf5a944e17a",
+      "nonce": "9e3f156324d42f0ea4b6f4fce81d56fb"
+    },
+    "expected_bytes_hex": "0000000e736c3a776562617574686e3a76310000001472657175657374732e62756c6b5f72656a656374000000615b7b226964223a227265715f31222c2274797065223a2272657175657374227d2c7b226964223a227265715f32222c2274797065223a2272657175657374227d2c7b226964223a227265715f33222c2274797065223a2272657175657374227d5d0000004031656630616537626265346365366339396162373434666538633237353832313738643639633636303533386566366134623230316366356139343465313761000000203965336631353633323464343266306561346236663466636538316435366662",
+    "expected_hash": "60f6e8dca2bd14a8ddcb3947c6c8605546ccc18480910ce4647100fed59ccd99",
+    "expected_webauthn_challenge": "YPbo3KK9FKjdyzlHxshgVUbMwYSAkQzkZHEA_tWczZk"
+  },
+  {
+    "id": "C-02c",
+    "fn": [
+      "deriveChallenge",
+      "webauthnChallenge"
+    ],
+    "description": "Bulk reject of req_1 and req_2 only: a different challenge from C-02a (ST-50)",
+    "input": {
+      "action": "requests.bulk_reject",
+      "targets": [
+        {
+          "type": "request",
+          "id": "req_1"
+        },
+        {
+          "type": "request",
+          "id": "req_2"
+        }
+      ],
+      "contentHash": "1ef0ae7bbe4ce6c99ab744fe8c27582178d69c660538ef6a4b201cf5a944e17a",
+      "nonce": "9e3f156324d42f0ea4b6f4fce81d56fb"
+    },
+    "expected_bytes_hex": "0000000e736c3a776562617574686e3a76310000001472657175657374732e62756c6b5f72656a656374000000415b7b226964223a227265715f31222c2274797065223a2272657175657374227d2c7b226964223a227265715f32222c2274797065223a2272657175657374227d5d0000004031656630616537626265346365366339396162373434666538633237353832313738643639633636303533386566366134623230316366356139343465313761000000203965336631353633323464343266306561346236663466636538316435366662",
+    "expected_hash": "5a174425e8677821874bfd8f1e2d0fdfd93057416d07e11fffac69c7d914704e",
+    "expected_webauthn_challenge": "WhdEJehneCGHS_2PHi0P39kwV0FtB-Ef_6xpx9kUcE4"
+  },
+  {
+    "id": "C-03",
+    "fn": [
+      "deriveChallenge",
+      "webauthnChallenge"
+    ],
+    "description": "site_config.update over one site target",
+    "input": {
+      "action": "site_config.update",
+      "targets": [
+        {
+          "type": "site",
+          "id": "site_1"
+        }
+      ],
+      "contentHash": "1ef0ae7bbe4ce6c99ab744fe8c27582178d69c660538ef6a4b201cf5a944e17a",
+      "nonce": "9e3f156324d42f0ea4b6f4fce81d56fb"
+    },
+    "expected_bytes_hex": "0000000e736c3a776562617574686e3a763100000012736974655f636f6e6669672e7570646174650000001f5b7b226964223a22736974655f31222c2274797065223a2273697465227d5d0000004031656630616537626265346365366339396162373434666538633237353832313738643639633636303533386566366134623230316366356139343465313761000000203965336631353633323464343266306561346236663466636538316435366662",
+    "expected_hash": "5e57b5fc90371f50bc4f95948a770ab029ca15f445cc99751d8b1d24c86ce439",
+    "expected_webauthn_challenge": "Xle1_JA3H1C8T5WUincKsCnKFfRFzJl1HYsdJMhs5Dk"
+  },
+  {
+    "id": "C-04",
+    "fn": [
+      "deriveChallenge",
+      "webauthnChallenge"
+    ],
+    "description": "Bulk reject ids sort by UTF-8 bytes: U+FB01 before U+1F600, the reverse of UTF-16 order",
+    "input": {
+      "action": "requests.bulk_reject",
+      "contentHash": "1ef0ae7bbe4ce6c99ab744fe8c27582178d69c660538ef6a4b201cf5a944e17a",
+      "nonce": "9e3f156324d42f0ea4b6f4fce81d56fb",
+      "targets": [
+        {
+          "type": "request",
+          "id": "\ud83d\ude00"
+        },
+        {
+          "type": "request",
+          "id": "\ufb01"
+        }
+      ]
+    },
+    "expected_bytes_hex": "0000000e736c3a776562617574686e3a76310000001472657175657374732e62756c6b5f72656a6563740000003e5b7b226964223a22efac81222c2274797065223a2272657175657374227d2c7b226964223a22f09f9880222c2274797065223a2272657175657374227d5d0000004031656630616537626265346365366339396162373434666538633237353832313738643639633636303533386566366134623230316366356139343465313761000000203965336631353633323464343266306561346236663466636538316435366662",
+    "expected_hash": "af81913c858a599c534ebcd7f8fc6a61d9ee3c4e43c80381c2727302f89dd5a6",
+    "expected_webauthn_challenge": "r4GRPIWKWZxTTrzX-PxqYdnuPE5DyAOBwnJzAvid1aY"
+  },
+  {
+    "id": "C-06",
+    "fn": [
+      "deriveChallenge",
+      "webauthnChallenge"
+    ],
+    "description": "hold.clear targets sort by type first: request req_1, then verdict pv_1, although pv_1 sorts before req_1 by id",
+    "input": {
+      "action": "hold.clear",
+      "contentHash": "1ef0ae7bbe4ce6c99ab744fe8c27582178d69c660538ef6a4b201cf5a944e17a",
+      "nonce": "9e3f156324d42f0ea4b6f4fce81d56fb",
+      "targets": [
+        {
+          "type": "verdict",
+          "id": "pv_1"
+        },
+        {
+          "type": "request",
+          "id": "req_1"
+        }
+      ]
+    },
+    "expected_bytes_hex": "0000000e736c3a776562617574686e3a76310000000a686f6c642e636c656172000000405b7b226964223a227265715f31222c2274797065223a2272657175657374227d2c7b226964223a2270765f31222c2274797065223a2276657264696374227d5d0000004031656630616537626265346365366339396162373434666538633237353832313738643639633636303533386566366134623230316366356139343465313761000000203965336631353633323464343266306561346236663466636538316435366662",
+    "expected_hash": "41d68f0ee10c91d42ea084e8054dd6a560e30a5a4471adc4a8affaa2762b59f5",
+    "expected_webauthn_challenge": "QdaPDuEMkdQuoIToBU3WpWDjClpEca3EqK_6onYrWfU"
+  },
+  {
+    "id": "C-05a",
+    "fn": [
+      "deriveChallenge",
+      "webauthnChallenge"
+    ],
+    "description": "C-01 with only the action changed",
+    "input": {
+      "action": "spec.approve",
+      "targets": [
+        {
+          "type": "request",
+          "id": "req_1"
+        }
+      ],
+      "contentHash": "1ef0ae7bbe4ce6c99ab744fe8c27582178d69c660538ef6a4b201cf5a944e17a",
+      "nonce": "9e3f156324d42f0ea4b6f4fce81d56fb"
+    },
+    "expected_bytes_hex": "0000000e736c3a776562617574686e3a76310000000c737065632e617070726f7665000000215b7b226964223a227265715f31222c2274797065223a2272657175657374227d5d0000004031656630616537626265346365366339396162373434666538633237353832313738643639633636303533386566366134623230316366356139343465313761000000203965336631353633323464343266306561346236663466636538316435366662",
+    "expected_hash": "cfe9b6b325b9b82bb2bd484cf8af675001e63ca3e66ce5a0879c5034946a8830",
+    "expected_webauthn_challenge": "z-m2syW5uCuyvUhM-K9nUAHmPKPmbOWgh5xQNJRqiDA"
+  },
+  {
+    "id": "C-05b",
+    "fn": [
+      "deriveChallenge",
+      "webauthnChallenge"
+    ],
+    "description": "C-01 with only the nonce changed",
+    "input": {
+      "action": "request.approve",
+      "targets": [
+        {
+          "type": "request",
+          "id": "req_1"
+        }
+      ],
+      "contentHash": "1ef0ae7bbe4ce6c99ab744fe8c27582178d69c660538ef6a4b201cf5a944e17a",
+      "nonce": "7474c1e7ed929af580fe66e460b06039"
+    },
+    "expected_bytes_hex": "0000000e736c3a776562617574686e3a76310000000f726571756573742e617070726f7665000000215b7b226964223a227265715f31222c2274797065223a2272657175657374227d5d0000004031656630616537626265346365366339396162373434666538633237353832313738643639633636303533386566366134623230316366356139343465313761000000203734373463316537656439323961663538306665363665343630623036303339",
+    "expected_hash": "8de5f1140d81ac672461c11b1deba9ab6cec18bf90ee11b0c7b14291ae0e5697",
+    "expected_webauthn_challenge": "jeXxFA2BrGckYcEbHeupq2zsGL-Q7hGwx7FCka4OVpc"
+  },
+  {
+    "id": "C-05c",
+    "fn": [
+      "deriveChallenge",
+      "webauthnChallenge"
+    ],
+    "description": "C-01 with only the content hash changed",
+    "input": {
+      "action": "request.approve",
+      "targets": [
+        {
+          "type": "request",
+          "id": "req_1"
+        }
+      ],
+      "contentHash": "3460ebae1c45bfd069074b365281354cfdf41b82ffb05c7eedd6775446fcd3a4",
+      "nonce": "9e3f156324d42f0ea4b6f4fce81d56fb"
+    },
+    "expected_bytes_hex": "0000000e736c3a776562617574686e3a76310000000f726571756573742e617070726f7665000000215b7b226964223a227265715f31222c2274797065223a2272657175657374227d5d0000004033343630656261653163343562666430363930373462333635323831333534636664663431623832666662303563376565646436373735343436666364336134000000203965336631353633323464343266306561346236663466636538316435366662",
+    "expected_hash": "40ca0da1fa80861a08631856a862521492230e0c47a9392e4d078f372adb4c97",
+    "expected_webauthn_challenge": "QMoNofqAhhoIYxhWqGJSFJIjDgxHqTkuTQePNyrbTJc"
+  }
+]
