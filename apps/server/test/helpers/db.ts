@@ -52,7 +52,9 @@ export async function openTestDb(target: TestDbTarget = resolveTestDbTarget()): 
     close: async () => {
       try {
         await db.destroy()
-        await sql`drop database ${sql.id(name)} with (force)`.execute(admin)
+        // No FORCE: pg's Pool.end() resolves before its clients have closed, and Postgres waits
+        // up to five seconds for those backends to exit; FORCE would kill them with a 57P01.
+        await sql`drop database ${sql.id(name)}`.execute(admin)
       } finally {
         await admin.destroy()
       }
