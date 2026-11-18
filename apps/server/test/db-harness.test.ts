@@ -79,3 +79,24 @@ testPg('[T003-8] FOR UPDATE SKIP LOCKED skips a row another transaction holds', 
     expect(other.rows.map((r) => r.id)).toEqual([2])
   })
 })
+
+// pg's Pool.end() resolves before its clients finish closing, so dropping the database WITH
+// (FORCE) killed backends mid-goodbye and surfaced as an unhandled 57P01 in whichever file ran.
+testPg('[T003-9] closing a test database never kills its own closing connections', async () => {
+  const codes: unknown[] = []
+  const record = (error: unknown): void => {
+    codes.push((error as { code?: unknown }).code)
+  }
+  process.on('uncaughtException', record)
+  try {
+    for (let i = 0; i < 10; i++) {
+      const handle = await openTestDb()
+      await Promise.all(Array.from({ length: 8 }, () => sql`select pg_sleep(0.01)`.execute(handle.db)))
+      await handle.close()
+    }
+    await new Promise((resolve) => setTimeout(resolve, 100))
+  } finally {
+    process.off('uncaughtException', record)
+  }
+  expect(codes).toEqual([])
+})
