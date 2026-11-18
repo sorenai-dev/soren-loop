@@ -217,8 +217,14 @@ describe('L3 result shape and attribution (spec 017 batch C)', () => {
       return performance.now() - t0
     }
     time(10_000) // warm up
-    const small = time(100_000)
-    const big = time(200_000)
+    // The fastest of several interleaved runs: a parallel suite's load spikes inflate single
+    // samples, but they can't make the quickest run of an O(n^2) scan look linear.
+    let small = Infinity
+    let big = Infinity
+    for (let i = 0; i < 5; i++) {
+      small = Math.min(small, time(100_000))
+      big = Math.min(big, time(200_000))
+    }
     expect(small).toBeLessThan(2_000)
     expect(big).toBeLessThan(Math.max(3 * small, 50))
   })
