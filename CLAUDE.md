@@ -44,8 +44,8 @@ pnpm --filter @sorenai/loop-server db:migrate        # also db:rollback, db:chec
 - `packages/widget`, `packages/react`: the embeddable request widget.
 - `packages/node`: server-side helpers for the host app.
 - `packages/flag-adapters`: OpenFeature and flagd integration.
-- `spikes/<id>/`: throwaway investigation scripts; results are written up in
-  `docs/discovery/spikes/`.
+- `spikes/<id>/`: throwaway investigation scripts, git-ignored and kept local; results are
+  written up in `docs/discovery/spikes/` (earlier spikes are in history at `7abb099`).
 - `scripts/`: repo tooling (action pin check).
 
 ## Design documents
